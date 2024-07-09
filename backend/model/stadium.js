@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const stadiumSchema = new mongoose.Schema({
   stadium_name: {
     type: String,
@@ -46,5 +45,4 @@ const stadiumSchema = new mongoose.Schema({
 });
 stadiumSchema.index({ stadium_name: "text", address: "text", phone: "text" });
 let Stadium = mongoose.model("Stadium", stadiumSchema);
-
 module.exports = { Stadium };
