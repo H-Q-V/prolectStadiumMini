@@ -65,6 +65,52 @@ const stadiumController = {
     }
   },
 
+    // Delete a stadium
+    deleteStadium: async (req, res) => {
+        try {
+            await Stadium.findByIdAndDelete(req.params.id);
+            return res.status(200).json("Deleted successfully");
+        } catch (err) {
+            return res.status(500).json(err);
+        }
+    },
+    
+    searchStadium: async (req, res) => {
+        try {
+            const { search, city } = req.query;
+            
+            // Tạo mảng các điều kiện tìm kiếm
+            let queries = [];
+            if (search) {
+                queries.push({ 
+                    $or: [
+                        { stadium_name: { $regex: search, $options: 'i' } },
+                        { address: { $regex: search, $options: 'i' } }
+                    ]
+                });
+            }
+            if (city) {
+                queries.push({ address: { $regex: city, $options: 'i' } });
+            }
+    
+            // Kết hợp các điều kiện tìm kiếm với $and
+            const query = queries.length > 0 ? { $and: queries } : {};
+    
+            const projection = {
+                _id: 0,
+                stadium_name: 1,
+                address: 1,
+                phone: 1,
+            };
+    
+            const stadiums = await Stadium.find(query, projection);
+            return res.status(200).json(stadiums);
+        } catch (err) {
+            return res.status(500).json(err);
+        }
+    },
+    
+    
   // Delete a stadium
   deleteStadium: async (req, res) => {
     try {
@@ -77,28 +123,38 @@ const stadiumController = {
 
   searchStadium: async (req, res) => {
     try {
-      const queries = Array.isArray(req.query.query)
-        ? req.query.query
-        : [req.query.query];
-      const regexQueries = queries.map((q) => ({
-        $or: [
-          { stadium_name: { $regex: q, $options: "i" } },
-          { address: { $regex: q, $options: "i" } },
-        ],
-      }));
-      const query = { $and: regexQueries };
-      const projection = {
-        _id: 0,
-        stadium_name: 1,
-        address: 1,
-        phone: 1,
-      };
-      const stadiums = await Stadium.find(query, projection);
-      return res.status(200).json(stadiums);
+        const { search, city } = req.query;
+
+        // Tạo mảng các điều kiện tìm kiếm
+        let queries = [];
+        if (search) {
+            queries.push({ 
+                $or: [
+                    { stadium_name: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } }
+                ]
+            });
+        }
+        if (city) {
+            queries.push({ address: { $regex: city, $options: 'i' } });
+        }
+
+        // Kết hợp các điều kiện tìm kiếm với $and
+        const query = queries.length > 0 ? { $and: queries } : {};
+
+        const projection = {
+            _id: 0,
+            stadium_name: 1,
+            address: 1,
+            phone: 1,
+        };
+
+        const stadiums = await Stadium.find(query, projection);
+        return res.status(200).json(stadiums);
     } catch (err) {
-      return res.status(500).json(err);
+        return res.status(500).json(err);
     }
-  },
+},
 
   // Add a StadiumStyle to a specific Stadium
   addStadiumStyle: async (req, res) => {
@@ -119,7 +175,28 @@ const stadiumController = {
       return res.status(500).json(err);
     }
   },
-
+  getAllStadiumStyle: async (req, res) => {
+    try{
+        const {id} = req.params;
+        const stadium = await Stadium.findById(id);
+        if (!stadium) {
+            return res.status(404).json({ message: "Không tìm thấy sân vận động" });
+        }
+        return res.status(200).json({stadium_styles: stadium.stadium_styles, stadium_name: stadium.stadium_name, address: stadium.address});
+    }catch(err) {
+        return res.status(500).json(err);
+    }
+},
+getAnStadiumStyle: async (req, res) => {
+    try{
+        const {id, idStadiumStyle} = req.params;
+        const stadium = await Stadium.findById(id);
+        const style = stadium.stadium_styles.id(idStadiumStyle);
+        return res.status(200).json({stadium_style: style, stadium_name: stadium.stadium_name, address: stadium.address});
+    } catch (err){
+        res.status(500).json(err);
+    }
+},
   updateStadiumStyle: async (req, res) => {
     try {
       const { id, stadiumStyleId } = req.params;
