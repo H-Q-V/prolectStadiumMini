@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useStadium } from "../stores/fetchStadium";
 const stadiumData = ref([]);
+console.log("🚀 ~ stadiumData:", stadiumData);
 const stadiumStore = useStadium();
 const route = useRoute();
 onMounted(async () => {
