@@ -1,0 +1,18 @@
+.p-checkbox-box {
+  height: 18.3px;
+}
+
+.p-datepicker-input {
+  padding: 16px;
+  color: #334155;
+  border: 1px solid#334155;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.p-select-list-container {
+  padding: 14px;
+  border-radius: 6px;
+}
