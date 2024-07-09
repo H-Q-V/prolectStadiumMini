@@ -72,28 +72,39 @@ const stadiumController = {
     
     searchStadium: async (req, res) => {
         try {
-            //const queries = Array.isArray(req.query.query) ? req.query.query : [req.query.query];
-            const {search,city} = req.query;
+            const { search, city } = req.query;
             
-            const regexQueries = queries.map(q => ({
-                $or: [
-                    { stadium_name: { $regex: search, $options: 'i' } },
-                    { address: { $regex: city, $options: 'i' } }
-                ]
-            }));
-            const query = { $and: regexQueries };
+            // Tạo mảng các điều kiện tìm kiếm
+            let queries = [];
+            if (search) {
+                queries.push({ 
+                    $or: [
+                        { stadium_name: { $regex: search, $options: 'i' } },
+                        { address: { $regex: search, $options: 'i' } }
+                    ]
+                });
+            }
+            if (city) {
+                queries.push({ address: { $regex: city, $options: 'i' } });
+            }
+    
+            // Kết hợp các điều kiện tìm kiếm với $and
+            const query = queries.length > 0 ? { $and: queries } : {};
+    
             const projection = {
                 _id: 0,
                 stadium_name: 1,
                 address: 1,
                 phone: 1,
             };
+    
             const stadiums = await Stadium.find(query, projection);
             return res.status(200).json(stadiums);
         } catch (err) {
             return res.status(500).json(err);
         }
     },
+    
     
 
     // Add a StadiumStyle to a specific Stadium
