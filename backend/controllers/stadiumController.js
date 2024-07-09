@@ -1,26 +1,22 @@
 const { Stadium } = require("../model/stadium");
-const { search } = require("../router/stadiumRouter");
+//const { search } = require("../router/stadiumRouter");
 const { uploadImage } = require("../uploadImage/uploadImage");
 
 const stadiumController = {
     addStadium: async (req, res) => {
         try {
-            const { stadium_name, address, phone, image, describe, stadium_style } =
+            const { stadium_name, address, phone, image, describe, stadium_style, stadium_owner} =
               req.body;
             const uploadedImage = await uploadImage(image);
-            const uploadedStadiumStyleImage = await uploadImage(stadium_style.image);
             const response = await Stadium.create({
               image: uploadedImage.secure_url,
               stadium_name: stadium_name,
               address: address,
               describe: describe,
-              stadium_style: {
-                name: stadium_style.name,
-                type: stadium_style.type,
-                image: uploadedStadiumStyleImage.secure_url,
-                price: stadium_style.price
-              },
-              phone: phone,
+              stadium_styles: stadium_style,
+              stadium_owner: stadium_owner,
+              phone: phone
+            
             });
             return res.status(200).json({ success: true, data: response });
           } catch (err) {
@@ -31,13 +27,14 @@ const stadiumController = {
           }
     },
 
+
     // Get all stadiums
     getAllStadium: async (req, res) => {
         try {
             const stadiums = await Stadium.find({}).populate("stadium_owner");
-            res.status(200).json(stadiums);
+            return res.status(200).json(stadiums);
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
 
@@ -46,9 +43,9 @@ const stadiumController = {
         try {
             const { id } = req.params;
             const stadium = await Stadium.findById(id).populate("stadium_owner");
-            res.status(200).json(stadium);
+            return res.status(200).json(stadium);
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
 
@@ -57,9 +54,9 @@ const stadiumController = {
         try {
             const stadium = await Stadium.findById(req.params.id);
             await stadium.updateOne({ $set: req.body });
-            res.status(200).json("Updated successfully");
+            return res.status(200).json("Updated successfully");
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
 
@@ -67,9 +64,9 @@ const stadiumController = {
     deleteStadium: async (req, res) => {
         try {
             await Stadium.findByIdAndDelete(req.params.id);
-            res.status(200).json("Deleted successfully");
+            return res.status(200).json("Deleted successfully");
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
     
@@ -90,9 +87,9 @@ const stadiumController = {
                 phone: 1,
             };
             const stadiums = await Stadium.find(query, projection);
-            res.status(200).json(stadiums);
+            return res.status(200).json(stadiums);
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
     
@@ -111,9 +108,9 @@ const stadiumController = {
 
             stadium.stadium_styles.push(stadiumStyle);
             const updatedStadium = await stadium.save();
-            res.status(200).json(updatedStadium);
+            return res.status(200).json(updatedStadium);
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
 
@@ -136,9 +133,9 @@ const stadiumController = {
             style.set(updatedData);
 
             await stadium.save();
-            res.status(200).json(style);
+            return res.status(200).json(style);
         } catch (err) {
-            res.status(500).json(err);
+            return res.status(500).json(err);
         }
     },
 
@@ -166,10 +163,10 @@ const stadiumController = {
             await stadium.save();
     
             console.log(`StadiumStyle with id: ${stadiumStyleId} deleted successfully`);
-            res.status(200).json("Deleted successfully");
+            return res.status(200).json("Deleted successfully");
         } catch (err) {
             console.error(`Error occurred: ${err}`);
-            res.status(500).json({ error: err.message });
+            return res.status(500).json({ error: err.message });
         }
     }
     
