@@ -2,30 +2,34 @@
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import { ref } from "vue";
+import { useStadium } from "../../stores/fetchStadium";
 const loading = ref([false]);
 const name = ref("");
-const datetime = ref(null);
 const address = ref("");
+const result = ref([]);
+const stadiumStore = useStadium();
 const load = (index) => {
   loading.value[index] = true;
   setTimeout(() => {
     loading.value[index] = false;
   }, 2000);
 };
-const onSearch = (event) => {
-  event.preventDefault();
+const onSearch = async () => {
   load(0);
   const dataSearch = {
-    dropdownValue: dropdownValue.value,
     name: name.value,
     address: address.value,
-    datetime: datetime.value,
   };
   console.log("🚀 ~ onSearch ~ dataSearch:", dataSearch);
+  result.value = await stadiumStore.searchStadium(
+    dataSearch.name,
+    dataSearch.address
+  );
+  console.log("🚀 ~ onSearch ~ result:", result.value);
 };
 </script>
 <template>
-  <form @submit="onSearch">
+  <form @submit.prevent="onSearch">
     <InputText
       type="text"
       placeholder="Nhập tên sân "
