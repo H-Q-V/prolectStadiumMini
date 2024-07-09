@@ -18,7 +18,11 @@ router.get("/searchStadium",stadiumController.searchStadium);
 // router để thêm stadiumstyle
 router.post("/createStadiumStyle/:id",stadiumController.addStadiumStyle);
 
-router.put("/UpdateStadiumStyle/:id/:stadiumStyleId",stadiumController.updateStadiumStyle);
+router.get("/getAllStadiumStyle/:id",stadiumController.getAllStadiumStyle);
+
+router.get("/getAnStadiumStyle/:id/:idStadiumStyle", stadiumController.getAnStadiumStyle);
+
+router.put("/updateStadiumStyle/:id/:stadiumStyleId",stadiumController.updateStadiumStyle);
 
 router.delete("/deleteStadiumStyle/:id/:stadiumStyleId", stadiumController.deleteStadiumStyle);
 
