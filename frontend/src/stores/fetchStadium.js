@@ -7,7 +7,7 @@ export const useStadium = defineStore("stadium", () => {
   const getAllStadium = async () => {
     try {
       const response = await axios.get(`${endpoint}/getAllStadium`);
-      stadiumData.value = response?.data?.data;
+      stadiumData.value = response?.data;
     } catch (error) {
       console.log("🚀 ~ getAllStadium ~ error:", error);
     }
@@ -15,9 +15,22 @@ export const useStadium = defineStore("stadium", () => {
   const getAStadium = async (id) => {
     try {
       const response = await axios.get(`${endpoint}/getAnStadium/${id}`);
-      stadiumData.value = response?.data?.data;
+      stadiumData.value = response?.data;
     } catch (error) {
       console.log("🚀 ~ getAStadium ~ error:", error);
+    }
+  };
+
+  const searchStadium = async (stadiumName, address) => {
+    const resultSearch = ref([]);
+    try {
+      const response = await axios.get(
+        `${endpoint}/searchStadium?query=${stadiumName}&&${address}`
+      );
+      resultSearch.value = response?.data;
+      console.log("🚀 ~ searchStadium ~ response:", response);
+    } catch (error) {
+      console.log("🚀 ~ searchStadium ~ error:", error);
     }
   };
 
@@ -25,5 +38,6 @@ export const useStadium = defineStore("stadium", () => {
     stadiumData,
     getAllStadium,
     getAStadium,
+    searchStadium,
   };
 });

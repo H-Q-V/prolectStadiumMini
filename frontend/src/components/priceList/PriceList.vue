@@ -24,47 +24,53 @@ onMounted(async () => {
 
     <tr>
       <td>
-        <router-link :to="`/book-pitch/${stadiumData._id}`">
-          <div
-            v-for="(stadiumStyle, index) in stadiumData.stadium_style"
-            :key="index"
-            class="flex items-center gap-2"
-          >
+        <router-link
+          v-for="(stadiumStyle, index) in stadiumData.stadium_styles"
+          :key="index"
+          :to="`/book-pitch/${stadiumData._id}/${stadiumStyle._id}`"
+          class="link"
+        >
+          <div class="flex items-center gap-2">
             <span> {{ stadiumStyle.name }}</span>
             <span> (Sân {{ stadiumStyle.type }})</span>
           </div>
         </router-link>
       </td>
       <td>
-        <router-link :to="`/book-pitch/${stadiumData._id}`">
-          <span
-            v-for="(stadium_style, index) in stadiumData.stadium_style"
-            :key="index"
-          >
-            {{ stadium_style.price }} Đ
-          </span>
+        <router-link
+          v-for="(stadium_style, index) in stadiumData.stadium_styles"
+          :key="index"
+          :to="`/book-pitch/${stadiumData._id}/${stadium_style._id}`"
+          class="link"
+        >
+          <div>{{ stadium_style.price }} Đ</div>
         </router-link>
       </td>
     </tr>
   </table>
 </template>
 <style scoped>
-#price-list td,
-#price-list th {
-  border: 1px solid #ddd;
-  padding: 8px;
-  width: 50%;
-}
-
-#price-list tr:hover {
-  background-color: #ddd;
-}
-
-#price-list th {
-  padding-top: 12px;
-  padding-bottom: 12px;
+#price-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
   text-align: left;
+}
+
+#price-list th,
+#price-list td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+#price-list th {
   background-color: #04aa6d;
   color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+#price-list tr {
+  border-bottom: 1px solid #dddddd;
 }
 </style>

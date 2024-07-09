@@ -1,6 +1,5 @@
 <script setup>
 import Search from "../../components/search/Search.vue";
-import Stadium from "../../components/stadium/Stadium.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { ref } from "vue";
@@ -9,6 +8,7 @@ import Textarea from "primevue/textarea";
 import axios from "axios";
 import { endpoint } from "../../utils/endpoint";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
+import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
 const visible = ref(false);
 const image = ref("");
 const stadium_name = ref(null);
@@ -40,7 +40,7 @@ const onAddStadium = async () => {
   <h1 class="text-[#18458b] text-[24px] font-semibold text-center mb-4">
     Danh sách sân
   </h1>
-  <Stadium></Stadium>
+  <StadiumAdmin></StadiumAdmin>
   <Button
     @click="visible = true"
     class="fixed bottom-3 right-3 w-[38px] h-[38px] bg-slate-500 rounded-full text-white z-10"
