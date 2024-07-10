@@ -24,6 +24,6 @@ router.get("/getAnStadiumStyle/:id/:idStadiumStyle", stadiumController.getAnStad
 
 router.put("/updateStadiumStyle/:id/:stadiumStyleId",stadiumController.updateStadiumStyle);
 
-router.delete("/deleteStadiumStyle/:id/:stadiumStyleId", stadiumController.deleteStadiumStyle);
+router.delete("/deleteStadiumStyle/:stadiumStyleId", stadiumController.deleteStadiumStyle);
 
 module.exports = router;
