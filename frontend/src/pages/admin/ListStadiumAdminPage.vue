@@ -2,37 +2,30 @@
 import Search from "../../components/search/Search.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
-import { ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import axios from "axios";
-import { endpoint } from "../../utils/endpoint";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
 import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
+import { useStadium } from "../../stores/fetchStadium";
 const visible = ref(false);
 const image = ref("");
 const stadium_name = ref(null);
 const address = ref(null);
 const phone = ref(null);
-
+const stadiumStore = useStadium();
 const handleFileChange = (e) => {
   onFileChange(e, image);
 };
 
-const onAddStadium = async () => {
+const handleAddStadium = async () => {
   const data = {
     image: await convertBase64(image.value),
     stadium_name: stadium_name.value,
     address: address.value,
     phone: phone.value,
   };
-
-  try {
-    const response = await axios.post(`${endpoint}/createStadium`, data);
-    console.log("🚀 ~ onAddStadium ~ response:", response);
-  } catch (error) {
-    console.log("🚀 ~ onAddStadium ~ error:", error);
-  }
+  await stadiumStore.createStadium(data);
 };
 </script>
 <template>
@@ -54,7 +47,7 @@ const onAddStadium = async () => {
     header="Thêm sân"
     class="py-3 px-10 z-10"
   >
-    <form @submit.prevent="onAddStadium" class="flex flex-col gap-4">
+    <form @submit.prevent="handleAddStadium" class="flex flex-col gap-4">
       <div class="flex items-center gap-4">
         <label for="image" class="font-semibold w-24">Ảnh</label>
         <InputText
