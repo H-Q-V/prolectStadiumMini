@@ -233,33 +233,23 @@ const stadiumController = {
 
   deleteStadiumStyle: async (req, res) => {
     try {
-      const { id, stadiumStyleId } = req.params;
-      console.log(
-        `Received request to delete StadiumStyle with id: ${stadiumStyleId} from Stadium with id: ${id}`
+      const { stadiumStyleId } = req.params;
+
+      const stadium = await Stadium.find({
+        stadium_styles: { $elemMatch: { _id: stadiumStyleId } },
+      });
+
+      if (stadium.length === 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Sân không tồn tại" });
+      }
+      await Stadium.updateOne(
+        { "stadium_styles._id": stadiumStyleId },
+        { $pull: { stadium_styles: { _id: stadiumStyleId } } }
       );
 
-      const stadium = await Stadium.findById(id);
-      if (!stadium) {
-        console.log(`Stadium with id: ${id} not found`);
-        return res.status(404).json("Stadium not found");
-      }
-
-      const style = stadium.stadium_styles.id(stadiumStyleId);
-      if (!style) {
-        console.log(`StadiumStyle with id: ${stadiumStyleId} not found`);
-        return res.status(404).json("StadiumStyle not found");
-      }
-
-      console.log(`StadiumStyle found, removing...`);
-      stadium.stadium_styles.pull(stadiumStyleId);
-
-      console.log(`Saving stadium changes...`);
-      await stadium.save();
-
-      console.log(
-        `StadiumStyle with id: ${stadiumStyleId} deleted successfully`
-      );
-      return res.status(200).json("Deleted successfully");
+      return res.status(200).json({ success: true, message: "Xóa thành công" });
     } catch (err) {
       console.error(`Error occurred: ${err}`);
       return res.status(500).json({ error: err.message });
