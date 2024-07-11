@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const stadiumRoute = require("./router/stadiumRouter");
 const stadiumOwner = require("./router/stadiumOwnerRouter");
 const authRouter = require("./router/authRouter");
+const customerRouter = require("./router/customerRouter");
 dotenv.config();
 
 app.use(bodyParser.json({limit: "50mb"}));
@@ -36,7 +37,7 @@ app.use("/api", stadiumRoute);
 app.use("/api", stadiumOwner);
 //Router Regiter/login
 app.use("/api", authRouter);
-
+app.use("/api", customerRouter);
 
 app.listen(3000, () => {
     console.log("server is running http://localhost:3000/");
