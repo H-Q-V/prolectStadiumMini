@@ -73,4 +73,13 @@ onMounted(async () => {
 #price-list tr {
   border-bottom: 1px solid #dddddd;
 }
+
+.link {
+  display: block;
+  width: 100%;
+}
+
+.link:hover {
+  background-color: #ddd;
+}
 </style>

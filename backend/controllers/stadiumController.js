@@ -7,18 +7,38 @@ const stadiumController = {
     try {
       const {
         stadium_name,
-        address,
+        province,
+        district,
         phone,
         image,
         describe,
         stadium_styles,
         stadium_owner,
       } = req.body;
+
+      const isValidVietnamPhoneNumber = (phone) => {
+        const phoneRegex =
+          /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/;
+        return phoneRegex.test(phone);
+      };
+
+      if (!stadium_name || !province || !district || !phone || !describe) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
+      }
+
+      if (!isValidVietnamPhoneNumber(phone)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Số điện thoại không hợp lệ" });
+      }
       const uploadedImage = await uploadImage(image);
       const response = await Stadium.create({
         image: uploadedImage.secure_url,
         stadium_name: stadium_name,
-        address: address,
+        province: province,
+        district: district,
         describe: describe,
         stadium_styles: stadium_styles,
         stadium_owner: stadium_owner,

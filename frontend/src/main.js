@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import "./style.css";
+import "vue3-toastify/dist/index.css";
 import "./primevue.css";
 import "primeicons/primeicons.css";
 import App from "./App.vue";
@@ -21,5 +22,6 @@ app.use(PrimeVue, {
 });
 
 app.use(router);
+
 app.use(pinia);
 app.mount("#app");
