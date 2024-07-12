@@ -10,6 +10,7 @@ const stadiumRoute = require("./router/stadiumRouter");
 const stadiumOwner = require("./router/stadiumOwnerRouter");
 const authRouter = require("./router/authRouter");
 const bookPitchRouter = require("./router/bookPitchRouter");
+const customerRouter = require("./router/customerRouter");
 dotenv.config();
 
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -38,6 +39,8 @@ app.use("/api", stadiumOwner);
 //Router Regiter/login
 app.use("/api", authRouter);
 app.use("/api", bookPitchRouter);
+app.use("/api", customerRouter);
+
 app.listen(3000, () => {
   console.log("server is running http://localhost:3000/");
 });

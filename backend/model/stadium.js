@@ -22,6 +22,8 @@ const stadiumSchema = new mongoose.Schema({
   },
   describe: {
     type: String,
+    required: true,
+
   },
   stadium_styles: [
     {
