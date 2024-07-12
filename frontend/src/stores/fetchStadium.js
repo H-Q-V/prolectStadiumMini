@@ -9,12 +9,14 @@ export const useStadium = defineStore("stadium", {
   }),
   getters: {},
   actions: {
-    async createStadium(data) {
+    async createStadium(data, toast) {
       try {
         await axios.post(`${endpoint}/createStadium`, data);
+        toast.success("Thêm mới thành công");
         this.getAllStadium();
       } catch (error) {
         console.log("🚀 ~ createStadium ~ error:", error);
+        toast.error(error.message);
       }
     },
     async getAllStadium() {
@@ -33,10 +35,11 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ getAStadium ~ error:", error);
       }
     },
-    async deleteStadium(id) {
+    async deleteStadium(id, toast) {
       try {
         await axios.delete(`${endpoint}/deleteStadium/${id}`);
         this.getAllStadium();
+        toast.success("Xóa thành công");
       } catch (error) {
         console.log("🚀 ~ deleteStadium ~ error:", error);
       }
@@ -54,9 +57,9 @@ export const useStadium = defineStore("stadium", {
     async searchStadium(stadiumName, address) {
       try {
         const response = await axios.get(
-          `${endpoint}/searchStadium?query=${stadiumName}&&${address}`
+          `${endpoint}/searchStadium?search=${stadiumName}&&city=${address}`
         );
-        resultSearch.value = response?.data;
+        this.resultSearch = response?.data;
         console.log("🚀 ~ searchStadium ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ searchStadium ~ error:", error);

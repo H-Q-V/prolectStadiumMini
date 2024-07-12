@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
+import { toast } from "vue3-toastify";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
@@ -13,7 +14,7 @@ watchEffect(() => {
 
 const handleDeleteStadium = async (id) => {
   if (window.confirm("Bạn có chắc chắn xóa không ?")) {
-    await stadiumStore.deleteStadium(id);
+    await stadiumStore.deleteStadium(id, toast);
   }
 };
 </script>
@@ -44,7 +45,9 @@ const handleDeleteStadium = async (id) => {
         </div>
         <div class="flex items-center gap-2 text-sm">
           <i class="pi pi-fw pi-map-marker"></i>
-          <p class="capitalize line-clamp-2">{{ stadium.address }}</p>
+          <p class="capitalize line-clamp-2">
+            {{ stadium.province }} {{ stadium.district }}
+          </p>
         </div>
       </router-link>
 

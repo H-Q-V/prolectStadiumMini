@@ -35,7 +35,7 @@ const onSubmit = (e) => {
           id="email1"
           type="text"
           placeholder="Email address"
-          class="w-full text-black border border-[#cbd5e1] mb-5"
+          class="w-full px-5 py-4 text-black border border-[#cbd5e1] mb-5"
           v-model="email"
         />
 
