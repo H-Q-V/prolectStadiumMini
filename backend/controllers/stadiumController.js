@@ -71,7 +71,7 @@ const stadiumController = {
       const stadium = await Stadium.findById(req.params.id);
       //const {stadium_name, address, image, phone, describe} = req.body
       const updates = {};
-      const {stadium_name, ward, city, provice, phone, image, describe} = req.body;
+      const {stadium_name, ward, city, province, phone, image, describe} = req.body;
       
       const phoneRegex = /^[0-9]{10}$/;
       if(phone && !phoneRegex.test(phone)){
@@ -84,8 +84,8 @@ const stadiumController = {
       if(ward){
         updates.ward = ward;
       }
-      if(provice){
-        updates.provice= provice;
+      if(province){
+        updates.province= province;
       }
       if(city){
         updates.city = city;
