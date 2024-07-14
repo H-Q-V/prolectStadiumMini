@@ -4,7 +4,15 @@ const stadiumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
+  ward: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  provice: {
     type: String,
     required: true,
   },
@@ -19,7 +27,6 @@ const stadiumSchema = new mongoose.Schema({
   describe: {
     type: String,
     required: true,
-
   },
   stadium_styles: [
     {
