@@ -4,6 +4,7 @@ export const useAddress = defineStore("address", {
   state: () => ({
     provinceData: [],
     districtData: [],
+    wardData: [],
   }),
   getters: {},
   actions: {
@@ -26,6 +27,17 @@ export const useAddress = defineStore("address", {
         this.districtData = response?.data?.data;
       } catch (error) {
         console.log("🚀 ~ getdistrict ~ error:", error);
+      }
+    },
+
+    async getWard(districtID) {
+      try {
+        const response = await axios.get(
+          `https://esgoo.net/api-tinhthanh/3/${districtID}.htm`
+        );
+        this.wardData = response?.data?.data;
+      } catch (error) {
+        console.log("🚀 ~ getWard ~ error:", error);
       }
     },
   },

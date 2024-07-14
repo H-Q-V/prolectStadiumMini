@@ -1,18 +1,21 @@
 <script setup>
 import { ref } from "vue";
 import InputText from "primevue/inputtext";
-import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
-const email = ref("");
+import { toast } from "vue3-toastify";
+import { useRouter } from "vue-router";
+import { useUser } from "../stores/fetchAuth";
+const router = useRouter();
+const userStore = useUser();
+const username = ref("");
 const password = ref("");
-const checked = ref(false);
-const onSubmit = () => {
+const handleSubmit = async () => {
   const data = {
-    email: email.value,
+    username: username.value,
     password: password.value,
-    rememberMe: checked.value,
   };
-  console.log("🚀 ~ onSubmit ~ data:", data);
+  console.log("🚀 ~ handleSubmit ~ data:", data);
+  await userStore.login(data, toast, router);
 };
 </script>
 <template>
@@ -25,43 +28,36 @@ const onSubmit = () => {
         <span class="text-black font-medium">Sign in to continue</span>
       </div>
 
-      <form @submit.prevent="onSubmit">
-        <label for="email1" class="block text-black text-xl font-medium mb-2"
-          >Email</label
+      <form @submit.prevent="handleSubmit">
+        <label for="username" class="block text-black text-xl font-medium mb-2"
+          >Tên người dùng</label
         >
         <InputText
-          id="email"
+          id="username"
+          name="username"
           type="text"
-          placeholder="Email address"
+          placeholder="Tên người dùng"
           class="w-full px-5 py-4 border border-[#cbd5e1] mb-5"
-          v-model="email"
+          v-model="username"
         />
 
-        <label for="password1" class="block text-black font-medium text-xl mb-2"
-          >Password</label
+        <label for="password" class="block text-black font-medium text-xl mb-2"
+          >Mật khẩu</label
         >
         <InputText
           id="password"
+          name="password"
           type="text"
-          placeholder="Password"
+          placeholder="Mật khẩu"
           class="w-full px-5 py-4 border border-[#cbd5e1] mb-5"
           v-model="password"
         />
 
-        <div class="flex items-center justify-between mb-5 gap-5">
-          <div class="flex items-center">
-            <Checkbox
-              v-model="checked"
-              id="remembermer"
-              binary
-              class="mr-2 border border-[#cbd5e1] rounded-md"
-            ></Checkbox>
-            <label class="text-black" for="rememberme1">Remember me</label>
-          </div>
-          <a
+        <div class="flex items-center justify-end mb-5 gap-5">
+          <router-link
             class="font-medium no-underline ml-2 text-right cursor-pointer"
             style="color: #81c784"
-            >Forgot password?</a
+            >Forgot password?</router-link
           >
         </div>
         <Button
@@ -73,7 +69,9 @@ const onSubmit = () => {
 
       <div class="flex items-center justify-center gap-4 mt-4">
         <p class="text-black">You haven't any account?</p>
-        <a href="/auth/register" class="text-primary">Sign up</a>
+        <router-link to="/auth/register" class="text-primary"
+          >Sign up</router-link
+        >
       </div>
     </div>
   </div>

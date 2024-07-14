@@ -43,7 +43,7 @@ const topbarMenuClasses = computed(() => {
         <i class="text-black pi pi-user"></i>
         <span>Profile</span>
       </button>
-      <button class="p-link layout-topbar-button">
+      <button class="layout-topbar-button">
         <i class="text-black pi pi-cog"></i>
         <span>Settings</span>
       </button>
@@ -64,6 +64,7 @@ const topbarMenuClasses = computed(() => {
   align-items: center;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05),
     0px 1px 4px rgba(0, 0, 0, 0.08);
+  z-index: 100;
   img {
     height: 2.5rem;
     margin-right: 0.5rem;

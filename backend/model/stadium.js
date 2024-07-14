@@ -12,6 +12,10 @@ const stadiumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  ward: {
+    type: String,
+    required: true,
+  },
   image: {
     type: String,
     required: true,
@@ -23,7 +27,6 @@ const stadiumSchema = new mongoose.Schema({
   describe: {
     type: String,
     required: true,
-
   },
   stadium_styles: [
     {

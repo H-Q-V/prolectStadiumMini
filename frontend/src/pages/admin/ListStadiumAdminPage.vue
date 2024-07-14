@@ -2,21 +2,30 @@
 import Search from "../../components/search/Search.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
-import { ref } from "vue";
+import Dropdown from "primevue/dropdown";
+import { onMounted, ref, watch, watchEffect } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
 import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
 import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
+import { getAddress } from "../../utils/getAddress";
 const visible = ref(false);
 const image = ref("");
 const stadium_name = ref(null);
-const province = ref(null);
-const district = ref(null);
 const phone = ref(null);
 const describe = ref(null);
 const stadiumStore = useStadium();
+const {
+  province,
+  district,
+  ward,
+  provinceOptions,
+  districtOptions,
+  wardOptions,
+} = getAddress();
+
 const handleFileChange = (e) => {
   onFileChange(e, image);
 };
@@ -25,8 +34,9 @@ const handleAddStadium = async () => {
   const data = {
     image: await convertBase64(image.value),
     stadium_name: stadium_name.value,
-    province: province.value,
-    district: district.value,
+    province: province.value.name,
+    district: district.value.name,
+    ward: ward.value.name,
     phone: phone.value,
     describe: describe.value,
   };
@@ -83,21 +93,33 @@ const handleAddStadium = async () => {
 
       <div class="flex items-center gap-4">
         <label for="province" class="font-semibold w-24">Tỉnh thành</label>
-        <InputText
-          id="province"
-          name="province"
-          class="input-text"
+        <Dropdown
           v-model="province"
+          :options="provinceOptions"
+          optionLabel="name"
+          class="input-text"
         />
       </div>
 
       <div class="flex items-center gap-4">
         <label for="district" class="font-semibold w-24">Quận huyện</label>
-        <InputText
-          id="district"
-          name="district"
-          class="input-text"
+        <Dropdown
           v-model="district"
+          :options="districtOptions"
+          optionLabel="name"
+          :disabled="!province"
+          class="input-text"
+        />
+      </div>
+
+      <div class="flex items-center gap-4">
+        <label for="district" class="font-semibold w-24">Phường xã</label>
+        <Dropdown
+          v-model="ward"
+          :options="wardOptions"
+          optionLabel="name"
+          :disabled="!district"
+          class="input-text"
         />
       </div>
 
