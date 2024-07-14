@@ -46,7 +46,7 @@ const handleDeleteStadium = async (id) => {
         <div class="flex items-center gap-2 text-sm">
           <i class="pi pi-fw pi-map-marker"></i>
           <p class="capitalize line-clamp-2">
-            {{ stadium.province }} {{ stadium.district }}
+            {{ stadium.ward }} {{ stadium.district }} {{ stadium.province }}
           </p>
         </div>
       </router-link>

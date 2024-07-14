@@ -1,5 +1,4 @@
 const { Stadium } = require("../model/stadium");
-//const { search } = require("../router/stadiumRouter");
 const { uploadImage } = require("../uploadImage/uploadImage");
 
 const stadiumController = {
@@ -9,6 +8,7 @@ const stadiumController = {
         stadium_name,
         province,
         district,
+        ward,
         phone,
         image,
         describe,
@@ -22,11 +22,18 @@ const stadiumController = {
         return phoneRegex.test(phone);
       };
 
-      if (!stadium_name || !province || !district || !phone || !describe) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-      }
+      // if (
+      //   !stadium_name ||
+      //   !province ||
+      //   !district ||
+      //   !phone ||
+      //   !describe ||
+      //   !ward
+      // ) {
+      //   return res
+      //     .status(400)
+      //     .json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
+      // }
 
       if (!isValidVietnamPhoneNumber(phone)) {
         return res
@@ -39,6 +46,7 @@ const stadiumController = {
         stadium_name: stadium_name,
         province: province,
         district: district,
+        ward: ward,
         describe: describe,
         stadium_styles: stadium_styles,
         stadium_owner: stadium_owner,
