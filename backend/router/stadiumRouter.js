@@ -14,7 +14,6 @@ router.put("/updateStadium/:id", stadiumController.updateStadium);
 router.delete("/deleteStadium/:id",stadiumController.deleteStadium);
 
 router.get("/searchStadium",stadiumController.searchStadium);
-
 // router để thêm stadiumstyle
 router.post("/createStadiumStyle/:id",stadiumController.addStadiumStyle);
 
