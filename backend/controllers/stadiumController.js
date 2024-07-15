@@ -6,68 +6,31 @@ const stadiumController = {
     try {
       const {
         stadium_name,
-<<<<<<< HEAD
         ward,
         city,
         provice,
-=======
-        province,
-        district,
-        ward,
->>>>>>> master
         phone,
         image,
         describe,
         stadium_styles,
         stadium_owner
       } = req.body;
-<<<<<<< HEAD
+
       if(!stadium_name || !ward || !city || !provice || !phone){
         return res.status(500).json({status:false, message:"Nhập sai thông tin"});
       }
       const phoneRegex = /^[0-9]{10}$/;
       if(!phoneRegex.test(phone)){
         return res.status(400).json({status:false, message:"Nhập sai thông tin"});
-=======
-
-      const isValidVietnamPhoneNumber = (phone) => {
-        const phoneRegex =
-          /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/;
-        return phoneRegex.test(phone);
-      };
-
-      // if (
-      //   !stadium_name ||
-      //   !province ||
-      //   !district ||
-      //   !phone ||
-      //   !describe ||
-      //   !ward
-      // ) {
-      //   return res
-      //     .status(400)
-      //     .json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
-      // }
-
-      if (!isValidVietnamPhoneNumber(phone)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Số điện thoại không hợp lệ" });
->>>>>>> master
       }
+      
       const uploadedImage = await uploadImage(image);
       const response = await Stadium.create({
         image: uploadedImage.secure_url,
         stadium_name: stadium_name,
-<<<<<<< HEAD
         ward: ward,
         city: city,
-        provice: provice,
-=======
-        province: province,
-        district: district,
-        ward: ward,
->>>>>>> master
+        provice: provice,       
         describe: describe,
         stadium_styles: stadium_styles,
         stadium_owner: stadium_owner,
@@ -148,7 +111,7 @@ const stadiumController = {
     }
   },
 
-<<<<<<< HEAD
+
     // Delete a stadium
     deleteStadium: async (req, res) => {
         try {
@@ -199,102 +162,7 @@ const stadiumController = {
         }
     },
     
-=======
->>>>>>> master
-  // Delete a stadium
-  deleteStadium: async (req, res) => {
-    try {
-      await Stadium.findByIdAndDelete(req.params.id);
-      return res.status(200).json("Deleted successfully");
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  },
-<<<<<<< HEAD
 
-=======
-
-  searchStadium: async (req, res) => {
-    try {
-      const { search, city } = req.query;
-
-      // Tạo mảng các điều kiện tìm kiếm
-      let queries = [];
-      if (search) {
-        queries.push({
-          $or: [
-            { stadium_name: { $regex: search, $options: "i" } },
-            { address: { $regex: search, $options: "i" } },
-          ],
-        });
-      }
-      if (city) {
-        queries.push({ address: { $regex: city, $options: "i" } });
-      }
-
-      // Kết hợp các điều kiện tìm kiếm với $and
-      const query = queries.length > 0 ? { $and: queries } : {};
-
-      const projection = {
-        _id: 0,
-        stadium_name: 1,
-        address: 1,
-        phone: 1,
-      };
-
-      const stadiums = await Stadium.find(query, projection);
-      return res.status(200).json(stadiums);
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  },
-
-  // Delete a stadium
-  deleteStadium: async (req, res) => {
-    try {
-      await Stadium.findByIdAndDelete(req.params.id);
-      return res.status(200).json("Deleted successfully");
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  },
-
-  searchStadium: async (req, res) => {
-    try {
-      const { search, city } = req.query;
-
-      // Tạo mảng các điều kiện tìm kiếm
-      let queries = [];
-      if (search) {
-        queries.push({
-          $or: [
-            { stadium_name: { $regex: search, $options: "i" } },
-            { address: { $regex: search, $options: "i" } },
-          ],
-        });
-      }
-      if (city) {
-        queries.push({ address: { $regex: city, $options: "i" } });
-      }
-
-      // Kết hợp các điều kiện tìm kiếm với $and
-      const query = queries.length > 0 ? { $and: queries } : {};
-
-      const projection = {
-        _id: 0,
-        stadium_name: 1,
-        address: 1,
-        phone: 1,
-      };
-
-      const stadiums = await Stadium.find(query, projection);
-      return res.status(200).json(stadiums);
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  },
-
->>>>>>> master
   // Add a StadiumStyle to a specific Stadium
   addStadiumStyle: async (req, res) => {
     try {
