@@ -21,7 +21,7 @@ const stadiumController = {
       }
       const phoneRegex = /^[0-9]{10}$/;
       if(!phoneRegex.test(phone)){
-        return res.status(400).json({status:false, message:"Nhập sai thông tin"});
+        return res.status(400).json({status:false, message:"Nhập sai điện thoại"});
       }
       
       const uploadedImage = await uploadImage(image);
@@ -131,25 +131,28 @@ const stadiumController = {
                 queries.push({ 
                     $or: [
                         { stadium_name: { $regex: search, $options: 'i' } },
-                        { address: { $regex: search, $options: 'i' } }
+                        { provice: { $regex: search, $options: 'i' } }
                     ]
                 });
             }
             if (ward) {
-              queries.push({ address: {$regex: ward, $options: 'i' } });
+              queries.push({ ward: {$regex: ward, $options: 'i' } });
           }
             if (city) {
-                queries.push({ address: {$regex: ward, $options: 'i' } });
+                queries.push({ city: {$regex: city, $options: 'i' } });
             }
             if (provice) {
-                queries.push({address: {$regex: provice, $options: 'i'}});
+                queries.push({provice: {$regex: provice, $options: 'i'}});
             }
             // Kết hợp các điều kiện tìm kiếm với $and
             const query = queries.length > 0 ? { $and: queries } : {};
             const projection = {
                 _id: 0,
                 stadium_name: 1,
-                address: 1,
+                //address: 1,
+                ward:1,
+                city:1,
+                provice:1,
                 phone: 1,
                 stadium_styles:1,
                 stadium_owner:1,
