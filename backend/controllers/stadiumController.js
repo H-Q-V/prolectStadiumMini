@@ -72,7 +72,7 @@ const stadiumController = {
       const stadium = await Stadium.findById(req.params.id);
       //const {stadium_name, address, image, phone, describe} = req.body
       const updates = {};
-      const {stadium_name, ward, city, province, phone, image, describe} = req.body;
+      const {stadium_name, ward, city, provice, phone, image, describe} = req.body;
       
       const phoneRegex = /^[0-9]{10}$/;
       if(phone && !phoneRegex.test(phone)){
@@ -85,8 +85,8 @@ const stadiumController = {
       if(ward){
         updates.ward = ward;
       }
-      if(province){
-        updates.province= province;
+      if(provice){
+        updates.provice= provice;
       }
       if(city){
         updates.city = city;
@@ -124,7 +124,7 @@ const stadiumController = {
     
     searchStadium: async (req, res) => {
         try {
-            const { search, ward, city,province} = req.query;
+            const { search, ward, city,provice} = req.query;
             // Tạo mảng các điều kiện tìm kiếm
             let queries = [];
             if (search) {
@@ -141,8 +141,8 @@ const stadiumController = {
             if (city) {
                 queries.push({ address: {$regex: ward, $options: 'i' } });
             }
-            if (province) {
-                queries.push({address: {$regex: province, $options: 'i'}});
+            if (provice) {
+                queries.push({address: {$regex: provice, $options: 'i'}});
             }
             // Kết hợp các điều kiện tìm kiếm với $and
             const query = queries.length > 0 ? { $and: queries } : {};
