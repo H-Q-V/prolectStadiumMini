@@ -4,7 +4,6 @@ import { useStadium } from "../../stores/fetchStadium";
 import { onMounted, ref } from "vue";
 
 const stadiumData = ref([]);
-console.log("🚀 ~ stadiumData:", stadiumData);
 const stadiumStore = useStadium();
 const route = useRoute();
 onMounted(async () => {
@@ -72,5 +71,14 @@ onMounted(async () => {
 
 #price-list tr {
   border-bottom: 1px solid #dddddd;
+}
+
+.link {
+  display: block;
+  width: 100%;
+}
+
+.link:hover {
+  background-color: #ddd;
 }
 </style>

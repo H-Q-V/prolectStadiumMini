@@ -1,22 +1,20 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
-import axios from "axios";
-import { endpoint } from "../../utils/endpoint";
+import { toast } from "vue3-toastify";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
   await stadiumStore.getAllStadium();
+});
+
+watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
 });
 
-const deleteStadium = async (id) => {
+const handleDeleteStadium = async (id) => {
   if (window.confirm("Bạn có chắc chắn xóa không ?")) {
-    try {
-      await axios.delete(`${endpoint}/deleteStadium/${id}`);
-    } catch (error) {
-      console.log("🚀 ~ deleteStadium ~ error:", error);
-    }
+    await stadiumStore.deleteStadium(id, toast);
   }
 };
 </script>
@@ -47,13 +45,15 @@ const deleteStadium = async (id) => {
         </div>
         <div class="flex items-center gap-2 text-sm">
           <i class="pi pi-fw pi-map-marker"></i>
-          <p class="capitalize line-clamp-2">{{ stadium.address }}</p>
+          <p class="capitalize line-clamp-2">
+            {{ stadium.ward }} {{ stadium.district }} {{ stadium.province }}
+          </p>
         </div>
       </router-link>
 
       <button
         class="absolute top-1 right-2 -translate-x-2/3 translate-y-2/3 bg-slate-600 rounded-full p-2 text-white opacity-0 group-hover:opacity-100 hover:bg-red-500 transition-opacity duration-300"
-        @click="deleteStadium(stadium._id)"
+        @click="handleDeleteStadium(stadium._id)"
       >
         <i class="pi pi-fw pi-trash"></i>
       </button>

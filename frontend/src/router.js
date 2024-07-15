@@ -28,7 +28,7 @@ const routes = [
       },
 
       {
-        path: "/book-pitch/:stadiumID/:styleID",
+        path: "/book-pitch/:id/:stadiumStyleID",
         name: "BookPitch",
         component: () => import("./pages/client/BookPitchPage.vue"),
       },

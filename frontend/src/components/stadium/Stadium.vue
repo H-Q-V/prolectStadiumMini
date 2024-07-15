@@ -1,10 +1,13 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
   await stadiumStore.getAllStadium();
+});
+
+watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
 });
 </script>
@@ -34,7 +37,9 @@ onMounted(async () => {
         </div>
         <div class="flex items-center gap-2 text-sm">
           <i class="pi pi-fw pi-map-marker"></i>
-          <p class="capitalize line-clamp-2">{{ stadium.address }}</p>
+          <p class="capitalize">
+            Phường {{ stadium.district }} {{ stadium.province }}
+          </p>
         </div>
       </router-link>
     </div>

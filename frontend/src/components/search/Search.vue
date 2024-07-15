@@ -1,11 +1,20 @@
 <script setup>
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import Dropdown from "primevue/dropdown";
 import { ref } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
+import { getAddress } from "../../utils/getAddress";
+const {
+  province,
+  district,
+  ward,
+  provinceOptions,
+  districtOptions,
+  wardOptions,
+} = getAddress();
 const loading = ref([false]);
 const name = ref("");
-const address = ref("");
 const result = ref([]);
 const stadiumStore = useStadium();
 const load = (index) => {
@@ -14,35 +23,59 @@ const load = (index) => {
     loading.value[index] = false;
   }, 2000);
 };
-const onSearch = async () => {
+
+const handleSearch = async () => {
   load(0);
   const dataSearch = {
     name: name.value,
-    address: address.value,
+    province: province.value,
+    district: district.value,
   };
   console.log("🚀 ~ onSearch ~ dataSearch:", dataSearch);
-  result.value = await stadiumStore.searchStadium(
-    dataSearch.name,
-    dataSearch.address
-  );
-  console.log("🚀 ~ onSearch ~ result:", result.value);
+  try {
+    await stadiumStore.searchStadium(
+      dataSearch.name,
+      dataSearch.province,
+      dataSearch.district
+    );
+  } catch (error) {
+    console.log("🚀 ~ handleSearch ~ error:", error);
+  }
 };
 </script>
 <template>
-  <form @submit.prevent="onSearch">
+  <form @submit.prevent="handleSearch">
     <InputText
       type="text"
       placeholder="Nhập tên sân "
       class="inputText"
       v-model="name"
     ></InputText>
-    <InputText
-      type="text"
-      placeholder="Nhập địa chỉ "
-      v-model="address"
-      class="inputText"
-    ></InputText>
 
+    <Dropdown
+      v-model="province"
+      :options="provinceOptions"
+      optionLabel="name"
+      placeholder="Chọn tỉnh thành"
+      class="inputText"
+    />
+    <Dropdown
+      v-model="district"
+      :options="districtOptions"
+      optionLabel="name"
+      placeholder="Chọn quận huyện"
+      :disabled="!province"
+      class="inputText"
+    />
+
+    <Dropdown
+      v-model="ward"
+      :options="wardOptions"
+      optionLabel="name"
+      placeholder="Chọn phường xã"
+      :disabled="!district"
+      class="inputText"
+    />
     <Button
       type="submit"
       label="Tìm kiếm"

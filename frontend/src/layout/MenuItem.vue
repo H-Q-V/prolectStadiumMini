@@ -9,6 +9,12 @@ const props = defineProps({
     default: () => {},
   },
 });
+
+const emit = defineEmits(["menuClick"]);
+
+const handleClick = (menuItem) => {
+  emit("menuClick", menuItem);
+};
 </script>
 <template>
   <li
@@ -19,6 +25,7 @@ const props = defineProps({
     <router-link
       :to="menuItem.to"
       class="flex items-center gap-2 px-3 py-2 rounded-xl text-lg"
+      @click.prevent="handleClick(menuItem)"
     >
       <i :class="menuItem.icon"></i>
       <span>{{ menuItem.label }}</span>

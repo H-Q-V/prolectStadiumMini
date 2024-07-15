@@ -4,6 +4,7 @@ const stadiumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+<<<<<<< HEAD
   ward: {
     type: String,
     required: true,
@@ -13,6 +14,17 @@ const stadiumSchema = new mongoose.Schema({
     required: true,
   },
   province: {
+=======
+  province: {
+    type: String,
+    required: true,
+  },
+  district: {
+    type: String,
+    required: true,
+  },
+  ward: {
+>>>>>>> master
     type: String,
     required: true,
   },

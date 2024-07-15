@@ -27,16 +27,19 @@ onMounted(async () => {
       </router-link>
     </div>
 
+    <img :src="stadiumData.image" alt="" class="h-96 object-cover rounded-md" />
+
     <div class="flex items-center gap-2 text-lg">
       <i class="pi pi-fw pi-map-marker"></i>
-      <p>{{ stadiumData.address }}</p>
+      <p class="capitalize">
+        Phường {{ stadiumData.district }} {{ stadiumData.province }}
+      </p>
     </div>
 
     <div class="flex items-center gap-2 text-lg">
       <i class="pi pi-fw pi-phone"></i>
       <p>{{ stadiumData.phone }}</p>
     </div>
-    <img :src="stadiumData.image" alt="" class="h-96 object-cover rounded-md" />
     <p class="text-sm text-[#1a1a1a]">{{ stadiumData.describe }}</p>
     <Evaluate></Evaluate>
   </div>

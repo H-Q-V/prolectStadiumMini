@@ -52,7 +52,6 @@ const handleMenuToggle = () => {
   min-height: 100vh;
   padding: 7rem 2rem 2rem calc(300px + 70px);
   transition: all 0.2s ease-in;
-  z-index: -1;
 }
 
 .layout-main-container.actives {
