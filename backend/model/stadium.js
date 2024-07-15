@@ -12,7 +12,7 @@ const stadiumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  province: {
+  provice: {
     type: String,
     required: true,
   },
