@@ -12,6 +12,7 @@ export const useUser = defineStore("user", {
   getters: {
     isRegistered: (state) => state.isRegistered,
     isLoggedIn: (state) => state.isLoggedIn,
+    username: (state) => state.userData?.name,
   },
   actions: {
     async register(data, toast, router) {
@@ -21,7 +22,6 @@ export const useUser = defineStore("user", {
           userData: response.data.data,
           isRegistered: true,
         });
-
         router.push({ name: "Login" });
         toast.success("Đăng kí thành công");
       } catch (error) {
@@ -34,10 +34,13 @@ export const useUser = defineStore("user", {
       try {
         const response = await axios.post(`${endpoint}/login`, data);
         this.$patch({
-          userData: response?.data?.data,
+          userData: response.data.data,
           isLoggedIn: true,
         });
-        localStorage.setItem(LOCAL_STORAGE_TOKEN, response?.data?.accessToken);
+        localStorage.setItem(
+          LOCAL_STORAGE_TOKEN,
+          response?.data?.data?.accessToken
+        );
         router.push({ name: "HomePage" });
         toast.success("Đăng nhập thành công");
       } catch (error) {
