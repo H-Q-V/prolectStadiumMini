@@ -17,7 +17,8 @@ const topbarMenuClasses = computed(() => {
 });
 
 const userStore = useUser();
-const username = computed(() => userStore.username);
+const username = computed(() => userStore.getUsername);
+
 console.log("🚀 ~ username:", username);
 </script>
 <template>

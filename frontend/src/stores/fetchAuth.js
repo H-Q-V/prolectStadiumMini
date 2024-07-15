@@ -5,21 +5,20 @@ import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 
 export const useUser = defineStore("user", {
   state: () => ({
-    userData: [],
+    username: [],
     isRegistered: false,
     isLoggedIn: false,
   }),
   getters: {
     isRegistered: (state) => state.isRegistered,
     isLoggedIn: (state) => state.isLoggedIn,
-    username: (state) => state.userData?.name,
+    getUsername: (state) => state.username,
   },
   actions: {
     async register(data, toast, router) {
       try {
-        const response = await axios.post(`${endpoint}/register`, data);
+        await axios.post(`${endpoint}/register`, data);
         this.$patch({
-          userData: response.data.data,
           isRegistered: true,
         });
         router.push({ name: "Login" });
@@ -34,8 +33,8 @@ export const useUser = defineStore("user", {
       try {
         const response = await axios.post(`${endpoint}/login`, data);
         this.$patch({
-          userData: response.data.data,
           isLoggedIn: true,
+          username: response?.data?.data?.username,
         });
         localStorage.setItem(
           LOCAL_STORAGE_TOKEN,

@@ -5,14 +5,8 @@ import Dropdown from "primevue/dropdown";
 import { ref } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
 import { getAddress } from "../../utils/getAddress";
-const {
-  province,
-  district,
-  ward,
-  provinceOptions,
-  districtOptions,
-  wardOptions,
-} = getAddress();
+const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
+  getAddress();
 const loading = ref([false]);
 const name = ref("");
 const result = ref([]);
@@ -28,15 +22,16 @@ const handleSearch = async () => {
   load(0);
   const dataSearch = {
     name: name.value,
-    province: province.value,
-    district: district.value,
+    province: provice.value,
+    city: city.value,
+    ward: ward.value,
   };
   console.log("🚀 ~ onSearch ~ dataSearch:", dataSearch);
   try {
     await stadiumStore.searchStadium(
       dataSearch.name,
       dataSearch.province,
-      dataSearch.district
+      dataSearch.city
     );
   } catch (error) {
     console.log("🚀 ~ handleSearch ~ error:", error);
@@ -53,18 +48,18 @@ const handleSearch = async () => {
     ></InputText>
 
     <Dropdown
-      v-model="province"
-      :options="provinceOptions"
+      v-model="provice"
+      :options="proviceOptions"
       optionLabel="name"
       placeholder="Chọn tỉnh thành"
       class="inputText"
     />
     <Dropdown
-      v-model="district"
-      :options="districtOptions"
+      v-model="city"
+      :options="cityOptions"
       optionLabel="name"
       placeholder="Chọn quận huyện"
-      :disabled="!province"
+      :disabled="!provice"
       class="inputText"
     />
 
@@ -73,7 +68,7 @@ const handleSearch = async () => {
       :options="wardOptions"
       optionLabel="name"
       placeholder="Chọn phường xã"
-      :disabled="!district"
+      :disabled="!city"
       class="inputText"
     />
     <Button

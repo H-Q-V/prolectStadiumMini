@@ -38,7 +38,7 @@ watchEffect(() => {
         <div class="flex items-center gap-2 text-sm">
           <i class="pi pi-fw pi-map-marker"></i>
           <p class="capitalize">
-            Phường {{ stadium.district }} {{ stadium.province }}
+            {{ stadium.ward }} {{ stadium.city }} {{ stadium.provice }}
           </p>
         </div>
       </router-link>

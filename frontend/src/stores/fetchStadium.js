@@ -16,7 +16,7 @@ export const useStadium = defineStore("stadium", {
         this.getAllStadium();
       } catch (error) {
         console.log("🚀 ~ createStadium ~ error:", error);
-        toast.error(error.message);
+        toast.error(error?.response?.data?.message);
       }
     },
     async getAllStadium() {
