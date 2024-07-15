@@ -2,6 +2,7 @@ const {StadiumOwner} = require("../model/stadiumOwner");
 
 const stadiumOwnerController = {
        addStadiumOwner: async(req,res) => {
+       /*
         try{
             const newStadiumOwner = new StadiumOwner(req.body);
             const saveStadiumOwner = await newStadiumOwner.save();
@@ -9,7 +10,31 @@ const stadiumOwnerController = {
         }catch(err){
             return res.status(500).json(err);
          }
+        */
+        try{
+            const{
+                name,
+                phone,
+                address,
+            } = req.body;
+            if(!name || !phone ||! address){
+                return res.status(400).json({status: false, message:"Nhập sai thông tin"});
+            }
+            const phoneRegex = /^[0-9]{10}$/;
+            if(!phoneRegex.test(phone)){
+                return res.status(400).json({status:false, message:"Nhập sai thông tin"});
+            }
+            const response =  await StadiumOwner.create({
+                name: name,
+                phone: phone,
+                address: address,
+            });
+            return res.status(200).json({status:true, data:response});
+        } catch(err){
+            return res.status(500).json({success: false, message:"Nhập thông tin bị lỗi"});
+        }
        },
+    
 
        getAllStadiumOwner: async(req,res) => {
         try{

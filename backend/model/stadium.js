@@ -4,15 +4,15 @@ const stadiumSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  province: {
-    type: String,
-    required: true,
-  },
-  district: {
-    type: String,
-    required: true,
-  },
   ward: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  provice: {
     type: String,
     required: true,
   },
