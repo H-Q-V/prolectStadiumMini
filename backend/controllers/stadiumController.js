@@ -19,14 +19,13 @@ const stadiumController = {
       if (!stadium_name || !ward || !city || !provice || !phone) {
         return res
           .status(500)
-          .json({ status: false, message: "Vui lòng điền đầy đủ thông tin" });
+          .json({ status: false, message: "Nhập sai thông tin" });
       }
-
-      const phoneRegex = /^(03|05|07|08|09)[0-9]{8,9}$/;
+      const phoneRegex = /^[0-9]{10}$/;
       if (!phoneRegex.test(phone)) {
         return res
           .status(400)
-          .json({ status: false, message: "Số điện thoại không hợp lệ" });
+          .json({ status: false, message: "Nhập sai điện thoại" });
       }
 
       const uploadedImage = await uploadImage(image);
@@ -158,12 +157,13 @@ const stadiumController = {
       // Kết hợp các điều kiện tìm kiếm với $and
       const query = queries.length > 0 ? { $and: queries } : {};
       const projection = {
-        _id: 0,
+        _id: 1,
         stadium_name: 1,
         //address: 1,
         ward: 1,
         city: 1,
         provice: 1,
+        image: 1,
         phone: 1,
         stadium_styles: 1,
         stadium_owner: 1,
