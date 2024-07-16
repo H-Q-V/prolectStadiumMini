@@ -2,21 +2,16 @@
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
 import { getAddress } from "../../utils/getAddress";
-const {
-  province,
-  district,
-  ward,
-  provinceOptions,
-  districtOptions,
-  wardOptions,
-} = getAddress();
+const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
+  getAddress();
 const loading = ref([false]);
 const name = ref("");
 const result = ref([]);
 const stadiumStore = useStadium();
+const emit = defineEmits(["searchResults"]);
 const load = (index) => {
   loading.value[index] = true;
   setTimeout(() => {
@@ -28,16 +23,23 @@ const handleSearch = async () => {
   load(0);
   const dataSearch = {
     name: name.value,
-    province: province.value,
-    district: district.value,
+    provice: provice.value.name,
+    city: city.value.name,
+    ward: ward.value.name,
   };
-  console.log("🚀 ~ onSearch ~ dataSearch:", dataSearch);
   try {
     await stadiumStore.searchStadium(
       dataSearch.name,
-      dataSearch.province,
-      dataSearch.district
+      dataSearch.provice,
+      dataSearch.city,
+      dataSearch.ward
     );
+
+    watchEffect(() => {
+      result.value = stadiumStore.resultSearch;
+      emit("searchResults", result.value);
+      console.log("🚀 ~ watchEffect ~ result:", result);
+    });
   } catch (error) {
     console.log("🚀 ~ handleSearch ~ error:", error);
   }
@@ -53,18 +55,18 @@ const handleSearch = async () => {
     ></InputText>
 
     <Dropdown
-      v-model="province"
-      :options="provinceOptions"
+      v-model="provice"
+      :options="proviceOptions"
       optionLabel="name"
       placeholder="Chọn tỉnh thành"
       class="inputText"
     />
     <Dropdown
-      v-model="district"
-      :options="districtOptions"
+      v-model="city"
+      :options="cityOptions"
       optionLabel="name"
       placeholder="Chọn quận huyện"
-      :disabled="!province"
+      :disabled="!provice"
       class="inputText"
     />
 
@@ -73,7 +75,7 @@ const handleSearch = async () => {
       :options="wardOptions"
       optionLabel="name"
       placeholder="Chọn phường xã"
-      :disabled="!district"
+      :disabled="!city"
       class="inputText"
     />
     <Button

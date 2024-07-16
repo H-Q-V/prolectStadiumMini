@@ -1,14 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
-
+import { useUser } from "../../stores/fetchAuth";
 const props = defineProps({
   onMenuToogle: {
     type: Function,
   },
 });
-
 const topbarMenuActive = ref(false);
-
 const onTopbarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -35,7 +33,7 @@ const topbarMenuClasses = computed(() => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+      <button @click="onTopbarMenuButton()" class="p-link layout-topbar-button">
         <i class="pi pi-calendar"></i>
         <span>Calendar</span>
       </button>
@@ -47,6 +45,10 @@ const topbarMenuClasses = computed(() => {
         <i class="text-black pi pi-cog"></i>
         <span>Settings</span>
       </button>
+
+      <div class="bg-primary px-6 py-4 rounded-lg text-white text-center">
+        {{ username }}
+      </div>
     </div>
   </div>
 </template>

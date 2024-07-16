@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useAddress = defineStore("address", {
   state: () => ({
     provinceData: [],
-    districtData: [],
+    cityData: [],
     wardData: [],
   }),
   getters: {},
@@ -19,21 +19,21 @@ export const useAddress = defineStore("address", {
       }
     },
 
-    async getdistrict(provinceID) {
+    async getCity(provinceID) {
       try {
         const response = await axios.get(
           `https://esgoo.net/api-tinhthanh/2/${provinceID}.htm`
         );
-        this.districtData = response?.data?.data;
+        this.cityData = response?.data?.data;
       } catch (error) {
-        console.log("🚀 ~ getdistrict ~ error:", error);
+        console.log("🚀 ~ getCity ~ error:", error);
       }
     },
 
-    async getWard(districtID) {
+    async getWard(cityID) {
       try {
         const response = await axios.get(
-          `https://esgoo.net/api-tinhthanh/3/${districtID}.htm`
+          `https://esgoo.net/api-tinhthanh/3/${cityID}.htm`
         );
         this.wardData = response?.data?.data;
       } catch (error) {

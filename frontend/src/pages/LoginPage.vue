@@ -14,7 +14,6 @@ const handleSubmit = async () => {
     username: username.value,
     password: password.value,
   };
-  console.log("🚀 ~ handleSubmit ~ data:", data);
   await userStore.login(data, toast, router);
 };
 </script>

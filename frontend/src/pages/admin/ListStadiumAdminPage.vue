@@ -3,7 +3,7 @@ import Search from "../../components/search/Search.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
@@ -17,14 +17,8 @@ const stadium_name = ref(null);
 const phone = ref(null);
 const describe = ref(null);
 const stadiumStore = useStadium();
-const {
-  province,
-  district,
-  ward,
-  provinceOptions,
-  districtOptions,
-  wardOptions,
-} = getAddress();
+const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
+  getAddress();
 
 const handleFileChange = (e) => {
   onFileChange(e, image);
@@ -34,8 +28,8 @@ const handleAddStadium = async () => {
   const data = {
     image: await convertBase64(image.value),
     stadium_name: stadium_name.value,
-    province: province.value.name,
-    district: district.value.name,
+    provice: provice.value.name,
+    city: city.value.name,
     ward: ward.value.name,
     phone: phone.value,
     describe: describe.value,
@@ -94,8 +88,8 @@ const handleAddStadium = async () => {
       <div class="flex items-center gap-4">
         <label for="province" class="font-semibold w-24">Tỉnh thành</label>
         <Dropdown
-          v-model="province"
-          :options="provinceOptions"
+          v-model="provice"
+          :options="proviceOptions"
           optionLabel="name"
           class="input-text"
         />
@@ -104,10 +98,10 @@ const handleAddStadium = async () => {
       <div class="flex items-center gap-4">
         <label for="district" class="font-semibold w-24">Quận huyện</label>
         <Dropdown
-          v-model="district"
-          :options="districtOptions"
+          v-model="city"
+          :options="cityOptions"
           optionLabel="name"
-          :disabled="!province"
+          :disabled="!provice"
           class="input-text"
         />
       </div>
@@ -118,7 +112,7 @@ const handleAddStadium = async () => {
           v-model="ward"
           :options="wardOptions"
           optionLabel="name"
-          :disabled="!district"
+          :disabled="!city"
           class="input-text"
         />
       </div>
