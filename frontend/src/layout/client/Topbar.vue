@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed } from "vue";
 import { useUser } from "../../stores/fetchAuth";
 const props = defineProps({
   onMenuToogle: {
@@ -15,11 +15,6 @@ const topbarMenuClasses = computed(() => {
     "layout-topbar-menu-mobile-active": topbarMenuActive.value,
   };
 });
-
-const userStore = useUser();
-const username = computed(() => userStore.getUsername);
-
-console.log("🚀 ~ username:", username);
 </script>
 <template>
   <div class="layout-topbar">
@@ -37,7 +32,6 @@ console.log("🚀 ~ username:", username);
       <i class="pi pi-ellipsis-v"></i>
     </button>
 
-    <button class="bg-red-500 text-white">{{ username }}</button>
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
       <button @click="onTopbarMenuButton()" class="p-link layout-topbar-button">
         <i class="pi pi-calendar"></i>
@@ -53,7 +47,7 @@ console.log("🚀 ~ username:", username);
       </button>
 
       <div class="bg-primary px-6 py-4 rounded-lg text-white text-center">
-        Thanh Bình
+        {{ username }}
       </div>
     </div>
   </div>

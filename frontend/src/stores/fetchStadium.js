@@ -54,13 +54,12 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ getAnStadiumStyle ~ error:", error);
       }
     },
-    async searchStadium(stadiumName, address) {
+    async searchStadium(stadiumName, provice, city, ward) {
       try {
         const response = await axios.get(
-          `${endpoint}/searchStadium?search=${stadiumName}&&city=${address}`
+          `${endpoint}/searchStadium?search=${stadiumName}&provice=${provice}&city=${city}&ward=${ward}`
         );
         this.resultSearch = response?.data;
-        console.log("🚀 ~ searchStadium ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ searchStadium ~ error:", error);
       }
