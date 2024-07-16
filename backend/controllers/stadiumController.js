@@ -147,12 +147,13 @@ const stadiumController = {
             // Kết hợp các điều kiện tìm kiếm với $and
             const query = queries.length > 0 ? { $and: queries } : {};
             const projection = {
-                _id: 0,
+                _id: 1,
                 stadium_name: 1,
                 //address: 1,
                 ward:1,
                 city:1,
                 provice:1,
+                image:1,
                 phone: 1,
                 stadium_styles:1,
                 stadium_owner:1,
