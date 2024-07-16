@@ -19,13 +19,13 @@ const stadiumController = {
       if (!stadium_name || !ward || !city || !provice || !phone) {
         return res
           .status(500)
-          .json({ status: false, message: "Nhập sai thông tin" });
+          .json({ status: false, message: "Vui lòng điền đầy đủ thông tin" });
       }
-      const phoneRegex = /^[0-9]{10}$/;
+      const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
         return res
           .status(400)
-          .json({ status: false, message: "Nhập sai điện thoại" });
+          .json({ status: false, message: "Số điện thoại không hợp lệ" });
       }
 
       const uploadedImage = await uploadImage(image);
