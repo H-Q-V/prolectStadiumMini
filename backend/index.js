@@ -11,6 +11,7 @@ const stadiumOwner = require("./router/stadiumOwnerRouter");
 const authRouter = require("./router/authRouter");
 const bookPitchRouter = require("./router/bookPitchRouter");
 const customerRouter = require("./router/customerRouter");
+const otpRoutes = require('./router/otpRouter');
 dotenv.config();
 
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -36,11 +37,10 @@ connectDB();
 
 app.use("/api", stadiumRoute);
 app.use("/api", stadiumOwner);
-//Router Regiter/login
 app.use("/api", authRouter);
 app.use("/api", bookPitchRouter);
 app.use("/api", customerRouter);
-
+app.use('/api', otpRoutes);
 app.listen(3000, () => {
   console.log("server is running http://localhost:3000/");
 });

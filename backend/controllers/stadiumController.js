@@ -133,50 +133,51 @@ const stadiumController = {
     }
   },
 
-  searchStadium: async (req, res) => {
-    try {
-      const { search, ward, city, provice } = req.query;
-      // Tạo mảng các điều kiện tìm kiếm
-      let queries = [];
-      if (search) {
-        queries.push({
-          $or: [
-            { stadium_name: { $regex: search, $options: "i" } },
-            { provice: { $regex: search, $options: "i" } },
-          ],
-        });
-      }
-      if (ward) {
-        queries.push({ ward: { $regex: ward, $options: "i" } });
-      }
-      if (city) {
-        queries.push({ city: { $regex: city, $options: "i" } });
-      }
-      if (provice) {
-        queries.push({ provice: { $regex: provice, $options: "i" } });
-      }
-      // Kết hợp các điều kiện tìm kiếm với $and
-      const query = queries.length > 0 ? { $and: queries } : {};
-      const projection = {
-        _id: 0,
-        stadium_name: 1,
-        //address: 1,
-        ward: 1,
-        city: 1,
-        provice: 1,
-        phone: 1,
-        stadium_styles: 1,
-        stadium_owner: 1,
-      };
-      //const stadiums = await Stadium.find(query, projection);
-      const stadiums = await Stadium.find(query, projection).populate(
-        "stadium_owner"
-      );
-      return res.status(200).json(stadiums);
-    } catch (err) {
-      return res.status(500).json(err);
-    }
-  },
+    searchStadium: async (req, res) => {
+        try {
+            const { search, ward, city,provice} = req.query;
+            // Tạo mảng các điều kiện tìm kiếm
+            let queries = [];
+            if (search) {
+                queries.push({ 
+                    $or: [
+                        { stadium_name: { $regex: search, $options: 'i' } },
+                        { provice: { $regex: search, $options: 'i' } }
+                    ]
+                });
+            }
+            if (ward) {
+              queries.push({ ward: {$regex: ward, $options: 'i' } });
+          }
+            if (city) {
+                queries.push({ city: {$regex: city, $options: 'i' } });
+            }
+            if (provice) {
+                queries.push({provice: {$regex: provice, $options: 'i'}});
+            }
+            // Kết hợp các điều kiện tìm kiếm với $and
+            const query = queries.length > 0 ? { $and: queries } : {};
+            const projection = {
+                _id: 1,
+                stadium_name: 1,
+                //address: 1,
+                ward:1,
+                city:1,
+                provice:1,
+                image:1,
+                phone: 1,
+                stadium_styles:1,
+                stadium_owner:1,
+            };
+            //const stadiums = await Stadium.find(query, projection);
+            const stadiums = await Stadium.find(query, projection).populate('stadium_owner');
+            return res.status(200).json(stadiums);
+        } catch (err) {
+            return res.status(500).json(err);
+        }
+    },
+    
+
 
   // Add a StadiumStyle to a specific Stadium
   addStadiumStyle: async (req, res) => {
