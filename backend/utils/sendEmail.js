@@ -9,6 +9,8 @@ const sendEmail = async (options) => {
     console.log('SMTP Port:', process.env.SMPT_PORT);
     console.log('SMTP Mail:', process.env.SMPT_MAIL);
     console.log('SMTP App Password:', process.env.SMPT_APP_PASS);
+
+    
     const transporter = nodeMailer.createTransport({
         host: process.env.SMPT_HOST,
         port: process.env.SMPT_PORT,
