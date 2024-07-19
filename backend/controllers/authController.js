@@ -178,6 +178,30 @@ const authController = {
     res.status(200).json("Logged out successful");
   },
 
+
+  customerForgot: async (req,res) => {
+   try{
+    const {email} = req.body;
+    const otp = generateOTP();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)){
+      return res.status(400).json({ success: false, message: 'Nhập không đúng định dạng email' });
+    }
+    
+    const newOTP = new OtpForget({ email: email, otp });
+      await newOTP.save();
+      await sendEmail({
+        to: email,
+        subject: 'Your OTP for forgotten password',
+        message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
+      });
+      res.status(200).json({ message: "OTP sent to email. Please verify to complete registration." });
+   } catch(err){
+       return res.status(500).json(err);
+   }
+    
+  },
+
   verifyOTP: async (req, res, next) => {
     try {
       const { email, otp } = req.body;
