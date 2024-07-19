@@ -17,6 +17,26 @@ const authController = {
   registerCustomer: async (req, res) => {
     try {
       const { username, email, password } = req.body;
+
+      if (username.length < 6) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Tên tối thiểu 6 ký tự" });
+      }
+
+      if (password.length < 8) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Mật khẩu tối thiểu 8 ký tự" });
+      }
+
+      const emailCustomer = await Customer.findOne({ email: email });
+      if (emailCustomer) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Nhập trùng email" });
+      }
+
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const otp = generateOTP();
@@ -49,11 +69,9 @@ const authController = {
         password: hashed,
         // otp:otp,
       });
-      const customer = await newCustomer.save();
+      await tempCustomer.save();
 
-      // Generate and send OTP
-      const newOTP = new Otps({ email: email, otp });
-      await newOTP.save();
+      // Gửi mã OTP qua email
       await sendEmail({
         to: email,
         subject: "Your OTP",
@@ -66,6 +84,7 @@ const authController = {
       res.status(500).json(err);
     }
   },
+
   //GENERATE ACCESS TOKEN
   generateAccessToken: (customer) => {
     return jwt.sign(
@@ -92,7 +111,7 @@ const authController = {
   // login
   loginCustomer: async (req, res) => {
     try {
-      const customer = await Customer.findOne({ username: req.body.username });
+      const customer = await Customer.findOne({ email: req.body.email });
       if (!customer) {
         return res.status(404).json("Tên người dùng không đúng");
       }
@@ -130,7 +149,8 @@ const authController = {
     const refreshToken = req.cookies.refreshToken;
     // res.status(200).json(refreshToken);
     if (!refreshToken) return res.status(401).json("you are not authenticated");
-    if (!refreshTokens.include(refreshToken)) {
+    if (!refreshTokens.includes(refreshToken)) {
+      return res.status(403).json("Refresh token is not valid");
     }
     jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, customer) => {
       if (err) {
@@ -145,9 +165,11 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
+
       res.status(200).json({ accessToken: newAccessToken });
     });
   },
+
   customerLogout: async (req, res) => {
     res.clearCookie("refreshToken");
     refreshTokens = refreshTokens.filter(
