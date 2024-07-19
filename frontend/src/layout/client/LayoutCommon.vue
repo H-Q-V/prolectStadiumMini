@@ -1,11 +1,21 @@
 <script setup>
 import Sidebar from "./Sidebar.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import Topbar from "./Topbar.vue";
+import { useRouter } from "vue-router";
+import { LOCAL_STORAGE_TOKEN } from "../../utils/localStoreName";
 const sidebarActive = ref(false);
 const handleMenuToggle = () => {
   sidebarActive.value = !sidebarActive.value;
 };
+
+const router = useRouter();
+const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
+onMounted(() => {
+  if (!token) {
+    router.push({ name: "Login" });
+  }
+});
 </script>
 <template>
   <div class="layout-wrapper">

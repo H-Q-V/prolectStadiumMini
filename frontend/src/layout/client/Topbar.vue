@@ -15,6 +15,8 @@ const topbarMenuClasses = computed(() => {
     "layout-topbar-menu-mobile-active": topbarMenuActive.value,
   };
 });
+
+const username = localStorage.getItem("username");
 </script>
 <template>
   <div class="layout-topbar">
@@ -42,12 +44,14 @@ const topbarMenuClasses = computed(() => {
         <span>Profile</span>
       </button>
       <button class="layout-topbar-button">
-        <i class="text-black pi pi-cog"></i>
-        <span>Settings</span>
+        <i class="text-black pi pi-bell"></i>
+        <span>Thông báo</span>
       </button>
 
-      <div class="bg-primary px-6 py-4 rounded-lg text-white text-center">
-        {{ username }}
+      <div
+        class="w-[140px] bg-primary px-2 py-4 rounded-lg text-white text-center"
+      >
+        <span class="capitalize">{{ username }}</span>
       </div>
     </div>
   </div>

@@ -9,6 +9,7 @@ const router = useRouter();
 const email = ref("");
 const username = ref("");
 const password = ref("");
+
 const userStore = useUser();
 const handleSubmit = async () => {
   const data = {
@@ -59,7 +60,7 @@ const handleSubmit = async () => {
         <InputText
           id="password"
           name="password"
-          type="text"
+          type="password"
           placeholder="Mật khẩu"
           class="w-full px-5 py-4 text-black border border-[#cbd5e1] mb-5"
           v-model="password"
@@ -67,14 +68,16 @@ const handleSubmit = async () => {
 
         <Button
           type="submit"
-          label="Sign up"
+          label="Đăng kí"
           class="w-full px-3 py-5 text-xl bg-primary text-white"
         ></Button>
       </form>
 
       <div class="flex items-center justify-center gap-4 mt-4">
-        <p class="text-black font-medium">Already have an account?</p>
-        <router-link to="/auth/login" class="text-primary">Sign in</router-link>
+        <p class="text-black font-medium">Bạn đã có tài khoản?</p>
+        <router-link to="/auth/login" class="text-primary"
+          >Đăng nhập</router-link
+        >
       </div>
     </div>
   </div>

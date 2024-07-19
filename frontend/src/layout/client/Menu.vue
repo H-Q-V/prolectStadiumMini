@@ -25,6 +25,7 @@ const router = useRouter();
 
 const handleLogout = () => {
   localStorage.removeItem(LOCAL_STORAGE_TOKEN);
+  localStorage.removeItem("username");
   router.push("/auth/login");
 };
 

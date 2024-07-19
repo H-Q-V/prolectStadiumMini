@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
+import date from "date-and-time";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
@@ -7,16 +8,8 @@ import { useStadium } from "../../stores/fetchStadium";
 import { useRoute } from "vue-router";
 import Tag from "../../components/tag/Tag.vue";
 const phone = ref(null);
-const datetime1 = ref(null);
-const datetime2 = ref(null);
-const onSubmit = () => {
-  const data = {
-    phone: phone.value,
-    datetime1: datetime1.value,
-    datetime2: datetime2.value,
-  };
-};
-
+const startTime = ref(null);
+const endTime = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const route = useRoute();
@@ -27,6 +20,15 @@ onMounted(async () => {
   );
   stadiumData.value = stadiumStore.stadiumData;
 });
+
+const handleSubmit = () => {
+  const data = {
+    phone: phone.value,
+    startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
+    endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
+  };
+  console.log("🚀 ~ handleSubmit ~ data:", data);
+};
 
 const formatPrice = (price) => {
   return (
@@ -41,7 +43,7 @@ const formatPrice = (price) => {
     Đặt lịch ở {{ stadiumData?.stadium_style?.name }} (Sân
     {{ stadiumData?.stadium_style?.type }})
   </h1>
-  <form class="flex flex-col gap-[20px]" @submit.prevent="onSubmit">
+  <form @submit.prevent="handleSubmit" class="flex flex-col gap-[20px]">
     <div class="flex gap-[50px]">
       <div class="w-[580px] flex flex-col gap-[10px]">
         <h1 class="text-xl">Thông tin cá nhân</h1>
@@ -53,20 +55,20 @@ const formatPrice = (price) => {
           class="common"
         ></InputText>
 
-        <label for="datetime1">Đặt từ</label>
+        <label for="startTime">Thời gian bắt đầu</label>
         <DatePicker
-          id="datetime1"
-          v-model="datetime1"
+          id="startTime"
+          v-model="startTime"
           showTime
           hourFormat="24"
           fluid
           inputId="datetime"
         />
 
-        <label for="datetime2">Đến</label>
+        <label for="endTime">Thời gian kết thúc</label>
         <DatePicker
-          id="datetime2"
-          v-model="datetime2"
+          id="endTime"
+          v-model="endTime"
           showTime
           hourFormat="24"
           fluid
