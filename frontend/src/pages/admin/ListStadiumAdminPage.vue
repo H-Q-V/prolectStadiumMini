@@ -7,18 +7,19 @@ import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
-import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
 import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
+import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
+import ListStadiumAdmin from "../../components/stadium/ListStadiumAdmin.vue";
 import { getAddress } from "../../utils/getAddress";
+const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
+  getAddress();
 const visible = ref(false);
 const image = ref("");
 const stadium_name = ref(null);
 const phone = ref(null);
 const describe = ref(null);
 const stadiumStore = useStadium();
-const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
-  getAddress();
 
 const handleFileChange = (e) => {
   onFileChange(e, image);
@@ -36,13 +37,39 @@ const handleAddStadium = async () => {
   };
   await stadiumStore.createStadium(data, toast);
 };
+
+const searchResults = ref([]);
+
+const handleSearchResults = (results) => {
+  searchResults.value = results;
+  console.log("🚀 ~ handleSearchResults ~ searchResults:", searchResults);
+};
 </script>
 <template>
-  <Search></Search>
+  <Search @searchResults="handleSearchResults"></Search>
   <h1 class="text-[#18458b] text-[24px] font-semibold text-center mb-4">
     Danh sách sân
   </h1>
-  <StadiumAdmin></StadiumAdmin>
+
+  <div v-if="searchResults.length > 0">
+    <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
+      <div v-for="stadium in searchResults" :key="stadium._id">
+        <StadiumAdmin
+          :stadiumId="stadium._id"
+          :image="stadium.image"
+          :stadium_name="stadium.stadium_name"
+          :phone="stadium.phone"
+          :ward="stadium.ward"
+          :city="stadium.city"
+          :provice="stadium.provice"
+        ></StadiumAdmin>
+      </div>
+    </div>
+  </div>
+
+  <div v-else>
+    <ListStadiumAdmin></ListStadiumAdmin>
+  </div>
   <Button
     @click="visible = true"
     class="fixed bottom-3 right-3 w-[38px] h-[38px] bg-slate-500 rounded-full text-white z-10"

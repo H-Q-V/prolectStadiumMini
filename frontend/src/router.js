@@ -32,6 +32,12 @@ const routes = [
         name: "BookPitch",
         component: () => import("./pages/client/BookPitchPage.vue"),
       },
+
+      {
+        path: "/calendar",
+        name: "Calendar",
+        component: () => import("./components/calendar/Calendar.vue"),
+      },
     ],
   },
 
@@ -62,6 +68,16 @@ const routes = [
     path: "/auth/register",
     name: "Register",
     component: () => import("./pages/RegisterPage.vue"),
+  },
+  {
+    path: "/auth/forgot",
+    name: "Forgot",
+    component: () => import("./pages/ForgotPage.vue"),
+  },
+  {
+    path: "/auth/send-otp",
+    name: "SendOtp",
+    component: () => import("./pages/SendOtpPage.vue"),
   },
 ];
 
