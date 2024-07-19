@@ -2,6 +2,7 @@ const Customer = require("../model/customer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Otps = require('../model/otpModel.js');
+const OtpForget = require('../model/otpForgotModel.js');
 const randomstring = require('randomstring');
 const sendEmail = require('../utils/sendEmail');
 require("dotenv").config();
@@ -18,47 +19,51 @@ const authController = {
   registerCustomer: async (req, res) => {
     try {
       const { username, email, password } = req.body;
+  
+      if (username.length < 6) {
+        return res.status(400).json({ success: false, message: "Tên tối thiểu 6 ký tự" });
+      }
+  
+      if (password.length < 8) {
+        return res.status(400).json({ success: false, message: "Mật khẩu tối thiểu 8 ký tự" });
+      }
+  
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "Email nhập sai" });
+      }
+  
+      const emailCustomer = await Customer.findOne({ email: email });
+      if (emailCustomer) {
+        return res.status(400).json({ success: false, message: "Nhập trùng email" });
+      }
+  
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const otp = generateOTP();
-      if (username.length < 6) {
-        return res.status(400).json({ success: false,message: "Tên tối thiểu 6 ký tự" });
-      }
-
-      // Check password length
-      if (password.length < 8) {
-        return res.status(400).json({ success: false,message: "Mật khẩu tối thiểu 8 ký tự" });
-      }
-
-      // Check email format
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.status(400).json({ success: false,message: "Email nhập sai" });
-      }
-      
-      // create new customer
-      const newCustomer = await new Customer({
+  
+      // Tạo người dùng tạm thời với OTP
+      const tempCustomer = new Otps({
         username: username,
         email: email,
         password: hashed,
-       // otp:otp,
+        otp: otp,
       });
-      const customer = await newCustomer.save();
-
-      // Generate and send OTP
-      const newOTP = new Otps({ email: email, otp });
-      await newOTP.save();
+      await tempCustomer.save();
+  
+      // Gửi mã OTP qua email
       await sendEmail({
         to: email,
         subject: 'Your OTP',
         message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
       });
-      res.status(200).json({ message: "Customer registered successfully. OTP sent to email." });
+  
+      res.status(200).json({ message: "OTP sent to email. Please verify to complete registration." });
     } catch (err) {
       res.status(500).json(err);
     }
   },
+  
   //GENERATE ACCESS TOKEN
   generateAccessToken: (customer) => {
     return jwt.sign(
@@ -85,7 +90,7 @@ const authController = {
   // login
   loginCustomer: async (req, res) => {
     try {
-      const customer = await Customer.findOne({ username: req.body.username });
+      const customer = await Customer.findOne({ email: req.body.email });
       if (!customer) {
         return res.status(404).json("Tên người dùng không đúng");
       }
@@ -123,7 +128,8 @@ const authController = {
     const refreshToken = req.cookies.refreshToken;
     // res.status(200).json(refreshToken);
     if (!refreshToken) return res.status(401).json("you are not authenticated");
-    if (!refreshTokens.include(refreshToken)) {
+    if (!refreshTokens.includes(refreshToken)) {
+      return res.status(403).json("Refresh token is not valid");
     }
     jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, customer) => {
       if (err) {
@@ -138,9 +144,14 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
+      
       res.status(200).json({ accessToken: newAccessToken });
+    
+
     });
   },
+
+
   customerLogout: async (req, res) => {
     res.clearCookie("refreshToken");
     refreshTokens = refreshTokens.filter(
@@ -148,26 +159,89 @@ const authController = {
     );
     res.status(200).json("Logged out successful");
   },
+
+  customerForgot: async (req,res) => {
+   try{
+    const {email} = req.body;
+    const otp = generateOTP();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)){
+      return res.status(400).json({ success: false, message: 'Nhập không đúng định dạng email' });
+    }
+    const newOTP = new OtpForget({ email: email, otp });
+      await newOTP.save();
+      await sendEmail({
+        to: email,
+        subject: 'Your OTP for forgotten password',
+        message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
+      });
+      res.status(200).json({ message: "OTP sent to email. Please verify to complete registration." });
+   } catch(err){
+       return res.status(500).json(err);
+   }
+    
+  },
+
   verifyOTP: async (req, res, next) => {
     try {
-        const { email, otp } = req.body;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          return res.status(400).json({ success: false, error: 'Invalid email format' });
-        }
-        const existingOTP = await Otps.findOneAndDelete({ email, otp });
-        if (existingOTP) {
-            // OTP is valid
-            res.status(200).json({ success: true, message: 'OTP verification successful' });
-        } else {
-            // OTP is invalid
-            res.status(400).json({ success: false, error: 'Invalid OTP' });
-        }
+      const { otp } = req.body;
+
+      const otpCustomer = await Otps.findOne({otp:otp});
+      if(!otpCustomer){
+        return res.status(400).json({success: false, message: "Nhập sai Otp"});
+      }
+      const existingOTP = await Otps.findOneAndDelete({otp});
+      
+      if (existingOTP) {
+        const newCustomer = new Customer({
+          username: existingOTP.username,
+          email: existingOTP.email,
+          password: existingOTP.password,
+        });
+        await newCustomer.save();
+  
+        res.status(200).json({ success: true, message: 'OTP verification successful' });
+      } else {
+        res.status(400).json({ success: false, error: 'Invalid OTP' });
+      }
     } catch (error) {
-        console.error('Error verifying OTP:', error);
-        res.status(500).json({ success: false, error: 'Internal server error' });
+      console.error('Error verifying OTP:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
     }
-   }
+  }, 
+
+  verifyForgotOTP: async (req, res, next) => {
+    try{
+        const {otp, password} = req.body;
+       
+        const otpforgot = await OtpForget.findOneAndDelete({otp:otp});
+        if(!otpforgot){
+          return res.status(400).json({status: false, message: "Nhập sai Otp"});
+        }
+        const CustomerForgot = await Customer.findById(req.params.id);
+        if(!CustomerForgot){
+          return res.status(400).json({status: false, message: "Người dùng không tồn tại"});
+        }
+        if(password.length < 8){
+          return res.status(400).json({status: false, message: "Nhập tối thiểu 8 ký tự"});
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(password, salt);
+       // const {password} = req.body;
+       if(otpforgot){
+           // await CustomerForgot.updateOne({$set:hashed});
+            CustomerForgot.password = hashed;
+            await CustomerForgot.save();
+            return res.status(200).json({status: true, message: "Cập nhật mật khẩu thành công"});
+       } else{
+            return res.status(400).json({status: false, message: "Cập nhật dữ liệu thất bại"});
+       }
+        
+    } catch(err){
+       return res.status(500).json(err);
+    }
+  }
+  
 };
 //STORE TOKEN
 //1) LOCAL STORAGE

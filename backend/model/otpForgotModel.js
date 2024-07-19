@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
-const otpSchema = new mongoose.Schema({
-    username:{
-        type: String,
-        required: true,
-        minlength: 6,
-        maxlength: 20,
-        unique: true
-    },
+const otpForgotSchema = new mongoose.Schema({
     email:{
         type: String,
         required: true,
@@ -14,11 +7,6 @@ const otpSchema = new mongoose.Schema({
         maxlength: 40,
         unique: true,
         match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
-    },
-    password:{
-        type: String,
-        required: true,
-        minlength: 6,  
     },
     otp:{
         type: String,
@@ -30,5 +18,5 @@ const otpSchema = new mongoose.Schema({
         expires: 300  // 300 giây = 5 phút
     }
 });
-const Otps = mongoose.model('otps', otpSchema);
-module.exports = Otps;
+const OtpForgot = mongoose.model('otpForgot', otpForgotSchema);
+module.exports = OtpForgot;
