@@ -168,6 +168,10 @@ const authController = {
     if(!emailRegex.test(email)){
       return res.status(400).json({ success: false, message: 'Nhập không đúng định dạng email' });
     }
+    const emailForgot = await Customer.findOne({email: email});
+    if(!emailForgot){
+      return res.status(400).json({ success: false, message: "Nhập email không đúng" });
+    }
     const newOTP = new OtpForget({ email: email, otp });
       await newOTP.save();
       await sendEmail({
