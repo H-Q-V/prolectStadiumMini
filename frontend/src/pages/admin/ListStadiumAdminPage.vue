@@ -3,28 +3,23 @@ import Search from "../../components/search/Search.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
-import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
 import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
+import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
+import ListStadiumAdmin from "../../components/stadium/ListStadiumAdmin.vue";
 import { getAddress } from "../../utils/getAddress";
+const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
+  getAddress();
 const visible = ref(false);
 const image = ref("");
 const stadium_name = ref(null);
 const phone = ref(null);
 const describe = ref(null);
 const stadiumStore = useStadium();
-const {
-  province,
-  district,
-  ward,
-  provinceOptions,
-  districtOptions,
-  wardOptions,
-} = getAddress();
 
 const handleFileChange = (e) => {
   onFileChange(e, image);
@@ -34,21 +29,47 @@ const handleAddStadium = async () => {
   const data = {
     image: await convertBase64(image.value),
     stadium_name: stadium_name.value,
-    province: province.value.name,
-    district: district.value.name,
+    provice: provice.value.name,
+    city: city.value.name,
     ward: ward.value.name,
     phone: phone.value,
     describe: describe.value,
   };
   await stadiumStore.createStadium(data, toast);
 };
+
+const searchResults = ref([]);
+
+const handleSearchResults = (results) => {
+  searchResults.value = results;
+  console.log("🚀 ~ handleSearchResults ~ searchResults:", searchResults);
+};
 </script>
 <template>
-  <Search></Search>
+  <Search @searchResults="handleSearchResults"></Search>
   <h1 class="text-[#18458b] text-[24px] font-semibold text-center mb-4">
     Danh sách sân
   </h1>
-  <StadiumAdmin></StadiumAdmin>
+
+  <div v-if="searchResults.length > 0">
+    <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
+      <div v-for="stadium in searchResults" :key="stadium._id">
+        <StadiumAdmin
+          :stadiumId="stadium._id"
+          :image="stadium.image"
+          :stadium_name="stadium.stadium_name"
+          :phone="stadium.phone"
+          :ward="stadium.ward"
+          :city="stadium.city"
+          :provice="stadium.provice"
+        ></StadiumAdmin>
+      </div>
+    </div>
+  </div>
+
+  <div v-else>
+    <ListStadiumAdmin></ListStadiumAdmin>
+  </div>
   <Button
     @click="visible = true"
     class="fixed bottom-3 right-3 w-[38px] h-[38px] bg-slate-500 rounded-full text-white z-10"
@@ -94,8 +115,8 @@ const handleAddStadium = async () => {
       <div class="flex items-center gap-4">
         <label for="province" class="font-semibold w-24">Tỉnh thành</label>
         <Dropdown
-          v-model="province"
-          :options="provinceOptions"
+          v-model="provice"
+          :options="proviceOptions"
           optionLabel="name"
           class="input-text"
         />
@@ -104,10 +125,10 @@ const handleAddStadium = async () => {
       <div class="flex items-center gap-4">
         <label for="district" class="font-semibold w-24">Quận huyện</label>
         <Dropdown
-          v-model="district"
-          :options="districtOptions"
+          v-model="city"
+          :options="cityOptions"
           optionLabel="name"
-          :disabled="!province"
+          :disabled="!provice"
           class="input-text"
         />
       </div>
@@ -118,7 +139,7 @@ const handleAddStadium = async () => {
           v-model="ward"
           :options="wardOptions"
           optionLabel="name"
-          :disabled="!district"
+          :disabled="!city"
           class="input-text"
         />
       </div>

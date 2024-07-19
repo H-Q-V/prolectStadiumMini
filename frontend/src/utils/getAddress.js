@@ -3,14 +3,14 @@ import { useAddress } from "../stores/fetchAddress";
 
 export const getAddress = () => {
   const addressStore = useAddress();
-  const provinceData = ref([]);
-  const districtData = ref([]);
+  const proviceData = ref([]);
+  const cityData = ref([]);
   const wardData = ref([]);
-  const province = ref(null);
-  const district = ref(null);
+  const provice = ref(null);
+  const city = ref(null);
   const ward = ref(null);
-  const provinceOptions = ref([]);
-  const districtOptions = ref([]);
+  const proviceOptions = ref([]);
+  const cityOptions = ref([]);
   const wardOptions = ref([]);
 
   onMounted(async () => {
@@ -18,27 +18,27 @@ export const getAddress = () => {
   });
 
   watchEffect(() => {
-    provinceData.value = addressStore.provinceData;
-    provinceOptions.value = provinceData.value.map((province) => ({
+    proviceData.value = addressStore.provinceData;
+    proviceOptions.value = proviceData.value.map((province) => ({
       id: province.id,
       name: province.name,
     }));
   });
 
-  watch(province, async (newProvince) => {
+  watch(provice, async (newProvince) => {
     const provinceID = newProvince.id;
-    await addressStore.getdistrict(provinceID);
-    districtData.value = addressStore.districtData;
+    await addressStore.getCity(provinceID);
+    cityData.value = addressStore.cityData;
 
-    districtOptions.value = districtData.value.map((district) => ({
-      id: district.id,
-      name: district.name,
+    cityOptions.value = cityData.value.map((city) => ({
+      id: city.id,
+      name: city.name,
     }));
   });
 
-  watch(district, async (newDistrict) => {
-    const districtID = newDistrict.id;
-    await addressStore.getWard(districtID);
+  watch(city, async (newCity) => {
+    const cityID = newCity.id;
+    await addressStore.getWard(cityID);
     wardData.value = addressStore.wardData;
 
     wardOptions.value = wardData.value.map((ward) => ({
@@ -48,11 +48,11 @@ export const getAddress = () => {
   });
 
   return {
-    province,
-    district,
+    provice,
+    city,
     ward,
-    provinceOptions,
-    districtOptions,
+    proviceOptions,
+    cityOptions,
     wardOptions,
   };
 };

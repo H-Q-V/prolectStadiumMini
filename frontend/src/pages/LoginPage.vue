@@ -14,7 +14,6 @@ const handleSubmit = async () => {
     username: username.value,
     password: password.value,
   };
-  console.log("🚀 ~ handleSubmit ~ data:", data);
   await userStore.login(data, toast, router);
 };
 </script>
@@ -47,7 +46,7 @@ const handleSubmit = async () => {
         <InputText
           id="password"
           name="password"
-          type="text"
+          type="password"
           placeholder="Mật khẩu"
           class="w-full px-5 py-4 border border-[#cbd5e1] mb-5"
           v-model="password"
@@ -57,20 +56,21 @@ const handleSubmit = async () => {
           <router-link
             class="font-medium no-underline ml-2 text-right cursor-pointer"
             style="color: #81c784"
-            >Forgot password?</router-link
+            to="/auth/forgot"
+            >Quên mật khẩu?</router-link
           >
         </div>
         <Button
           type="submit"
-          label="Sign In"
+          label="Đăng nhập"
           class="w-full p-3 text-xl bg-primary text-white"
         ></Button>
       </form>
 
       <div class="flex items-center justify-center gap-4 mt-4">
-        <p class="text-black">You haven't any account?</p>
+        <p class="text-black">Bạn chưa có tài khoản?</p>
         <router-link to="/auth/register" class="text-primary"
-          >Sign up</router-link
+          >Đăng kí</router-link
         >
       </div>
     </div>

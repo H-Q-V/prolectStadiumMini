@@ -5,41 +5,31 @@ import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 
 export const useUser = defineStore("user", {
   state: () => ({
-    userData: [],
-    isRegistered: false,
-    isLoggedIn: false,
+    username: "",
   }),
   getters: {
-    isRegistered: (state) => state.isRegistered,
-    isLoggedIn: (state) => state.isLoggedIn,
+    getUsername: (state) => state.username,
   },
   actions: {
     async register(data, toast, router) {
       try {
-        const response = await axios.post(`${endpoint}/register`, data);
-        this.$patch({
-          userData: response.data.data,
-          isRegistered: true,
-        });
-
-        router.push({ name: "Login" });
+        await axios.post(`${endpoint}/register`, data);
         toast.success("Đăng kí thành công");
+        router.push({ name: "Login" });
       } catch (error) {
         console.log("🚀 ~ register ~ error:", error);
-        toast.error("Đăng ký thất bại");
+        toast.error(error?.response?.data?.message);
       }
     },
 
     async login(data, toast, router) {
       try {
         const response = await axios.post(`${endpoint}/login`, data);
-        this.$patch({
-          userData: response?.data?.data,
-          isLoggedIn: true,
-        });
-        localStorage.setItem(LOCAL_STORAGE_TOKEN, response?.data?.accessToken);
-        router.push({ name: "HomePage" });
+        this.username = response?.data?.username;
         toast.success("Đăng nhập thành công");
+        localStorage.setItem(LOCAL_STORAGE_TOKEN, response?.data?.accessToken);
+        localStorage.setItem("username", response?.data?.username);
+        router.push({ name: "HomePage" });
       } catch (error) {
         console.log("🚀 ~ login ~ error:", error);
         toast.error(error?.response?.data);

@@ -1,14 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
-
+import { useUser } from "../../stores/fetchAuth";
 const props = defineProps({
   onMenuToogle: {
     type: Function,
   },
 });
-
 const topbarMenuActive = ref(false);
-
 const onTopbarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -17,6 +15,8 @@ const topbarMenuClasses = computed(() => {
     "layout-topbar-menu-mobile-active": topbarMenuActive.value,
   };
 });
+
+const username = localStorage.getItem("username");
 </script>
 <template>
   <div class="layout-topbar">
@@ -35,7 +35,7 @@ const topbarMenuClasses = computed(() => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+      <button @click="onTopbarMenuButton()" class="p-link layout-topbar-button">
         <i class="pi pi-calendar"></i>
         <span>Calendar</span>
       </button>
@@ -44,9 +44,15 @@ const topbarMenuClasses = computed(() => {
         <span>Profile</span>
       </button>
       <button class="layout-topbar-button">
-        <i class="text-black pi pi-cog"></i>
-        <span>Settings</span>
+        <i class="text-black pi pi-bell"></i>
+        <span>Thông báo</span>
       </button>
+
+      <div
+        class="w-[140px] bg-primary px-2 py-4 rounded-lg text-white text-center"
+      >
+        <span class="capitalize">{{ username }}</span>
+      </div>
     </div>
   </div>
 </template>
