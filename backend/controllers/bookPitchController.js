@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-const BookPitch = require('../model/bookPitch');
-const moment = require('moment-timezone');
-=======
+
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
 const { Stadium } = require("../model/stadium");
->>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
 const bookPitchController = {
   bookPitch: async (req, res) => {
     try {
@@ -21,11 +17,8 @@ const bookPitchController = {
       if (endTime < startTime) {
         return res.status(400).json({
           success: false,
-<<<<<<< HEAD
           message: 'Thời  gian kết thúc phải sau thời gian bắt đầu',
-=======
-          message: "Thời gian kết thúc phải sau thời gian bắt đầu",
->>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
+
         });
       }
 
@@ -49,11 +42,8 @@ const bookPitchController = {
       if (overlappingBooking.length > 0) {
         return res.status(400).json({
           success: false,
-<<<<<<< HEAD
           message: 'Khung giờ này đã có người đặt',
-=======
-          message: "Thời gian đặt sân bị trùng lặp với lịch đặt sân khác",
->>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
+         
         });
       }
 
@@ -87,9 +77,7 @@ const bookPitchController = {
           startTime: formattedStartTime,
           endTime: formattedEndTime,
           username: username,
-<<<<<<< HEAD
           status: 'confirmed',
-=======
           stadium: {
             _id: stadium._id,
             stadium_name: stadium.stadium_name,
@@ -101,7 +89,6 @@ const bookPitchController = {
             phone: stadium.phone,
             stadium_style: style,
           },
->>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
         },
       });
     } catch (error) {
