@@ -76,11 +76,9 @@ const authController = {
         message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
       });
 
-      res
-        .status(200)
-        .json({
-          message: 'OTP sent to email. Please verify to complete registration.',
-        });
+      res.status(200).json({
+        message: 'OTP sent to email. Please verify to complete registration.',
+      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -210,11 +208,9 @@ const authController = {
       // Lưu email vào session
       req.session.email = email;
 
-      res
-        .status(200)
-        .json({
-          message: 'OTP sent to email. Please verify to complete registration.',
-        });
+      res.status(200).json({
+        message: 'OTP sent to email. Please verify to complete registration.',
+      });
     } catch (err) {
       return res.status(500).json(err);
     }
@@ -248,12 +244,10 @@ const authController = {
           res.status(400).json({ success: false, error: 'Invalid OTP' });
         }
       } else {
-        res
-          .status(400)
-          .json({
-            success: false,
-            message: 'Nhập sai OTP hoặc OTP đã hết hạn',
-          });
+        res.status(400).json({
+          success: false,
+          message: 'Nhập sai OTP hoặc OTP đã hết hạn',
+        });
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
@@ -296,7 +290,6 @@ const authController = {
       const email = req.session.email;
       const { password } = req.body;
       console.log(`Updating password for email: ${email}`);
-
       const CustomerForgot = await Customer.findOne({ email });
       if (!CustomerForgot) {
         console.log('Người dùng không tồn tại');
@@ -304,18 +297,15 @@ const authController = {
           .status(400)
           .json({ status: false, message: 'Người dùng không tồn tại' });
       }
-
       if (password.length < 8) {
         return res
           .status(400)
           .json({ status: false, message: 'Mật khẩu tối thiểu 8 ký tự' });
       }
-
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       CustomerForgot.password = hashed;
       await CustomerForgot.save();
-
       console.log(`Password updated successfully for email: ${email}`);
       return res
         .status(200)
@@ -336,4 +326,3 @@ const authController = {
 //3) REDUX STORE -> ACCESSTOKEN
 // HTTPONLY COOKIES -> REFRESHTOKEN
 module.exports = authController;
-

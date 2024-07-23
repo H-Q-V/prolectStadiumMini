@@ -1,6 +1,6 @@
-
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
+const cron = require('node-cron');
 const { Stadium } = require("../model/stadium");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
@@ -52,7 +52,6 @@ const bookPitchController = {
          
         });
       }
-
       const newBooking = await BookPitch.create({
         phone: phone,
         startTime: startTime,
@@ -144,6 +143,18 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: err.message });
     }
   },
+  
+  deleteBookPitchs: async(req,res) => {
+   try {
+     await BookPitch.findByIdAndDelete(req.params.id)
+     return res.status(200).json("Xóa lịch thành công");
+    
+   } catch (error) {
+      console.log("🚀 ~ deleteBookPitchs:async ~ error:", error);    
+      return res.status(500).json(err);
+   }
+  },
+ 
 };
 
 module.exports = bookPitchController;

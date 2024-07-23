@@ -9,4 +9,6 @@ router.post(
 );
 
 router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
+
+router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
 module.exports = router;
