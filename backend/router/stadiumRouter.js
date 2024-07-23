@@ -1,7 +1,11 @@
 const stadiumController = require("../controllers/stadiumController");
+//const { upload,uploadImage } = require("../uploadImage/uploadImage");
+//const cloudinary = require("./uploadImage/uploadImage")
+
 const router = require("express").Router();
 
 //add stadium
+//router.post("/createStadium", stadiumController.addStadium, upload.single('img'), uploadImage);
 router.post("/createStadium", stadiumController.addStadium);
 
 //get all stadium
