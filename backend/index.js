@@ -8,7 +8,6 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-
 const stadiumRoute = require('./router/stadiumRouter');
 const stadiumOwner = require('./router/stadiumOwnerRouter');
 const authRouter = require('./router/authRouter');
