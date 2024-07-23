@@ -76,7 +76,7 @@ const routes = [
   },
   {
     path: "/auth/send-otp",
-    name: "SendOtp",
+    name: "SendOTP",
     component: () => import("./pages/SendOtpPage.vue"),
   },
 ];
