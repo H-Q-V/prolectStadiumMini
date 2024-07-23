@@ -4,8 +4,11 @@ const app = express();
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 const morgan = require("morgan");
+const session = require('express-session');
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const multer = require("multer");
+
 const stadiumRoute = require("./router/stadiumRouter");
 const stadiumOwner = require("./router/stadiumOwnerRouter");
 const authRouter = require("./router/authRouter");
@@ -13,7 +16,12 @@ const bookPitchRouter = require("./router/bookPitchRouter");
 const customerRouter = require("./router/customerRouter");
 //const otpRoutes = require("./router/otpRouter");
 dotenv.config();
-
+app.use(session({
+  secret: "demo", // Thay đổi thành khóa bí mật của bạn
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Đặt là true nếu bạn sử dụng HTTPS
+}));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(cookieParser());

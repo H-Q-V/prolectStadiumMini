@@ -27,7 +27,7 @@ const otpSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 300  // 300 giây = 5 phút
+        expires: 120  // 120 giây = 2 phút
     }
 });
 const Otps = mongoose.model('otps', otpSchema);

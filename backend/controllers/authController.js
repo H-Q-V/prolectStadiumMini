@@ -1,10 +1,18 @@
 const Customer = require("../model/customer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+
+const Otps = require('../model/otpModel.js');
+const OtpForget = require('../model/otpForgotModel.js');
+const randomstring = require('randomstring');
+const sendEmail = require('../utils/sendEmail');
+const moment = require('moment-timezone');
+
 const Otps = require("../model/otpModel.js");
 const OtpForget = require("../model/otpForgotModel.js");
 const randomstring = require("randomstring");
 const sendEmail = require("../utils/sendEmail");
+
 require("dotenv").config();
 let refreshTokens = [];
 function generateOTP() {
@@ -168,6 +176,24 @@ const authController = {
     res.status(200).json("Logged out successful");
   },
 
+
+  customerForgot: async (req,res) => {
+   try{
+    const {email} = req.body;
+    const otp = generateOTP();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)){
+      return res.status(400).json({ success: false, message: 'Nhập không đúng định dạng email' });
+    }
+    
+    const emailForgot = await Customer.findOne({email});
+    if(!emailForgot){
+      return res.status(400).json({ success: false, message: "Nhập email không đúng" });
+    }
+    
+    const newOTP = new OtpForget({ email: email, otp });
+
   customerForgot: async (req, res) => {
     try {
       const { email } = req.body;
@@ -185,6 +211,7 @@ const authController = {
           .json({ success: false, message: "Nhập email không đúng" });
       }
       const newOTP = new OtpForget({ email: email, otp });
+
       await newOTP.save();
       await sendEmail({
         to: email,
@@ -231,6 +258,63 @@ const authController = {
     }
   },
 
+
+   verifyForgotOTP: async (req, res, next) => {
+    try {
+      const {otp} = req.body;
+  
+      if (!otp) {
+        return res.status(400).json({ status: false, message: "OTP không được để trống" });
+      }
+  
+      console.log(`Verifying OTP: ${otp}`);
+  
+      const otpRecord = await OtpForget.findOne({otp:otp});
+      if (!otpRecord) {
+        console.log("OTP không đúng hoặc đã hết hạn");
+        return res.status(400).json({ status: false, message: "Nhập sai OTP" });
+      }
+      //const existingOTP = await OtpForget.findOneAndDelete({otp});
+      return res.status(200).json({status:false, message: "OTP verification successful"});
+      
+    } catch (err) {
+      console.error("Error in verifyForgotOTP:", err);
+      return res.status(500).json({ status: false, message: "Đã xảy ra lỗi", error: err.message });
+    }
+  },
+  
+
+  updatePasswordForgot: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const { password } = req.body;
+      console.log(`Updating password for email: ${email}`);
+  
+      const CustomerForgot = await Customer.findOne({ email });
+      if (!CustomerForgot) {
+        console.log("Người dùng không tồn tại");
+        return res.status(400).json({ status: false, message: "Người dùng không tồn tại" });
+      }
+  
+      if (password.length < 8) {
+        return res.status(400).json({ status: false, message: "Mật khẩu tối thiểu 8 ký tự" });
+      }
+  
+      const salt = await bcrypt.genSalt(10);
+      const hashed = await bcrypt.hash(password, salt);
+      CustomerForgot.password = hashed;
+      await CustomerForgot.save();
+  
+      console.log(`Password updated successfully for email: ${email}`);
+      return res.status(200).json({ status: true, message: "Cập nhật mật khẩu thành công" });
+    } catch (err) {
+      console.error("Error in updatePasswordForgot:", err);
+      return res.status(500).json({ status: false, message: "Đã xảy ra lỗi", error: err.message });
+    }
+  }
+  
+
+
   verifyForgotOTP: async (req, res, next) => {
     try {
       const { otp, password } = req.body;
@@ -269,6 +353,7 @@ const authController = {
       return res.status(500).json(err);
     }
   },
+
 };
 //STORE TOKEN
 //1) LOCAL STORAGE

@@ -20,8 +20,19 @@ router.post(
 );
 
 //verify-otp
+
+router.post('/verify-otp', authController.verifyOTP);
+
+//verifyForgotOtp
+router.post("/verify-forgot-otp", authController.verifyForgotOTP);
+
+//update password forgot
+router.post("/update-password-forgot", authController.updatePasswordForgot);
+module.exports = router;
+
 router.post("/verify-otp", authController.verifyOTP);
 
 //verifyForgotOtp
 router.post("/verify-forgot-otp/:id", authController.verifyForgotOTP);
 module.exports = router;
+
