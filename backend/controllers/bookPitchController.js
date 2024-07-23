@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 const BookPitch = require('../model/bookPitch');
 const moment = require('moment-timezone');
+=======
+const BookPitch = require("../model/bookPitch");
+const moment = require("moment-timezone");
+const { Stadium } = require("../model/stadium");
+>>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
 const bookPitchController = {
   bookPitch: async (req, res) => {
     try {
@@ -15,7 +21,11 @@ const bookPitchController = {
       if (endTime < startTime) {
         return res.status(400).json({
           success: false,
+<<<<<<< HEAD
           message: 'Thời  gian kết thúc phải sau thời gian bắt đầu',
+=======
+          message: "Thời gian kết thúc phải sau thời gian bắt đầu",
+>>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
         });
       }
 
@@ -26,19 +36,24 @@ const bookPitchController = {
           .json({ status: false, message: 'Số điện thoại không hợp lệ' });
       }
 
-      const overlappingBookings = await BookPitch.find({
-        $or: [
-          {
-            startTime: { $lt: endTime },
-            endTime: { $gt: startTime },
-          },
-        ],
-      });
+      const { id, stadiumStyleID } = req.params;
+      const stadium = await Stadium.findById(id);
+      const style = stadium.stadium_styles.id(stadiumStyleID);
 
-      if (overlappingBookings.length > 0) {
+      const overlappingBooking = await BookPitch.find({
+        stadium: id,
+        $or: [{ startTime: { $lt: endTime }, endTime: { $gt: startTime } }],
+      });
+      console.log("🚀 ~ bookPitch: ~ overlappingBooking:", overlappingBooking);
+
+      if (overlappingBooking.length > 0) {
         return res.status(400).json({
           success: false,
+<<<<<<< HEAD
           message: 'Khung giờ này đã có người đặt',
+=======
+          message: "Thời gian đặt sân bị trùng lặp với lịch đặt sân khác",
+>>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
         });
       }
 
@@ -47,7 +62,10 @@ const bookPitchController = {
         startTime: startTime,
         endTime: endTime,
         user: req.customer.id,
+        stadium: id,
+        status: "confirmed",
       });
+      console.log("🚀 ~ bookPitch: ~ newBooking:", newBooking);
 
       const bookingWithUser = await BookPitch.findById(newBooking._id).populate(
         'user',
@@ -69,7 +87,21 @@ const bookPitchController = {
           startTime: formattedStartTime,
           endTime: formattedEndTime,
           username: username,
+<<<<<<< HEAD
           status: 'confirmed',
+=======
+          stadium: {
+            _id: stadium._id,
+            stadium_name: stadium.stadium_name,
+            image: stadium.image,
+            ward: stadium.ward,
+            city: stadium.city,
+            provice: stadium.provice,
+            describe: stadium.describe,
+            phone: stadium.phone,
+            stadium_style: style,
+          },
+>>>>>>> df6150a61bf0f6c7588934c61dc3282bf1307e0d
         },
       });
     } catch (error) {

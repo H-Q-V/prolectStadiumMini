@@ -2,11 +2,17 @@
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
+import { useUser } from "../stores/fetchAuth";
+import { useRouter } from "vue-router";
+import { toast } from "vue3-toastify";
 const otp = ref("");
-const handleSend = () => {
+const userStore = useUser();
+const router = useRouter();
+const handleSend = async () => {
   const data = {
     otp: otp.value,
   };
+  await userStore.verifyOTP(data, toast, router);
   console.log("🚀 ~ handleSend ~ data:", data);
 };
 </script>

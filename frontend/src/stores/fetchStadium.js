@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { endpoint } from "../utils/endpoint";
+import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 
 export const useStadium = defineStore("stadium", {
   state: () => ({
@@ -62,6 +63,27 @@ export const useStadium = defineStore("stadium", {
         this.resultSearch = response?.data;
       } catch (error) {
         console.log("🚀 ~ searchStadium ~ error:", error);
+      }
+    },
+
+    async bookPitch(data, toast, stadiumID, stadiumStyleID) {
+      const config = {
+        headers: {
+          token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
+        },
+      };
+      console.log("🚀 ~ bookPitch ~ config:", config);
+      try {
+        const response = await axios.post(
+          `${endpoint}/bookPitch/${stadiumID}/${stadiumStyleID}`,
+          data,
+          config
+        );
+        console.log("🚀 ~ bookPitch ~ response:", response);
+        toast.success("Đặt lịch thành công");
+      } catch (error) {
+        console.log("🚀 ~ bookPitch ~ error:", error);
+        toast.error(error?.response?.data?.message);
       }
     },
   },
