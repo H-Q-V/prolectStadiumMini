@@ -1,6 +1,8 @@
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
 const { Stadium } = require("../model/stadium");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 const bookPitchController = {
   bookPitch: async (req, res) => {
     try {
@@ -27,15 +29,19 @@ const bookPitchController = {
           .json({ status: false, message: "Số điện thoại không hợp lệ" });
       }
 
-      const { id, stadiumStyleID } = req.params;
-      const stadium = await Stadium.findById(id);
+      const { stadiumID, stadiumStyleID } = req.params;
+      const stadium = await Stadium.findById(stadiumID);
       const style = stadium.stadium_styles.id(stadiumStyleID);
 
       const overlappingBooking = await BookPitch.find({
-        stadium: id,
-        $or: [{ startTime: { $lt: endTime }, endTime: { $gt: startTime } }],
+        stadium: stadiumID,
+        stadiumStyle: stadiumStyleID,
+        $or: [
+          { startTime: { $lt: endTime, $gt: startTime } },
+          { endTime: { $gt: startTime, $lt: endTime } },
+          { startTime: { $lte: startTime }, endTime: { $gte: endTime } },
+        ],
       });
-      console.log("🚀 ~ bookPitch: ~ overlappingBooking:", overlappingBooking);
 
       if (overlappingBooking.length > 0) {
         return res.status(400).json({
@@ -49,7 +55,8 @@ const bookPitchController = {
         startTime: startTime,
         endTime: endTime,
         user: req.customer.id,
-        stadium: id,
+        stadium: stadiumID,
+        stadiumStyle: stadiumStyleID,
         status: "confirmed",
       });
 
@@ -94,11 +101,38 @@ const bookPitchController = {
 
   getAllBookPitches: async (req, res) => {
     try {
-      const bookPitches = await BookPitch.find().populate({
+      const bookPitches = await BookPitch.find({}).populate({
         path: "user",
         select: "username",
       });
-      return res.status(200).json(bookPitches);
+
+      const data = [];
+      for (let i = 0; i < bookPitches.length; i++) {
+        let stadiumStyleId = bookPitches[i].stadiumStyle;
+
+        const stadium = await Stadium.findOne({
+          "stadium_styles._id": stadiumStyleId,
+        });
+
+        // console.log(stadium);
+        const st = stadium.stadium_styles.find(
+          (style) => style._id.toString() === stadiumStyleId.toString()
+        );
+
+        let oject = {};
+        // stadium(...datas, stadium_styles)._doc;
+        const { stadium_styles, ...datas } = stadium._doc;
+
+        oject = {
+          ...datas,
+          ...st._doc,
+          ...bookPitches[i]._doc,
+        };
+
+        data.push(oject);
+      }
+
+      return res.status(200).json(data);
     } catch (err) {
       console.log("🚀 ~ getAllBookPitches: ~ err:", err);
       return res.status(500).json({ success: false, message: err.message });
