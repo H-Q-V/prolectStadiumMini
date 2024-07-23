@@ -3,7 +3,7 @@ const middlewareController = require("../controllers/middlewareController");
 const router = require("express").Router();
 
 router.post(
-  "/bookPitch/:stadiumID/:stadiumStyleID",
+  "/bookPitch/:id/:stadiumStyleID",
   middlewareController.verifyToken,
   bookPitchController.bookPitch
 );

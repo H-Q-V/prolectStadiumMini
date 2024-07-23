@@ -52,7 +52,6 @@ const bookPitchController = {
         stadium: id,
         status: "confirmed",
       });
-      console.log("🚀 ~ bookPitch: ~ newBooking:", newBooking);
 
       const bookingWithUser = await BookPitch.findById(newBooking._id).populate(
         "user"

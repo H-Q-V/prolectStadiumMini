@@ -66,7 +66,7 @@ export const useStadium = defineStore("stadium", {
       }
     },
 
-    async bookPitch(data, toast, stadiumID, stadiumStyleID) {
+    async bookPitch(data, toast, id, idStadiumStyle) {
       const config = {
         headers: {
           token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
@@ -75,7 +75,7 @@ export const useStadium = defineStore("stadium", {
       console.log("🚀 ~ bookPitch ~ config:", config);
       try {
         const response = await axios.post(
-          `${endpoint}/bookPitch/${stadiumID}/${stadiumStyleID}`,
+          `${endpoint}/bookPitch/${id}/${idStadiumStyle}`,
           data,
           config
         );
