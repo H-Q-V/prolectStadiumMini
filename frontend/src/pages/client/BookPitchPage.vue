@@ -32,7 +32,7 @@ const handleBookPitch = async () => {
   const response = await stadiumStore.bookPitch(
     data,
     toast,
-    route.params.stadiumID,
+    route.params.id,
     route.params.stadiumStyleID
   );
   console.log("🚀 ~ handleBookPitch ~ response:", response);
