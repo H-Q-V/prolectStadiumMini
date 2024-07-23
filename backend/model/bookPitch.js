@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const bookPitchSchema = new mongoose.Schema({
   phone: {
     type: String,
@@ -11,18 +11,18 @@ const bookPitchSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
+    ref: 'Customer',
   },
   stadium: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Stadium",
+    ref: 'Stadium',
   },
 
   status: {
     type: String,
-    enum: ["confirmed", "pending", "cancelled"],
-    default: "pending",
+    enum: ['confirmed', 'pending', 'cancelled'],
+    default: 'pending',
   },
 });
 
-module.exports = mongoose.model("BookPitch", bookPitchSchema);
+module.exports = mongoose.model('BookPitch', bookPitchSchema);
