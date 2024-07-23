@@ -1,47 +1,54 @@
 const Customer = require("../model/customer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Otps = require('../model/otpModel.js');
-const OtpForget = require('../model/otpForgotModel.js');
-const randomstring = require('randomstring');
-const sendEmail = require('../utils/sendEmail');
+const Otps = require("../model/otpModel.js");
+const OtpForget = require("../model/otpForgotModel.js");
+const randomstring = require("randomstring");
+const sendEmail = require("../utils/sendEmail");
 require("dotenv").config();
 let refreshTokens = [];
 function generateOTP() {
   return randomstring.generate({
-      length: 6,
-      charset: 'numeric'
+    length: 6,
+    charset: "numeric",
   });
 }
 const authController = {
-  
   //register
   registerCustomer: async (req, res) => {
     try {
       const { username, email, password } = req.body;
-  
+
       if (username.length < 6) {
-        return res.status(400).json({ success: false, message: "Tên tối thiểu 6 ký tự" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Tên tối thiểu 6 ký tự" });
       }
-  
+
       if (password.length < 8) {
-        return res.status(400).json({ success: false, message: "Mật khẩu tối thiểu 8 ký tự" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Mật khẩu tối thiểu 8 ký tự" });
       }
-  
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ success: false, message: "Email nhập sai" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Email nhập sai" });
       }
-  
+
       const emailCustomer = await Customer.findOne({ email: email });
       if (emailCustomer) {
-        return res.status(400).json({ success: false, message: "Nhập trùng email" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Nhập trùng email" });
       }
-  
+
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const otp = generateOTP();
-  
+
       // Tạo người dùng tạm thời với OTP
       const tempCustomer = new Otps({
         username: username,
@@ -50,20 +57,24 @@ const authController = {
         otp: otp,
       });
       await tempCustomer.save();
-  
+
       // Gửi mã OTP qua email
       await sendEmail({
         to: email,
-        subject: 'Your OTP',
+        subject: "Your OTP",
         message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
       });
-  
-      res.status(200).json({ message: "OTP sent to email. Please verify to complete registration." });
+
+      res
+        .status(200)
+        .json({
+          message: "OTP sent to email. Please verify to complete registration.",
+        });
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  
+
   //GENERATE ACCESS TOKEN
   generateAccessToken: (customer) => {
     return jwt.sign(
@@ -92,7 +103,7 @@ const authController = {
     try {
       const customer = await Customer.findOne({ email: req.body.email });
       if (!customer) {
-        return res.status(404).json("Tên người dùng không đúng");
+        return res.status(404).json("Email nhập không đúng");
       }
       const validPassword = await bcrypt.compare(
         req.body.password,
@@ -144,13 +155,10 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
-      
-      res.status(200).json({ accessToken: newAccessToken });
-    
 
+      res.status(200).json({ accessToken: newAccessToken });
     });
   },
-
 
   customerLogout: async (req, res) => {
     res.clearCookie("refreshToken");
@@ -160,41 +168,49 @@ const authController = {
     res.status(200).json("Logged out successful");
   },
 
-  customerForgot: async (req,res) => {
-   try{
-    const {email} = req.body;
-    const otp = generateOTP();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(email)){
-      return res.status(400).json({ success: false, message: 'Nhập không đúng định dạng email' });
-    }
-    const emailForgot = await Customer.findOne({email: email});
-    if(!emailForgot){
-      return res.status(400).json({ success: false, message: "Nhập email không đúng" });
-    }
-    const newOTP = new OtpForget({ email: email, otp });
+  customerForgot: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const otp = generateOTP();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Nhập không đúng định dạng email" });
+      }
+      const emailForgot = await Customer.findOne({ email: email });
+      if (!emailForgot) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Nhập email không đúng" });
+      }
+      const newOTP = new OtpForget({ email: email, otp });
       await newOTP.save();
       await sendEmail({
         to: email,
-        subject: 'Your OTP for forgotten password',
+        subject: "Your OTP for forgotten password",
         message: `<p>Your OTP is: <strong>${otp}</strong></p>`,
       });
-      res.status(200).json({ message: "OTP sent to email. Please verify to complete registration." });
-   } catch(err){
-       return res.status(500).json(err);
-   }
+      res.status(200).json({
+        message: "OTP sent to email. Please verify to complete registration.",
+      });
+    } catch (err) {
+      return res.status(500).json(err);
+    }
   },
 
   verifyOTP: async (req, res, next) => {
     try {
       const { otp } = req.body;
 
-      const otpCustomer = await Otps.findOne({otp:otp});
-      if(!otpCustomer){
-        return res.status(400).json({success: false, message: "Nhập sai Otp"});
+      const otpCustomer = await Otps.findOne({ otp: otp });
+      if (!otpCustomer) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Nhập sai Otp" });
       }
-      const existingOTP = await Otps.findOneAndDelete({otp});
-      
+      const existingOTP = await Otps.findOneAndDelete({ otp });
+
       if (existingOTP) {
         const newCustomer = new Customer({
           username: existingOTP.username,
@@ -202,49 +218,57 @@ const authController = {
           password: existingOTP.password,
         });
         await newCustomer.save();
-  
-        res.status(200).json({ success: true, message: 'OTP verification successful' });
+
+        res
+          .status(200)
+          .json({ success: true, message: "OTP verification successful" });
       } else {
-        res.status(400).json({ success: false, error: 'Invalid OTP' });
+        res.status(400).json({ success: false, error: "Invalid OTP" });
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+      console.error("Error verifying OTP:", error);
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
-  }, 
+  },
 
   verifyForgotOTP: async (req, res, next) => {
-    try{
-        const {otp, password} = req.body;
-       
-        const otpforgot = await OtpForget.findOneAndDelete({otp:otp});
-        if(!otpforgot){
-          return res.status(400).json({status: false, message: "Nhập sai Otp"});
-        }
-        const CustomerForgot = await Customer.findById(req.params.id);
-        if(!CustomerForgot){
-          return res.status(400).json({status: false, message: "Người dùng không tồn tại"});
-        }
-        if(password.length < 8){
-          return res.status(400).json({status: false, message: "Nhập tối thiểu 8 ký tự"});
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashed = await bcrypt.hash(password, salt);
-       // const {password} = req.body;
-       if(otpforgot){
-           // await CustomerForgot.updateOne({$set:hashed});
-            CustomerForgot.password = hashed;
-            await CustomerForgot.save();
-            return res.status(200).json({status: true, message: "Cập nhật mật khẩu thành công"});
-       } else{
-            return res.status(400).json({status: false, message: "Cập nhật dữ liệu thất bại"});
-       }
-        
-    } catch(err){
-       return res.status(500).json(err);
+    try {
+      const { otp, password } = req.body;
+
+      const otpforgot = await OtpForget.findOneAndDelete({ otp: otp });
+      if (!otpforgot) {
+        return res.status(400).json({ status: false, message: "Nhập sai Otp" });
+      }
+      const CustomerForgot = await Customer.findById(req.params.id);
+      if (!CustomerForgot) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Người dùng không tồn tại" });
+      }
+      if (password.length < 8) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Nhập tối thiểu 8 ký tự" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashed = await bcrypt.hash(password, salt);
+      // const {password} = req.body;
+      if (otpforgot) {
+        // await CustomerForgot.updateOne({$set:hashed});
+        CustomerForgot.password = hashed;
+        await CustomerForgot.save();
+        return res
+          .status(200)
+          .json({ status: true, message: "Cập nhật mật khẩu thành công" });
+      } else {
+        return res
+          .status(400)
+          .json({ status: false, message: "Cập nhật dữ liệu thất bại" });
+      }
+    } catch (err) {
+      return res.status(500).json(err);
     }
-  }
-  
+  },
 };
 //STORE TOKEN
 //1) LOCAL STORAGE

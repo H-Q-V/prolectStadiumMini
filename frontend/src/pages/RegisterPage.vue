@@ -30,7 +30,7 @@ const handleSubmit = async () => {
       </div>
 
       <form @submit.prevent="handleSubmit">
-        <label for="email1" class="block text-black text-xl font-medium mb-2">
+        <label for="email" class="block text-black text-xl font-medium mb-2">
           Email
         </label>
         <InputText

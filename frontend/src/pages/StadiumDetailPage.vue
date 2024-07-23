@@ -31,7 +31,7 @@ onMounted(async () => {
     <div class="flex items-center gap-2 text-lg">
       <i class="pi pi-fw pi-map-marker"></i>
       <p class="capitalize">
-        Phường {{ stadiumData.district }} {{ stadiumData.province }}
+        {{ stadiumData.ward }} {{ stadiumData.city }} {{ stadiumData.provice }}
       </p>
     </div>
 

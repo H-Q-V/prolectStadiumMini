@@ -7,11 +7,11 @@ import { useRouter } from "vue-router";
 import { useUser } from "../stores/fetchAuth";
 const router = useRouter();
 const userStore = useUser();
-const username = ref("");
+const email = ref("");
 const password = ref("");
 const handleSubmit = async () => {
   const data = {
-    username: username.value,
+    email: email.value,
     password: password.value,
   };
   await userStore.login(data, toast, router);
@@ -32,12 +32,12 @@ const handleSubmit = async () => {
           >Tên người dùng</label
         >
         <InputText
-          id="username"
-          name="username"
+          id="email"
+          name="email"
           type="text"
-          placeholder="Tên người dùng"
+          placeholder="Email"
           class="w-full px-5 py-4 border border-[#cbd5e1] mb-5"
-          v-model="username"
+          v-model="email"
         />
 
         <label for="password" class="block text-black font-medium text-xl mb-2"
