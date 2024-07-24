@@ -21,7 +21,7 @@ router.post(
 
 //verify-otp
 
-router.post('/verify-otp', authController.verifyOTP);
+router.post("/verify-otp", authController.verifyOTP);
 
 //verifyForgotOtp
 router.post("/verify-forgot-otp", authController.verifyForgotOTP);
@@ -35,4 +35,3 @@ router.post("/verify-otp", authController.verifyOTP);
 //verifyForgotOtp
 router.post("/verify-forgot-otp/:id", authController.verifyForgotOTP);
 module.exports = router;
-
