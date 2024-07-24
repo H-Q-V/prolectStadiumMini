@@ -1,5 +1,3 @@
-
-
 const Customer = require('../model/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -300,3 +298,4 @@ const authController = {
 //3) REDUX STORE -> ACCESSTOKEN
 // HTTPONLY COOKIES -> REFRESHTOKEN
 module.exports = authController;
+
