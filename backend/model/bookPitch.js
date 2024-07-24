@@ -17,10 +17,12 @@ const bookPitchSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Stadium',
   },
+
   stadiumStyle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Stadium.stadium_styles",
   },
+
   status: {
     type: String,
     enum: ['confirmed', 'pending', 'cancelled'],
