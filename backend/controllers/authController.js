@@ -15,9 +15,8 @@ function generateOTP() {
     charset: 'numeric',
   });
 }
-// Khởi tạo cache với thời gian hết hạn 15 giây
-const otpCache = new NodeCache({ stdTTL: 60 });
-const otpregister = new NodeCache({ stdTTL: 60 });
+const otpCache = new NodeCache({ stdTTL: 150 });
+const otpregister = new NodeCache({ stdTTL: 150 });
 const authController = {
   //register
   registerCustomer: async (req, res) => {
