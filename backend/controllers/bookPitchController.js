@@ -1,4 +1,3 @@
-
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
 const { Stadium } = require("../model/stadium");
@@ -12,15 +11,14 @@ const bookPitchController = {
       if (!phone || !startTime || !endTime) {
         return res.status(400).json({
           success: false,
-          message: 'Vui lòng điền đầy đủ thông tin',
+          message: "Vui lòng điền đầy đủ thông tin",
         });
       }
 
       if (endTime < startTime) {
         return res.status(400).json({
           success: false,
-          message: 'Thời  gian kết thúc phải sau thời gian bắt đầu',
-
+          message: "Thời  gian kết thúc phải sau thời gian bắt đầu",
         });
       }
 
@@ -28,7 +26,7 @@ const bookPitchController = {
       if (!phoneRegex.test(phone)) {
         return res
           .status(400)
-          .json({ status: false, message: 'Số điện thoại không hợp lệ' });
+          .json({ status: false, message: "Số điện thoại không hợp lệ" });
       }
 
       const { stadiumID, stadiumStyleID } = req.params;
@@ -48,8 +46,7 @@ const bookPitchController = {
       if (overlappingBooking.length > 0) {
         return res.status(400).json({
           success: false,
-          message: 'Khung giờ này đã có người đặt',
-         
+          message: "Khung giờ này đã có người đặt",
         });
       }
 
@@ -64,17 +61,20 @@ const bookPitchController = {
       });
 
       const bookingWithUser = await BookPitch.findById(newBooking._id).populate(
-        'user',
+        "user"
       );
-      const username = bookingWithUser.user.username;
+      console.log("🚀 ~ bookPitch: ~ bookingWithUser:", bookingWithUser);
 
-      const timeZone = 'Asia/Ho_Chi_Minh';
+      const username = bookingWithUser.username;
+      console.log("🚀 ~ bookPitch: ~ username:", username);
+
+      const timeZone = "Asia/Ho_Chi_Minh";
       const formattedStartTime = moment(newBooking.startTime)
         .tz(timeZone)
-        .format('YYYY/MM/DD HH:mm');
+        .format("YYYY/MM/DD HH:mm");
       const formattedEndTime = moment(newBooking.endTime)
         .tz(timeZone)
-        .format('YYYY/MM/DD HH:mm');
+        .format("YYYY/MM/DD HH:mm");
 
       return res.status(200).json({
         success: true,
@@ -83,7 +83,7 @@ const bookPitchController = {
           startTime: formattedStartTime,
           endTime: formattedEndTime,
           username: username,
-          status: 'confirmed',
+          status: "confirmed",
           stadium: {
             _id: stadium._id,
             stadium_name: stadium.stadium_name,
@@ -98,18 +98,16 @@ const bookPitchController = {
         },
       });
     } catch (error) {
-      console.log('🚀 ~ bookPitch: ~ error:', error);
+      console.log("🚀 ~ bookPitch: ~ error:", error);
       return res.status(500).json({ success: false, message: error.message });
     }
   },
 
   getAllBookPitches: async (req, res) => {
     try {
-
       const bookPitches = await BookPitch.find().populate({
-        path: 'user',
-        select: 'username',
-
+        path: "user",
+        select: "username",
       });
 
       const data = [];
@@ -140,7 +138,7 @@ const bookPitchController = {
 
       return res.status(200).json(data);
     } catch (err) {
-      console.log('🚀 ~ getAllBookPitches: ~ err:', err);
+      console.log("🚀 ~ getAllBookPitches: ~ err:", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   },
