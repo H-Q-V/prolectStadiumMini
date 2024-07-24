@@ -20,12 +20,11 @@ const otpSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
-  /*
-    otp:{
+  otp:{
         type: String,
         required: true
-    },
-    */
+  },
+  
   createdAt: {
     type: Date,
     default: Date.now,

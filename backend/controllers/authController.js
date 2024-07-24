@@ -17,7 +17,7 @@ function generateOTP() {
   });
 }
 const otpCache = new NodeCache({ stdTTL: 150 });
-const otpregister = new NodeCache({ stdTTL: 150 });
+//const otpregister = new NodeCache({ stdTTL: 150 });
 const authController = {
   //register
   registerCustomer: async (req, res) => {
@@ -53,19 +53,11 @@ const authController = {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const otp = generateOTP();
-
-      // Lưu OTP vào bộ nhớ cache với thời gian hết hạn
-      otpregister.set(email, otp);
-
-      // Lưu email vào session
-      req.session.email = email;
-
-      // Tạo người dùng tạm thời với OTP
       const tempCustomer = new Otps({
         username: username,
         email: email,
         password: hashed,
-        //otp: otp,
+        otp: otp,
       });
       await tempCustomer.save();
 
@@ -219,16 +211,7 @@ const authController = {
   verifyOTP: async (req, res) => {
     try {
       const { otp } = req.body;
-      const email = req.session.email;
-      if (!email) {
-        return res
-          .status(400)
-          .json({ success: false, message: 'Session đã hết hạn' });
-      }
-      const cachedOtp = otpregister.get(email);
-      if (cachedOtp === otp) {
-        otpregister.del(email);
-        const existingOTP = await Otps.findOneAndDelete({ email: email });
+      const existingOTP = await Otps.findOneAndDelete({ otp: otp });
         if (existingOTP) {
           const newCustomer = new Customer({
             username: existingOTP.username,
@@ -236,19 +219,10 @@ const authController = {
             password: existingOTP.password,
           });
           await newCustomer.save();
-
-          res
-            .status(200)
-            .json({ success: true, message: 'OTP verification successful' });
+          res.status(200).json({ success: true, message: 'OTP verification successful' });
         } else {
           res.status(400).json({ success: false, error: 'Invalid OTP' });
         }
-      } else {
-        res.status(400).json({
-          success: false,
-          message: 'Nhập sai OTP hoặc OTP đã hết hạn',
-        });
-      }
     } catch (error) {
       console.error('Error verifying OTP:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
@@ -326,4 +300,3 @@ const authController = {
 //3) REDUX STORE -> ACCESSTOKEN
 // HTTPONLY COOKIES -> REFRESHTOKEN
 module.exports = authController;
-
