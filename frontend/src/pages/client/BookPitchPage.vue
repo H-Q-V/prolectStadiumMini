@@ -6,14 +6,17 @@ import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import { toast } from "vue3-toastify";
 import { useStadium } from "../../stores/fetchStadium";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Tag from "../../components/tag/Tag.vue";
+import { useBookPitch } from "../../stores/fetchBookPitch";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
+const bookPitchStore = useBookPitch();
 const route = useRoute();
+const router = useRouter();
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(
     route.params.id,
@@ -28,14 +31,13 @@ const handleBookPitch = async () => {
     startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
     endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
   };
-  console.log("🚀 ~ handleBookPitch ~ data:", data);
-  const response = await stadiumStore.bookPitch(
+  await bookPitchStore.bookPitch(
     data,
     toast,
+    router,
     route.params.id,
     route.params.stadiumStyleID
   );
-  console.log("🚀 ~ handleBookPitch ~ response:", response);
 };
 
 const formatPrice = (price) => {

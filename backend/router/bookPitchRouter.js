@@ -10,13 +10,28 @@ router.post(
 
 router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
 
-router.get("/getAnBookPitches/:id",middlewareController.verifyToken, bookPitchController.getAnBookPitches);
+router.get(
+  "/getCustomerBookPitches",
+  middlewareController.verifyToken,
+  bookPitchController.getCustomerBookPitches
+);
 
-router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
+router.delete(
+  "/deleteBookPitches/:id",
+  middlewareController.verifyToken,
+  bookPitchController.deleteBookPitchs
+);
 
-router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
+router.post(
+  "/monthly_booking/:stadiumID/:stadiumStyleID",
+  middlewareController.verifyToken,
+  bookPitchController.monthlyBooking
+);
 
-router.post("/week_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.weeklyBooking);
-
+router.post(
+  "/week_booking/:stadiumID/:stadiumStyleID",
+  middlewareController.verifyToken,
+  bookPitchController.weeklyBooking
+);
 
 module.exports = router;
