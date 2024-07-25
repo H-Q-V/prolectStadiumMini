@@ -65,26 +65,5 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ searchStadium ~ error:", error);
       }
     },
-
-    async bookPitch(data, toast, id, idStadiumStyle) {
-      const config = {
-        headers: {
-          token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
-        },
-      };
-      console.log("🚀 ~ bookPitch ~ config:", config);
-      try {
-        const response = await axios.post(
-          `${endpoint}/bookPitch/${id}/${idStadiumStyle}`,
-          data,
-          config
-        );
-        console.log("🚀 ~ bookPitch ~ response:", response);
-        toast.success("Đặt lịch thành công");
-      } catch (error) {
-        console.log("🚀 ~ bookPitch ~ error:", error);
-        toast.error(error?.response?.data?.message);
-      }
-    },
   },
 });

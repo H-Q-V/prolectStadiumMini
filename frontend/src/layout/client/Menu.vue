@@ -12,6 +12,11 @@ const model = ref([
   },
   {
     items: [
+      { label: "Lịch đặt sân", icon: "pi pi-fw pi-calendar", to: "/schedule" },
+    ],
+  },
+  {
+    items: [
       {
         label: "Thoát",
         icon: "pi pi-fw pi-sign-out",
