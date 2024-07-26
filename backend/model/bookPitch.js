@@ -20,7 +20,7 @@ const bookPitchSchema = new mongoose.Schema({
 
   stadiumStyle: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Stadium.stadium_styles",
+    ref: 'Stadium.stadium_styles',
   },
 
   status: {
