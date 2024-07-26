@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 3d98a7c6e6ebea9ee65d08a356a9df464a0f4021
 const Customer = require('../model/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -90,7 +85,7 @@ const authController = {
       { expiresIn: '30d' },
     );
   },
-  //GENERATE REFRESH TOKEN
+  
   generateRefreshToken: (customer) => {
     return jwt.sign(
       {
@@ -101,7 +96,6 @@ const authController = {
       { expiresIn: '360d' },
     );
   },
-
   // login
   loginCustomer: async (req, res) => {
     try {
@@ -141,7 +135,7 @@ const authController = {
   requestRefreshToken: async (req, res) => {
     //Take refresh token from customer
     const refreshToken = req.cookies.refreshToken;
-    // res.status(200).json(refreshToken);
+     res.status(200).json(refreshToken);
     if (!refreshToken) return res.status(401).json('you are not authenticated');
     if (!refreshTokens.includes(refreshToken)) {
       return res.status(403).json('Refresh token is not valid');

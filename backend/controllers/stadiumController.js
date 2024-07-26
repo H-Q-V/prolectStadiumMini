@@ -154,7 +154,6 @@ const stadiumController = {
   searchStadium: async (req, res) => {
     try {
       const { search, ward, city, provice } = req.query;
-      // Tạo mảng các điều kiện tìm kiếm
       let queries = [];
       if (search) {
         queries.push({

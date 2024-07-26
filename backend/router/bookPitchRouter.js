@@ -10,7 +10,11 @@ router.post(
 
 router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
 
-router.get("/getAnBookPitches/:id",middlewareController.verifyToken, bookPitchController.getAnBookPitches);
+router.get(
+  "/getCustomerBookPitches",
+  middlewareController.verifyToken,
+  bookPitchController.getCustomerBookPitches
+);
 
 router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
 
