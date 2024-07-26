@@ -11,9 +11,13 @@ import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
 import Dialog from "primevue/dialog";
 import Calendar from "../../components/calendar/Calendar.vue";
+import Checkbox from "primevue/checkbox";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
+const isRecurring = ref(false);
+const recurringFrequency = ref("");
+const recurringEndDate = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const bookPitchStore = useBookPitch();
@@ -36,6 +40,11 @@ const handleBookPitch = async () => {
     phone: phone.value,
     startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
     endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
+    isRecurring: isRecurring.value,
+    recurringFrequency: recurringFrequency.value,
+    recurringEndDate: recurringEndDate.value
+      ? date.format(recurringEndDate.value, "YYYY/MM/DD")
+      : null,
   };
   await bookPitchStore.bookPitch(
     data,
@@ -52,6 +61,12 @@ const formatPrice = (price) => {
       minimumFractionDigits: 0,
     }).format(price) + " VNĐ"
   );
+};
+
+const validateInput = (e) => {
+  const value = e.target.value;
+  e.target.value = value.replace(/[^0-9]/g, "");
+  phone.value = e.target.value;
 };
 </script>
 <template>
@@ -70,6 +85,7 @@ const formatPrice = (price) => {
             type="text"
             v-model="phone"
             class="w-[65%] common"
+            @input="validateInput"
           ></InputText>
 
           <Button
@@ -107,6 +123,30 @@ const formatPrice = (price) => {
           fluid
           inputId="datetime"
         />
+
+        <div class="flex items-center gap-2">
+          <Checkbox
+            v-model="isRecurring"
+            id="periodic"
+            binary
+            class="border border-solid border-[#6f6f6f] rounded-md"
+          ></Checkbox>
+          <label for="periodic">Đặt sân định kì</label>
+        </div>
+
+        <div v-if="isRecurring" class="flex flex-col gap-[10px]">
+          <Select
+            v-model="recurringFrequency"
+            id="frequency"
+            class="border border-[#6f6f6f] rounded-md px-2 py-4"
+          >
+            <Option value="daily">Hàng ngày</Option>
+            <Option value="weekly">Hàng tuần</Option>
+            <Option value="monthly">Hàng tháng</Option>
+          </Select>
+          <label for="recurringEndDate">Ngày kết thúc định kỳ</label>
+          <DatePicker v-model="recurringEndDate" id="recurringEndDate" />
+        </div>
       </div>
 
       <div class="flex flex-col gap-[10px]">
