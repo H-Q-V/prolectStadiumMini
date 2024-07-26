@@ -85,6 +85,17 @@ const authController = {
       { expiresIn: '30d' },
     );
   },
+  
+  generateRefreshToken: (customer) => {
+    return jwt.sign(
+      {
+        id: customer.id,
+        admin: customer.admin,
+      },
+      process.env.JWT_REFRESH_KEY,
+      { expiresIn: '360d' },
+    );
+  },
 
   // login
   loginCustomer: async (req, res) => {
@@ -125,7 +136,7 @@ const authController = {
   requestRefreshToken: async (req, res) => {
     //Take refresh token from customer
     const refreshToken = req.cookies.refreshToken;
-    // res.status(200).json(refreshToken);
+     res.status(200).json(refreshToken);
     if (!refreshToken) return res.status(401).json('you are not authenticated');
     if (!refreshTokens.includes(refreshToken)) {
       return res.status(403).json('Refresh token is not valid');
