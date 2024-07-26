@@ -96,6 +96,7 @@ const authController = {
       { expiresIn: '360d' },
     );
   },
+
   // login
   loginCustomer: async (req, res) => {
     try {
