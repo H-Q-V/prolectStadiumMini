@@ -9,11 +9,11 @@ const bookPitchData = ref([]);
 const bookPitchStore = useBookPitch();
 
 onMounted(async () => {
-  await bookPitchStore.getAllBookPitches();
+  await bookPitchStore.getCustomerBookPitches();
 });
 
 watchEffect(() => {
-  bookPitchData.value = bookPitchStore.bookPitchData;
+  bookPitchData.value = bookPitchStore.customerBookPitchesData;
 });
 
 const calendarOptions = computed(() => ({
@@ -25,6 +25,7 @@ const calendarOptions = computed(() => ({
     start: pitch.startTime,
     end: pitch.endTime,
     extendedProps: {
+      id: pitch._id,
       stadium_name: pitch.stadium_name,
       name: pitch.name,
     },
@@ -34,12 +35,13 @@ const calendarOptions = computed(() => ({
 
 <template>
   <FullCalendar :options="calendarOptions">
-    <template v-slot:eventContent="arg" class="w-[250px]">
-      <h1>{{ arg.event.extendedProps.stadium_name }}</h1>
-      <p class="capitalize">{{ arg.event.extendedProps.name }}</p>
-      <b>{{ arg.timeText }}</b>
-    </template></FullCalendar
-  >
+    <template #eventContent="{ event }">
+      <div class="relative">
+        <h1>{{ event.extendedProps.stadium_name }}</h1>
+        <p class="capitalize">{{ event.extendedProps.name }}</p>
+      </div>
+    </template>
+  </FullCalendar>
 </template>
 
 <style scoped>
@@ -53,5 +55,9 @@ const calendarOptions = computed(() => ({
 
 ::v-deep .fc-scroller {
   overflow-y: hidden !important;
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
 }
 </style>

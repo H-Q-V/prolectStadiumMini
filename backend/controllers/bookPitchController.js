@@ -139,67 +139,41 @@ const bookPitchController = {
     }
   },
 
-  getAnBookPitches: async (req, res) => {
+  getCustomerBookPitches: async (req, res) => {
     try {
-      // Tìm kiếm thông tin đặt sân theo ID từ tham số của request
-      const bookPitch = await BookPitch.findById(req.params.id).populate({
-        path: 'user',
-        select: 'username',
+      const bookPitch = await BookPitch.find({
+        user: req.customer.id,
       });
 
-      // Nếu không tìm thấy đặt sân, trả về mã lỗi 404 và thông báo
-      if (!bookPitch) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không tìm thấy thông tin đặt sân',
+      const data = [];
+      for (let i = 0; i < bookPitch.length; i++) {
+        let stadiumStyleId = bookPitch[i].stadiumStyle;
+
+        const stadium = await Stadium.findOne({
+          "stadium_styles._id": stadiumStyleId,
         });
+        // console.log(stadium);
+        const st = stadium.stadium_styles.find(
+          (style) => style._id.toString() === stadiumStyleId.toString()
+        );
+        let oject = {};
+        // stadium(...datas, stadium_styles)._doc;
+        const { stadium_styles, ...datas } = stadium._doc;
+        oject = {
+          ...datas,
+          ...st._doc,
+          ...bookPitch[i]._doc,
+        };
+        data.push(oject);
       }
 
-      // Tìm kiếm sân vận động có kiểu sân tương ứng với ID của đặt sân
-      const stadium = await Stadium.findOne({
-        'stadium_styles._id': bookPitch.stadiumStyle,
-      });
-
-      // Nếu không tìm thấy sân vận động, trả về mã lỗi 404 và thông báo
-      if (!stadium) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không tìm thấy sân vận động với kiểu sân này',
-        });
-      }
-
-      // Tìm kiểu sân cụ thể trong danh sách các kiểu sân của sân vận động
-      const style = stadium.stadium_styles.id(bookPitch.stadiumStyle);
-
-      // Nếu không tìm thấy kiểu sân, trả về mã lỗi 404 và thông báo
-      if (!style) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không tìm thấy kiểu sân với ID này',
-        });
-      }
-
-      // Tách thuộc tính stadium_styles ra khỏi dữ liệu sân vận động
-      const { stadium_styles, ...stadiumData } = stadium._doc;
-
-      // Tạo đối tượng phản hồi kết hợp thông tin từ sân vận động, kiểu sân, và đặt sân
-      const responseData = {
-        ...stadiumData,
-        ...style._doc,
-        ...bookPitch._doc,
-      };
-
-      // Trả về mã thành công 200 và dữ liệu kết hợp
-      return res.status(200).json({
-        success: true,
-        data: responseData,
-      });
+      return res.status(200).json({ success: true, message: data });
     } catch (error) {
-      // Xử lý lỗi và trả về mã lỗi 500 với thông báo lỗi
-      console.log('🚀 ~ getAnBookPitches: ~ error:', error);
-      return res.status(500).json({ success: false, message: error.message });
+      console.log("🚀 ~ getAnBookPitches: ~ error:", error);
+      return res.status(500).json(error);
     }
   },
+
 
   deleteBookPitchs: async (req, res) => {
     try {
@@ -371,7 +345,7 @@ const bookPitchController = {
         }
       };
 
-      scheduledJobs[jobId] = cron.schedule('1 * * * * *', bookPitchWeekly);
+      scheduledJobs[jobId] = cron.schedule('0 0 * * 1 *', bookPitchWeekly);
 
       return res.status(200).json({
         success: true,
@@ -464,7 +438,7 @@ const bookPitchController = {
         }
       };
   
-      scheduledJobs[jobId] = cron.schedule('0 0 1 * *', bookPitchMonthly);
+      scheduledJobs[jobId] = cron.schedule('0 0 1 * * *', bookPitchMonthly);
   
       return res.status(200).json({
         success: true,
@@ -478,7 +452,7 @@ const bookPitchController = {
 };
 
 
-cron.schedule('1 * * * * *', async () => {
+cron.schedule('0 0 * * * *', async () => {
   try {
     const now = new Date();
     await BookPitch.deleteMany({ endTime: { $lt: now } });

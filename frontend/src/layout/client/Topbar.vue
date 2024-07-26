@@ -51,7 +51,7 @@ const username = localStorage.getItem("username");
       <div
         class="w-[140px] bg-primary px-2 py-4 rounded-lg text-white text-center"
       >
-        <span class="capitalize">{{ username }}</span>
+        <span class="capitalize line-clamp-1">{{ username }}</span>
       </div>
     </div>
   </div>

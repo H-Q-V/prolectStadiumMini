@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 3d98a7c6e6ebea9ee65d08a356a9df464a0f4021
 const Customer = require('../model/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -88,17 +83,6 @@ const authController = {
       },
       process.env.JWT_ACCESS_KEY,
       { expiresIn: '30d' },
-    );
-  },
-  //GENERATE REFRESH TOKEN
-  generateRefreshToken: (customer) => {
-    return jwt.sign(
-      {
-        id: customer.id,
-        admin: customer.admin,
-      },
-      process.env.JWT_REFRESH_KEY,
-      { expiresIn: '360d' },
     );
   },
 
