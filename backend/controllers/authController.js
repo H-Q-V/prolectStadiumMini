@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3d98a7c6e6ebea9ee65d08a356a9df464a0f4021
 const Customer = require('../model/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
