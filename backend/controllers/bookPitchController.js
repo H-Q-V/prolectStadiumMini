@@ -57,16 +57,13 @@ const bookPitchController = {
         user: req.customer.id,
         stadium: stadiumID,
         stadiumStyle: stadiumStyleID,
-        status: "confirmed",
       });
 
       const bookingWithUser = await BookPitch.findById(newBooking._id).populate(
         "user"
       );
-      console.log("🚀 ~ bookPitch: ~ bookingWithUser:", bookingWithUser);
 
       const username = bookingWithUser.user.username;
-      console.log("🚀 ~ bookPitch: ~ username:", username);
 
       const timeZone = "Asia/Ho_Chi_Minh";
       const formattedStartTime = moment(newBooking.startTime)
@@ -83,7 +80,6 @@ const bookPitchController = {
           startTime: formattedStartTime,
           endTime: formattedEndTime,
           username: username,
-          status: "confirmed",
           stadium: {
             _id: stadium._id,
             stadium_name: stadium.stadium_name,

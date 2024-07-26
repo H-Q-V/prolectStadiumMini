@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import date from "date-and-time";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
@@ -9,6 +9,8 @@ import { useStadium } from "../../stores/fetchStadium";
 import { useRoute, useRouter } from "vue-router";
 import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
+import Dialog from "primevue/dialog";
+import Calendar from "../../components/calendar/Calendar.vue";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
@@ -17,11 +19,15 @@ const stadiumStore = useStadium();
 const bookPitchStore = useBookPitch();
 const route = useRoute();
 const router = useRouter();
+const visible = ref(false);
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(
     route.params.id,
     route.params.stadiumStyleID
   );
+});
+
+watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
 });
 
@@ -58,12 +64,29 @@ const formatPrice = (price) => {
       <div class="w-[580px] flex flex-col gap-[10px]">
         <h1 class="text-xl">Thông tin cá nhân</h1>
         <label for="phone">Số điện thoại</label>
-        <InputText
-          id="phone"
-          type="text"
-          v-model="phone"
-          class="common"
-        ></InputText>
+        <div class="flex items-center justify-between gap-6">
+          <InputText
+            id="phone"
+            type="text"
+            v-model="phone"
+            class="w-[65%] common"
+          ></InputText>
+
+          <Button
+            label="Xem khung giờ trống"
+            @click="visible = true"
+            class="bg-primary px-[12px] py-[6px] text-white"
+          />
+
+          <Dialog
+            v-model:visible="visible"
+            modal
+            header="Xem khung giờ trống"
+            class="w-[780px] py-3 px-10 !overflow-y-hidden z-10"
+          >
+            <Calendar></Calendar>
+          </Dialog>
+        </div>
 
         <label for="startTime">Thời gian bắt đầu</label>
         <DatePicker
@@ -97,12 +120,12 @@ const formatPrice = (price) => {
 
         <Tag
           :infor="'Địa chỉ '"
-          :value="stadiumData.address"
+          :value="`${stadiumData.ward} ${stadiumData.city} ${stadiumData.provice}`"
           :className="'gap-5'"
         ></Tag>
         <Tag
-          :infor="'Giá:'"
-          :value="formatPrice(stadiumData?.stadium_style?.price)"
+          :infor="'Giá'"
+          :value="stadiumData?.stadium_style?.price"
           :class="'gap-5'"
         ></Tag>
 
@@ -127,5 +150,9 @@ const formatPrice = (price) => {
 .common {
   padding: 6px 12px;
   border: 1px solid #6f6f6f;
+}
+
+::v-deep .p-dialog-content {
+  overflow-y: hidden;
 }
 </style>
