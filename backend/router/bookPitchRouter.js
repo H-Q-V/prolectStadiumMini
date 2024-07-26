@@ -14,6 +14,8 @@ router.get("/getAnBookPitches/:id",middlewareController.verifyToken, bookPitchCo
 
 router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
 
+router.put("/updateBookPitches/:id", middlewareController.verifyToken, bookPitchController.updateBookPitch);
+
 router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
 
 router.post("/week_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.weeklyBooking);

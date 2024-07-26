@@ -1,4 +1,3 @@
-
 const Customer = require('../model/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -211,17 +210,19 @@ const authController = {
     try {
       const { otp } = req.body;
       const existingOTP = await Otps.findOneAndDelete({ otp: otp });
-        if (existingOTP) {
-          const newCustomer = new Customer({
-            username: existingOTP.username,
-            email: existingOTP.email,
-            password: existingOTP.password,
-          });
-          await newCustomer.save();
-          res.status(200).json({ success: true, message: 'OTP verification successful' });
-        } else {
-          res.status(400).json({ success: false, error: 'Invalid OTP' });
-        }
+      if (existingOTP) {
+        const newCustomer = new Customer({
+          username: existingOTP.username,
+          email: existingOTP.email,
+          password: existingOTP.password,
+        });
+        await newCustomer.save();
+        res
+          .status(200)
+          .json({ success: true, message: 'OTP verification successful' });
+      } else {
+        res.status(400).json({ success: false, error: 'Invalid OTP' });
+      }
     } catch (error) {
       console.error('Error verifying OTP:', error);
       res.status(500).json({ success: false, error: 'Internal server error' });
