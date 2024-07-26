@@ -20,6 +20,7 @@ export const useStadium = defineStore("stadium", {
         toast.error(error?.response?.data?.message);
       }
     },
+
     async getAllStadium() {
       try {
         const response = await axios.get(`${endpoint}/getAllStadium`);
@@ -28,6 +29,7 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ getAllStadium ~ error:", error);
       }
     },
+
     async getAStadium(id) {
       try {
         const response = await axios.get(`${endpoint}/getAnStadium/${id}`);
@@ -36,6 +38,7 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ getAStadium ~ error:", error);
       }
     },
+
     async deleteStadium(id, toast) {
       try {
         await axios.delete(`${endpoint}/deleteStadium/${id}`);
@@ -45,6 +48,7 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ deleteStadium ~ error:", error);
       }
     },
+
     async getAnStadiumStyle(id, stadiumStyleID) {
       try {
         const response = await axios.get(
@@ -55,6 +59,7 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ getAnStadiumStyle ~ error:", error);
       }
     },
+
     async searchStadium(stadiumName, provice, city, ward) {
       try {
         const response = await axios.get(

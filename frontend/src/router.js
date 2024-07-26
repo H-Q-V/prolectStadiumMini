@@ -34,12 +34,6 @@ const routes = [
       },
 
       {
-        path: "/calendar",
-        name: "Calendar",
-        component: () => import("./components/calendar/Calendar.vue"),
-      },
-
-      {
         path: "/schedule",
         name: "Schedule",
         component: () => import("./pages/client/SchedulePage.vue"),
