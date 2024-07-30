@@ -23,7 +23,7 @@ export const useBookPitch = defineStore("bookPitch", {
           config
         );
         console.log("🚀 ~ bookPitch ~ response:", response);
-        router.push({ name: "Calendar" });
+        router.push({ name: "Schedule" });
         toast.success("Đặt lịch thành công");
       } catch (error) {
         console.log("🚀 ~ bookPitch ~ error:", error);
@@ -71,7 +71,6 @@ export const useBookPitch = defineStore("bookPitch", {
           `${endpoint}/getCustomerBookPitches`,
           config
         );
-        console.log("🚀 ~ getCustomerBookPitches ~ response:", response);
         this.customerBookPitchesData = response?.data?.message;
       } catch (error) {
         console.log("🚀 ~ getCustomerBookPitches ~ error:", error);
