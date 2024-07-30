@@ -338,7 +338,7 @@ const stadiumController = {
       if (!stadium) {
         return res
           .status(404)
-          .json({ error: 'Kiểu sân vận động không tồn tại' });
+          .json({ error: 'Sân vận động không tồn tại' });
       }
 
       const stadiumStyle = stadium.stadium_styles.id(stadiumStyleId);
