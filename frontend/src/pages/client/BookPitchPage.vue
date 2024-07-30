@@ -9,21 +9,20 @@ import { useStadium } from "../../stores/fetchStadium";
 import { useRoute, useRouter } from "vue-router";
 import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
-import Dialog from "primevue/dialog";
-import Calendar from "../../components/calendar/Calendar.vue";
 import Checkbox from "primevue/checkbox";
+import Dropdown from "primevue/dropdown";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
 const isRecurring = ref(false);
-const recurringFrequency = ref("");
+const selectPeriodic = ref(null);
+const periodicOptions = ref([{ name: "hàng tuần" }, { name: "hàng tháng" }]);
 const recurringEndDate = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const bookPitchStore = useBookPitch();
 const route = useRoute();
 const router = useRouter();
-const visible = ref(false);
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(
     route.params.id,
@@ -35,13 +34,15 @@ watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
 });
 
+const result = selectPeriodic.value;
+console.log("🚀 ~ result:", result);
 const handleBookPitch = async () => {
   const data = {
     phone: phone.value,
     startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
     endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
-    isRecurring: isRecurring.value,
-    recurringFrequency: recurringFrequency.value,
+    isRecurring: isRecurring.value || "",
+    bookingType: selectPeriodic?.value?.name || "",
     recurringEndDate: recurringEndDate.value
       ? date.format(recurringEndDate.value, "YYYY/MM/DD")
       : null,
@@ -53,6 +54,7 @@ const handleBookPitch = async () => {
     route.params.id,
     route.params.stadiumStyleID
   );
+  console.log("🚀 ~ handleBookPitch ~ data:", data);
 };
 
 const formatPrice = (price) => {
@@ -119,15 +121,14 @@ const validateInput = (e) => {
         </div>
 
         <div v-if="isRecurring" class="flex flex-col gap-[10px]">
-          <Select
-            v-model="recurringFrequency"
-            id="frequency"
-            class="border border-[#6f6f6f] rounded-md px-2 py-4"
-          >
-            <Option value="daily">Hàng ngày</Option>
-            <Option value="weekly">Hàng tuần</Option>
-            <Option value="monthly">Hàng tháng</Option>
-          </Select>
+          <Dropdown
+            v-model="selectPeriodic"
+            :options="periodicOptions"
+            optionLabel="name"
+            name="role"
+            placeholder="Chọn lịch đặt"
+            class="w-full p-4 border border-[#334155]"
+          />
           <label for="recurringEndDate">Ngày kết thúc định kỳ</label>
           <DatePicker v-model="recurringEndDate" id="recurringEndDate" />
         </div>
