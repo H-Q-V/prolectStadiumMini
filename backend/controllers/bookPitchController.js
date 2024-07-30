@@ -98,7 +98,7 @@ bookPitch: async (req, res) => {
               case 'ngày':
                   timeSlots.push({ startTime: new Date(startTime), endTime: new Date(endTime) });
                   break;
-              case 'hàng tuần':
+              case 'Hàng tuần':
                   if (!weeksToBook) {
                       return res.status(400).json({
                           success: false,
@@ -113,7 +113,7 @@ bookPitch: async (req, res) => {
                       currentStart.add(1, 'week');
                   }
                   break;
-              case 'hàng tháng':
+              case 'Hàng tháng':
                   if (!monthsToBook) {
                       return res.status(400).json({
                           success: false,
