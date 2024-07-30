@@ -34,6 +34,7 @@ onMounted(async () => {
 
 watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
+  console.log("🚀 ~ watchEffect ~ stadiumData:", stadiumData);
 });
 
 const handleBookPitch = async () => {
