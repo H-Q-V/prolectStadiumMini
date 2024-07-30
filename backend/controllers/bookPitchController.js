@@ -7,146 +7,146 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const bookPitchController = {
 
-  bookPitch: async (req, res) => {
-    try {
+bookPitch: async (req, res) => {
+  try {
       let { phone, startTime, endTime, bookingType, weeksToBook, monthsToBook } = req.body;
       const { stadiumID, stadiumStyleID } = req.params;
-  
-      if (!phone || !startTime || !endTime || !bookingType) {
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng điền đầy đủ thông tin",
-        });
+
+      if (!phone || !startTime || !endTime) {
+          return res.status(400).json({
+              success: false,
+              message: "Vui lòng điền đầy đủ thông tin",
+          });
       }
-  
+
       if (endTime < startTime) {
-        return res.status(400).json({
-          success: false,
-          message: "Thời gian kết thúc phải sau thời gian bắt đầu",
-        });
+          return res.status(400).json({
+              success: false,
+              message: "Thời gian kết thúc phải sau thời gian bắt đầu",
+          });
       }
-  
+
       const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
-        return res.status(400).json({
-          success: false,
-          message: "Số điện thoại không hợp lệ",
-        });
+          return res.status(400).json({
+              success: false,
+              message: "Số điện thoại không hợp lệ",
+          });
       }
-  
+
       const stadium = await Stadium.findById(stadiumID);
       if (!stadium) {
-        return res.status(404).json({
-          success: false,
-          message: "Không tìm thấy sân",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Không tìm thấy sân",
+          });
       }
-  
+
       const style = stadium.stadium_styles.id(stadiumStyleID);
       if (!style) {
-        return res.status(404).json({
-          success: false,
-          message: "Không tìm thấy kiểu sân",
-        });
-      }
-  
-      const isOverlapping = async (timeSlots) => {
-        const overlappingBookings = await BookPitch.find({
-          stadium: stadiumID,
-          stadiumStyle: stadiumStyleID,
-          $or: timeSlots.map(({ startTime, endTime }) => ({
-            $or: [
-              { 'time.startTime': { $lt: endTime, $gt: startTime } },
-              { 'time.endTime': { $gt: startTime, $lt: endTime } },
-              { 'time.startTime': { $lte: startTime }, 'time.endTime': { $gte: endTime } },
-            ],
-          })),
-        });
-        return overlappingBookings.length > 0;
-      };
-  
-      const createBooking = async (timeSlots) => {
-        return await BookPitch.create({
-          phone: phone,
-          time: timeSlots,
-          user: req.customer.id,
-          stadium: stadiumID,
-          stadiumStyle: stadiumStyleID,
-          status: 'confirmed',
-          originalStartTime: new Date(startTime),
-          originalEndTime: new Date(endTime),
-        });
-      };
-  
-      const handleBooking = async (timeSlots) => {
-        if (await isOverlapping(timeSlots)) {
-          return res.status(400).json({
-            success: false,
-            message: 'Khung giờ này đã có người đặt',
-          });
-        }
-        const newBooking = await createBooking(timeSlots);
-        return res.status(200).json({
-          success: true,
-          data: newBooking,
-        });
-      };
-    
-      const processBooking = async () => {
-        let timeSlots = [];
-        switch (bookingType) {
-          case 'ngày':
-            timeSlots.push({ startTime: new Date(startTime), endTime: new Date(endTime) });
-            break;
-          case 'hàng tuần':
-            if (!weeksToBook) {
-              return res.status(400).json({
-                success: false,
-                message: 'Ngày để đặt tuần không hợp lệ.',
-              });
-            }
-            let currentStart = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
-            const endDate = moment.tz(weeksToBook, 'Asia/Ho_Chi_Minh');
-            while (currentStart.isBefore(endDate)) {
-              let currentEnd = moment.tz(endTime, 'Asia/Ho_Chi_Minh').year(currentStart.year()).week(currentStart.week());
-              timeSlots.push({ startTime: currentStart.toDate(), endTime: currentEnd.toDate() });
-              currentStart.add(1, 'week');
-            }
-            break;
-          case 'hàng tháng':
-            if (!monthsToBook) {
-              return res.status(400).json({
-                success: false,
-                message: 'Danh sách tháng để đặt không hợp lệ.',
-              });
-            }
-            let startMonth = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
-            let endMonth = moment.tz(monthsToBook, 'Asia/Ho_Chi_Minh');
-            while (startMonth.isBefore(endMonth) || startMonth.isSame(endMonth, 'month')) {
-              let monthEnd = moment(startMonth).set({
-                'hour': moment(endTime).hour(),
-                'minute': moment(endTime).minute(),
-                'second': moment(endTime).second()
-              });
-              timeSlots.push({ startTime: startMonth.toDate(), endTime: monthEnd.toDate() });
-              startMonth.add(1, 'month');
-            }
-            break;
-          default:
-            return res.status(400).json({
+          return res.status(404).json({
               success: false,
-              message: 'Loại đặt sân không hợp lệ.',
-            });
-        }
-        await handleBooking(timeSlots);
+              message: "Không tìm thấy kiểu sân",
+          });
+      }
+
+      const isOverlapping = async (timeSlots) => {
+          const overlappingBookings = await BookPitch.find({
+              stadium: stadiumID,
+              stadiumStyle: stadiumStyleID,
+              $or: timeSlots.map(({ startTime, endTime }) => ({
+                  $or: [
+                      { 'time.startTime': { $lt: endTime, $gt: startTime } },
+                      { 'time.endTime': { $gt: startTime, $lt: endTime } },
+                      { 'time.startTime': { $lte: startTime }, 'time.endTime': { $gte: endTime } },
+                  ],
+              })),
+          });
+          return overlappingBookings.length > 0;
       };
-  
+
+      const createBooking = async (timeSlots) => {
+          return await BookPitch.create({
+              phone: phone,
+              time: timeSlots,
+              user: req.customer.id,
+              stadium: stadiumID,
+              stadiumStyle: stadiumStyleID,
+              status: 'confirmed',
+              originalStartTime: new Date(startTime),
+              originalEndTime: new Date(endTime),
+          });
+      };
+
+      const handleBooking = async (timeSlots) => {
+          if (await isOverlapping(timeSlots)) {
+              return res.status(400).json({
+                  success: false,
+                  message: 'Khung giờ này đã có người đặt',
+              });
+          }
+          const newBooking = await createBooking(timeSlots);
+          return res.status(200).json({
+              success: true,
+              data: newBooking,
+          });
+      };
+
+      const processBooking = async () => {
+          let timeSlots = [];
+          switch (bookingType || 'ngày') {  // Mặc định là 'ngày' nếu không có bookingType
+              case 'ngày':
+                  timeSlots.push({ startTime: new Date(startTime), endTime: new Date(endTime) });
+                  break;
+              case 'hàng tuần':
+                  if (!weeksToBook) {
+                      return res.status(400).json({
+                          success: false,
+                          message: 'Ngày để đặt tuần không hợp lệ.',
+                      });
+                  }
+                  let currentStart = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
+                  const endDate = moment.tz(weeksToBook, 'Asia/Ho_Chi_Minh');
+                  while (currentStart.isBefore(endDate)) {
+                      let currentEnd = moment.tz(endTime, 'Asia/Ho_Chi_Minh').year(currentStart.year()).week(currentStart.week());
+                      timeSlots.push({ startTime: currentStart.toDate(), endTime: currentEnd.toDate() });
+                      currentStart.add(1, 'week');
+                  }
+                  break;
+              case 'hàng tháng':
+                  if (!monthsToBook) {
+                      return res.status(400).json({
+                          success: false,
+                          message: 'Danh sách tháng để đặt không hợp lệ.',
+                      });
+                  }
+                  let startMonth = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
+                  let endMonth = moment.tz(monthsToBook, 'Asia/Ho_Chi_Minh');
+                  while (startMonth.isBefore(endMonth) || startMonth.isSame(endMonth, 'month')) {
+                      let monthEnd = moment(startMonth).set({
+                          'hour': moment(endTime).hour(),
+                          'minute': moment(endTime).minute(),
+                          'second': moment(endTime).second()
+                      });
+                      timeSlots.push({ startTime: startMonth.toDate(), endTime: monthEnd.toDate() });
+                      startMonth.add(1, 'month');
+                  }
+                  break;
+              default:
+                  return res.status(400).json({
+                      success: false,
+                      message: 'Loại đặt sân không hợp lệ.',
+                  });
+          }
+          await handleBooking(timeSlots);
+      };
+
       await processBooking();
-    } catch (error) {
+  } catch (error) {
       console.log('🚀 ~ bookPitch: ~ error:', error);
       return res.status(500).json({ success: false, message: error.message });
-    }
-  },
+  }
+},
 
   getAllBookPitches: async (req, res) => {
     try {
@@ -211,14 +211,14 @@ const bookPitchController = {
           endTime: moment.utc(slot.endTime).tz('Asia/Ho_Chi_Minh').format(),
          }));
 
-      oject = {
-        ...datas,
-        ...st._doc,
-        ...bookPitch[i]._doc,
-        time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
-        originalStartTime: moment.utc(bookPitch[i].originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
-        originalEndTime: moment.utc(bookPitch[i].originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
-      };
+        oject = {
+          ...datas,
+          ...st._doc,
+          ...bookPitch[i]._doc,
+          time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
+          originalStartTime: moment.utc(bookPitch[i].originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
+          originalEndTime: moment.utc(bookPitch[i].originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
+        };
         data.push(oject);
       }
 
@@ -301,6 +301,14 @@ const bookPitchController = {
       console.log("🚀 ~ updateBookPitch: ~ error:", error);
       return res.status(500).json({ success: false, message: error.message });
     }
+  },
+  payBookPitches: async(req,res) => {
+      try {
+        const {id} = req.params;
+        const pay = await BookPitch.findById()
+      } catch (error) {
+        return res.status(500).json({success: false, message: error.message});
+      }
   },
 
 
