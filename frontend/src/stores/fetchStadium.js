@@ -25,6 +25,7 @@ export const useStadium = defineStore("stadium", {
       try {
         const response = await axios.get(`${endpoint}/getAllStadium`);
         this.stadiumData = response?.data.data;
+        console.log("🚀 ~ getAllStadium ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ getAllStadium ~ error:", error);
       }

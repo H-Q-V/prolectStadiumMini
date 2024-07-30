@@ -12,47 +12,47 @@ const routes = [
         path: "/",
         name: "HomePage",
         component: () => import("./pages/client/Homepage.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
       {
         path: "/list",
         name: "ListStadium",
         component: () => import("./pages/client/ListStadiumPage.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
       {
         path: "/price-list/:id",
         name: "PriceList",
         component: () => import("./components/priceList/PriceList.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/calendar/:id",
         name: "Calendar",
         component: () => import("./components/calendar/Calendar.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/stadium-detail/:id",
         name: "StadiumDetail",
         component: () => import("./pages/StadiumDetailPage.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/book-pitch/:id/:stadiumStyleID",
         name: "BookPitch",
         component: () => import("./pages/client/BookPitchPage.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/schedule",
         name: "Schedule",
         component: () => import("./pages/client/SchedulePage.vue"),
-        meta: { requiresAuth: true, role: "customer" },
+        // meta: { requiresAuth: true, role: "customer" },
       },
     ],
   },
@@ -98,6 +98,12 @@ const routes = [
         meta: { requiresAuth: true, role: "admin" },
       },
     ],
+  },
+
+  {
+    path: "/notfound",
+    name: "NotFound",
+    component: () => import("./pages/NotFoundPage.vue"),
   },
 
   {
