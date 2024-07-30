@@ -2,9 +2,12 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import { endpoint } from "../utils/endpoint";
 import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
+import { config } from "../utils/config";
 
 export const useUser = defineStore("user", {
-  state: () => ({}),
+  state: () => ({
+    userData: [],
+  }),
   getters: {},
   actions: {
     async register(data, toast, router) {
@@ -24,10 +27,54 @@ export const useUser = defineStore("user", {
         toast.success("Đăng nhập thành công");
         localStorage.setItem(LOCAL_STORAGE_TOKEN, response?.data?.accessToken);
         localStorage.setItem("username", response?.data?.username);
-        router.push({ name: "HomePage" });
+        localStorage.setItem("userRole", response?.data?.role);
+        if (response?.data?.role === "Admin") {
+          router.push({ name: "Admin" });
+        } else if (response?.data?.role === "StadiumOwner") {
+          router.push({ name: "StadiumOwner" });
+        } else {
+          router.push({ name: "HomePage" });
+        }
       } catch (error) {
         console.log("🚀 ~ login ~ error:", error);
         toast.error(error?.response?.data);
+      }
+    },
+
+    async getAllCustomers() {
+      try {
+        const response = await axios.get(`${endpoint}/getAllCustomer`);
+        this.userData = response?.data;
+      } catch (error) {
+        console.log("🚀 ~ getAllCustomers ~ error:", error);
+      }
+    },
+
+    async updateCustomer(customerId, role, toast) {
+      try {
+        const response = await axios.put(
+          `${endpoint}/updateCustomer/${customerId}`,
+          { role },
+          config
+        );
+        this.getAllCustomers();
+        toast.success(response?.data?.message);
+      } catch (error) {
+        console.log("🚀 ~ updateCustomer ~ error:", error);
+      }
+    },
+
+    async deleteCustomer(customerId, toast) {
+      try {
+        const response = await axios.delete(
+          `${endpoint}/deleteCustomer/${customerId}`,
+          config
+        );
+        console.log("🚀 ~ deleteCustomer ~ response:", response);
+        this.getAllCustomers();
+        toast.success("Xóa thành công");
+      } catch (error) {
+        console.log("🚀 ~ deleteCustomer ~ error:", error);
       }
     },
 

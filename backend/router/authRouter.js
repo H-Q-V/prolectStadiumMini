@@ -29,5 +29,3 @@ router.post("/verify-forgot-otp", authController.verifyForgotOTP);
 //update password forgot
 router.post("/update-password-forgot", authController.updatePasswordForgot);
 module.exports = router;
-
-

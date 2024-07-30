@@ -1,8 +1,8 @@
-const BookPitch = require('../model/bookPitch');
-const moment = require('moment-timezone');
-const cron = require('node-cron');
-const { Stadium } = require('../model/stadium');
-const mongoose = require('mongoose');
+const BookPitch = require("../model/bookPitch");
+const moment = require("moment-timezone");
+const cron = require("node-cron");
+const { Stadium } = require("../model/stadium");
+const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 const bookPitchController = {
@@ -153,17 +153,17 @@ const bookPitchController = {
       const bookPitches = await BookPitch.find().populate({
         path: "user",
         select: "username",
-
       });
+      // console.log(bookPitches);
       const data = [];
       for (let i = 0; i < bookPitches.length; i++) {
         let stadiumStyleId = bookPitches[i].stadiumStyle;
 
         const stadium = await Stadium.findOne({
-          'stadium_styles._id': stadiumStyleId,
+          "stadium_styles._id": stadiumStyleId,
         });
         const st = stadium.stadium_styles.find(
-          (style) => style._id.toString() === stadiumStyleId.toString(),
+          (style) => style._id.toString() === stadiumStyleId.toString()
         );
         let object = {};
         const { stadium_styles, ...datas } = stadium._doc;
@@ -190,7 +190,7 @@ const bookPitchController = {
   getCustomerBookPitches: async (req, res) => {
     try {
       const bookPitch = await BookPitch.find({
-        user: req.customer.id,
+        user: req?.customer?.id,
       });
 
       const data = [];
@@ -229,25 +229,24 @@ const bookPitchController = {
     }
   },
 
-
   deleteBookPitchs: async (req, res) => {
     try {
       await BookPitch.findByIdAndDelete(req.params.id);
-      return res.status(200).json('Xóa lịch thành công');
+      return res.status(200).json("Xóa lịch thành công");
     } catch (error) {
-      console.log('🚀 ~ deleteBookPitchs:async ~ error:', error);
+      console.log("🚀 ~ deleteBookPitchs:async ~ error:", error);
       return res.status(500).json(error);
     }
   },
 
   updateBookPitch: async (req, res) => {
     try {
-      const { phone, startTime, endTime} = req.body;
+      const { phone, startTime, endTime } = req.body;
       const { id } = req.params;
       if (new Date(endTime) <= new Date(startTime)) {
         return res.status(400).json({
           success: false,
-          message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
+          message: "Thời gian kết thúc phải sau thời gian bắt đầu",
         });
       }
 
@@ -255,7 +254,7 @@ const bookPitchController = {
       if (!phoneRegex.test(phone)) {
         return res.status(400).json({
           success: false,
-          message: 'Số điện thoại không hợp lệ',
+          message: "Số điện thoại không hợp lệ",
         });
       }
 
@@ -263,7 +262,7 @@ const bookPitchController = {
       if (!booking) {
         return res.status(404).json({
           success: false,
-          message: 'Không tìm thấy đặt sân',
+          message: "Không tìm thấy đặt sân",
         });
       }
 
@@ -274,14 +273,17 @@ const bookPitchController = {
         $or: [
           { startTime: { $lt: new Date(endTime), $gt: new Date(startTime) } },
           { endTime: { $gt: new Date(startTime), $lt: new Date(endTime) } },
-          { startTime: { $lte: new Date(startTime) }, endTime: { $gte: new Date(endTime) } },
+          {
+            startTime: { $lte: new Date(startTime) },
+            endTime: { $gte: new Date(endTime) },
+          },
         ],
       });
 
       if (overlappingBooking.length > 0) {
         return res.status(400).json({
           success: false,
-          message: 'Khung giờ này đã có người đặt',
+          message: "Khung giờ này đã có người đặt",
         });
       }
 
@@ -296,12 +298,11 @@ const bookPitchController = {
         data: booking,
       });
     } catch (error) {
-      console.log('🚀 ~ updateBookPitch: ~ error:', error);
+      console.log("🚀 ~ updateBookPitch: ~ error:", error);
       return res.status(500).json({ success: false, message: error.message });
     }
   },
 
-};
 
 
 cron.schedule('0 0 * * *', async () => {

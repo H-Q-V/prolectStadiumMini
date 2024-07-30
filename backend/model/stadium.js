@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const stadiumSchema = new mongoose.Schema({
   stadium_name: {
     type: String,
@@ -49,9 +49,9 @@ const stadiumSchema = new mongoose.Schema({
   ],
   stadium_owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'StadiumOwner',
+    ref: "Customer",
   },
 });
-stadiumSchema.index({ stadium_name: 'text', address: 'text', phone: 'text' });
-let Stadium = mongoose.model('Stadium', stadiumSchema);
+stadiumSchema.index({ stadium_name: "text", address: "text", phone: "text" });
+let Stadium = mongoose.model("Stadium", stadiumSchema);
 module.exports = { Stadium };
