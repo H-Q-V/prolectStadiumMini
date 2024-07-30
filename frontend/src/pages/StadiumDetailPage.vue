@@ -18,7 +18,7 @@ onMounted(async () => {
         Sân {{ stadiumData.stadium_name }}
       </h1>
       <router-link
-        :to="`/calendar/${stadiumData._id}`"
+        :to="`/price-list/${stadiumData._id}`"
         class="flex items-center gap-2 px-4 py-2 bg-[#19458a] text-white rounded-md"
       >
         <i class="pi pi-fw pi-calendar"></i>

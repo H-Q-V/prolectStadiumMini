@@ -20,6 +20,7 @@ const handleSearchResults = (results) => {
     <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
       <div v-for="stadium in searchResults" :key="stadium._id">
         <Stadium
+          v-if="stadium"
           :stadiumId="stadium._id"
           :image="stadium.image"
           :stadium_name="stadium.stadium_name"
