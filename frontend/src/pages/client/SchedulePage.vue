@@ -48,8 +48,8 @@ const handleDeleteBookPitch = async (id) => {
           >Địa chỉ: {{ booking.ward }} {{ booking.city }}
           {{ booking.provice }}</span
         >
-        <span>Bắt đầu: {{ formatBookingTime(booking.startTime) }}</span>
-        <span>Kết thúc: {{ formatBookingTime(booking.endTime) }}</span>
+        <span>Bắt đầu: {{ formatBookingTime(booking.originalStartTime) }}</span>
+        <span>Kết thúc: {{ formatBookingTime(booking.originalEndTime) }}</span>
 
         <div class="flex items-center justify-center gap-4">
           <Button class="bg-blue-500">Sửa lịch</Button>

@@ -9,22 +9,20 @@ import { useStadium } from "../../stores/fetchStadium";
 import { useRoute, useRouter } from "vue-router";
 import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
-import Dialog from "primevue/dialog";
-import Calendar from "../../components/calendar/Calendar.vue";
-import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
+import Dropdown from "primevue/dropdown";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
 const isRecurring = ref(false);
-const recurringFrequency = ref("");
+const selectPeriodic = ref(null);
+const periodicOptions = ref([{ name: "hàng tuần" }, { name: "hàng tháng" }]);
 const recurringEndDate = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const bookPitchStore = useBookPitch();
 const route = useRoute();
 const router = useRouter();
-const visible = ref(false);
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(
     route.params.id,
@@ -36,18 +34,19 @@ watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
 });
 
+const result = selectPeriodic.value;
+console.log("🚀 ~ result:", result);
 const handleBookPitch = async () => {
   const data = {
     phone: phone.value,
     startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
     endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
-    isRecurring: isRecurring.value,
-    recurringFrequency: recurringFrequency.value,
+    isRecurring: isRecurring.value || "",
+    bookingType: selectPeriodic?.value?.name || "",
     recurringEndDate: recurringEndDate.value
       ? date.format(recurringEndDate.value, "YYYY/MM/DD")
       : null,
   };
-  console.log("🚀 ~ handleBookPitch ~ data:", data);
   await bookPitchStore.bookPitch(
     data,
     toast,
@@ -55,6 +54,7 @@ const handleBookPitch = async () => {
     route.params.id,
     route.params.stadiumStyleID
   );
+  console.log("🚀 ~ handleBookPitch ~ data:", data);
 };
 
 const formatPrice = (price) => {
@@ -122,21 +122,15 @@ const validateInput = (e) => {
 
         <div v-if="isRecurring" class="flex flex-col gap-[10px]">
           <Dropdown
-            v-model="recurringFrequency"
-            :options="roleOptions"
+            v-model="selectPeriodic"
+            :options="periodicOptions"
             optionLabel="name"
-            name="bookingType"
-            placeholder="Chọn vai trò"
+            name="role"
+            placeholder="Chọn lịch đặt"
             class="w-full p-4 border border-[#334155]"
           />
           <label for="recurringEndDate">Ngày kết thúc định kỳ</label>
-          <DatePicker
-            showTime
-            hourFormat="24"
-            fluid
-            v-model="recurringEndDate"
-            id="recurringEndDate "
-          />
+          <DatePicker v-model="recurringEndDate" id="recurringEndDate" />
         </div>
       </div>
 
@@ -151,7 +145,7 @@ const validateInput = (e) => {
 
         <Tag
           :infor="'Địa chỉ '"
-          :value="`${stadiumData?.ward} ${stadiumData?.city} ${stadiumData?.provice}`"
+          :value="`${stadiumData.ward} ${stadiumData.city} ${stadiumData.provice}`"
           :className="'gap-5'"
         ></Tag>
         <Tag
