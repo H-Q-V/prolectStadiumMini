@@ -3,12 +3,16 @@ const bookPitchSchema = new mongoose.Schema({
   phone: {
     type: String,
   },
-  startTime: {
-    type: Date,
-  },
-  endTime: {
-    type: Date,
-  },
+  time:[
+    {
+      startTime: {
+        type: Date,
+      },
+      endTime: {
+        type: Date,
+      },
+    },
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
