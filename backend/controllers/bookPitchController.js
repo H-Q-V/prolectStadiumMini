@@ -17,14 +17,21 @@ bookPitch: async (req, res) => {
               message: "Vui lòng điền đầy đủ thông tin",
           });
       }
-
-      if (endTime < startTime) {
+      
+      if(endTime <= startTime){
+         return res.status(400).json({
+           success: false,
+           message: "Thời gian kết thúc phải sau thời gian bắt đầu",
+         })
+      }
+      
+     
+      if (new Date(endTime) < new Date() || new Date(startTime) < new Date()) {
           return res.status(400).json({
               success: false,
-              message: "Thời gian kết thúc phải sau thời gian bắt đầu",
+              message: "Thời gian đặt sân đã kết thúc vui lòng chọn khung giờ khác",
           });
       }
-
       const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
           return res.status(400).json({
@@ -173,8 +180,8 @@ bookPitch: async (req, res) => {
           ...st._doc,
           ...bookPitches[i]._doc,
           time: bookPitches[i].time.map(slot => ({
-            startTime: moment(slot.startTime).tz('Asia/Ho_Chi_Minh').format(), // Chuyển đổi startTime sang UTC+7
-            endTime: moment(slot.endTime).tz('Asia/Ho_Chi_Minh').format()    // Chuyển đổi endTime sang UTC+7
+            startTime: moment(slot.startTime).tz('Asia/Ho_Chi_Minh').format(), 
+            endTime: moment(slot.endTime).tz('Asia/Ho_Chi_Minh').format()    
           }))
         };
         data.push(object);
@@ -305,7 +312,7 @@ bookPitch: async (req, res) => {
         const {idGetCustomerBookPitches} = req.params;
         const pay = await BookPitch.findById(idGetCustomerBookPitches);
         //const user = pay.user.idGetCustomerBookPitches;
-        //console.log(pay.time);
+        console.log(pay.time);
         //console.log(user);
         return res.status(200).json("Số tiền cần thanh toán");
       } catch (error) {
