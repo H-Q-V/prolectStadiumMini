@@ -20,9 +20,11 @@ router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPi
 
 router.put("/updateBookPitches/:id", middlewareController.verifyToken, bookPitchController.updateBookPitch);
 
-router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
+//router.get("");
 
-router.post("/week_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.weeklyBooking);
+//router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
+
+//router.post("/week_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.weeklyBooking);
 
 
 module.exports = router;
