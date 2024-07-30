@@ -20,7 +20,7 @@ router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPi
 
 router.put("/updateBookPitches/:id", middlewareController.verifyToken, bookPitchController.updateBookPitch);
 
-//router.get("");
+router.get("/payBookPitches/:idGetCustomerBookPitches", middlewareController.verifyToken, bookPitchController.payBookPitches);
 
 //router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
 
