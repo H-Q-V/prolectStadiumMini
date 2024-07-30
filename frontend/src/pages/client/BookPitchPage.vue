@@ -79,30 +79,14 @@ const validateInput = (e) => {
       <div class="w-[580px] flex flex-col gap-[10px]">
         <h1 class="text-xl">Thông tin cá nhân</h1>
         <label for="phone">Số điện thoại</label>
-        <div class="flex items-center justify-between gap-6">
-          <InputText
-            id="phone"
-            type="text"
-            v-model="phone"
-            class="w-[65%] common"
-            @input="validateInput"
-          ></InputText>
 
-          <Button
-            label="Xem khung giờ trống"
-            @click="visible = true"
-            class="bg-primary px-[12px] py-[6px] text-white"
-          />
-
-          <Dialog
-            v-model:visible="visible"
-            modal
-            header="Xem khung giờ trống"
-            class="w-[780px] py-3 px-10 !overflow-y-hidden z-10"
-          >
-            <Calendar></Calendar>
-          </Dialog>
-        </div>
+        <InputText
+          id="phone"
+          type="text"
+          v-model="phone"
+          class="common"
+          @input="validateInput"
+        ></InputText>
 
         <label for="startTime">Thời gian bắt đầu</label>
         <DatePicker

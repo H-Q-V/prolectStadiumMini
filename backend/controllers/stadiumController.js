@@ -19,7 +19,6 @@ const stadiumController = {
         image,
         describe,
         stadium_styles,
-        stadium_owner,
       } = req.body;
 
       if (!stadium_name || !ward || !city || !provice || !phone) {
@@ -46,7 +45,7 @@ const stadiumController = {
         provice: provice,
         describe: describe,
         stadium_styles: stadium_styles,
-        stadium_owner: stadium_owner,
+        stadium_owner: req.customer.id,
         phone: phone,
       });
       return res.json({ success: true, data: response });
@@ -65,6 +64,17 @@ const stadiumController = {
       return res.json({ data: stadiums });
     } catch (err) {
       return res.status(500).json(err);
+    }
+  },
+
+  getAllStadiumsByOwner: async (req, res) => {
+    try {
+      const ownerID = req.customer.id;
+      const stadiums = await Stadium.find({ stadium_owner: ownerID });
+      return res.json({ success: true, data: stadiums });
+    } catch (error) {
+      console.log("🚀 ~ getAllStadiumsByOwner: ~ error:", error);
+      return res.status(500).json(error);
     }
   },
 

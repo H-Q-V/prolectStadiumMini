@@ -1,12 +1,12 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
-import StadiumAdmin from "./StadiumAdmin.vue";
+import StadiumByOwner from "./StadiumByOwner.vue";
 
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
-  await stadiumStore.getAllStadium();
+  await stadiumStore.getAllStadiumsByOwner();
 });
 
 watchEffect(() => {
@@ -15,8 +15,12 @@ watchEffect(() => {
 </script>
 <template>
   <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
-    <div v-for="stadium in stadiumData" :key="stadium._id">
-      <StadiumAdmin
+    <div
+      v-if="stadiumData.length > 0"
+      v-for="stadium in stadiumData"
+      :key="stadium._id"
+    >
+      <StadiumByOwner
         :stadiumId="stadium._id"
         :image="stadium.image"
         :stadium_name="stadium.stadium_name"
@@ -24,7 +28,11 @@ watchEffect(() => {
         :ward="stadium.ward"
         :city="stadium.city"
         :provice="stadium.provice"
-      ></StadiumAdmin>
+      ></StadiumByOwner>
+    </div>
+
+    <div v-else>
+      <p class="text-lg">Hiện không có sân nào</p>
     </div>
   </div>
 </template>

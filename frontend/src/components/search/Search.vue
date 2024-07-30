@@ -94,7 +94,6 @@ form {
   display: flex;
 }
 .inputText {
-  color: #334155;
   flex: 1;
   padding: 16px;
   border: 1px solid#334155;
