@@ -11,7 +11,6 @@ import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
 import Dialog from "primevue/dialog";
 import Calendar from "../../components/calendar/Calendar.vue";
-import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
 const phone = ref(null);
 const startTime = ref(null);
@@ -34,7 +33,6 @@ onMounted(async () => {
 
 watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
-  console.log("🚀 ~ watchEffect ~ stadiumData:", stadiumData);
 });
 
 const handleBookPitch = async () => {
@@ -48,7 +46,6 @@ const handleBookPitch = async () => {
       ? date.format(recurringEndDate.value, "YYYY/MM/DD")
       : null,
   };
-  console.log("🚀 ~ handleBookPitch ~ data:", data);
   await bookPitchStore.bookPitch(
     data,
     toast,
@@ -122,22 +119,17 @@ const validateInput = (e) => {
         </div>
 
         <div v-if="isRecurring" class="flex flex-col gap-[10px]">
-          <Dropdown
+          <Select
             v-model="recurringFrequency"
-            :options="roleOptions"
-            optionLabel="name"
-            name="bookingType"
-            placeholder="Chọn vai trò"
-            class="w-full p-4 border border-[#334155]"
-          />
+            id="frequency"
+            class="border border-[#6f6f6f] rounded-md px-2 py-4"
+          >
+            <Option value="daily">Hàng ngày</Option>
+            <Option value="weekly">Hàng tuần</Option>
+            <Option value="monthly">Hàng tháng</Option>
+          </Select>
           <label for="recurringEndDate">Ngày kết thúc định kỳ</label>
-          <DatePicker
-            showTime
-            hourFormat="24"
-            fluid
-            v-model="recurringEndDate"
-            id="recurringEndDate "
-          />
+          <DatePicker v-model="recurringEndDate" id="recurringEndDate" />
         </div>
       </div>
 
@@ -152,7 +144,7 @@ const validateInput = (e) => {
 
         <Tag
           :infor="'Địa chỉ '"
-          :value="`${stadiumData?.ward} ${stadiumData?.city} ${stadiumData?.provice}`"
+          :value="`${stadiumData.ward} ${stadiumData.city} ${stadiumData.provice}`"
           :className="'gap-5'"
         ></Tag>
         <Tag
