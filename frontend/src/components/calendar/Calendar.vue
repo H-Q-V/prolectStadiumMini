@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useBookPitch } from "../../stores/fetchBookPitch";
-import { onMounted, ref, watch, computed, watchEffect } from "vue";
+import { onMounted, ref, computed, watchEffect } from "vue";
 
 const bookPitchData = ref([]);
 const bookPitchStore = useBookPitch();
@@ -18,8 +18,11 @@ watchEffect(() => {
 
 const calendarOptions = computed(() => ({
   plugins: [timeGridPlugin, interactionPlugin],
-  initialView: "timeGridWeek",
+  initialView: "timeGridDay",
   weekends: true,
+  slotMinTime: "00:00:00",
+  slotMaxTime: "24:00:00",
+  height: "auto",
   events: bookPitchData.value.map((pitch) => ({
     stadium_name: pitch.stadium_name,
     start: pitch.startTime,
@@ -36,10 +39,8 @@ const calendarOptions = computed(() => ({
 <template>
   <FullCalendar :options="calendarOptions">
     <template #eventContent="{ event }">
-      <div class="relative">
-        <h1>{{ event.extendedProps.stadium_name }}</h1>
-        <p class="capitalize">{{ event.extendedProps.name }}</p>
-      </div>
+      <h1>{{ event.extendedProps.stadium_name }}</h1>
+      <p class="capitalize">{{ event.extendedProps.name }}</p>
     </template>
   </FullCalendar>
 </template>
@@ -55,9 +56,5 @@ const calendarOptions = computed(() => ({
 
 ::v-deep .fc-scroller {
   overflow-y: hidden !important;
-}
-
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
 }
 </style>

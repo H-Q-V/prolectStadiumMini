@@ -33,6 +33,7 @@ const handleDeleteBookPitch = async (id) => {
 <template>
   <div class="grid grid-cols-3 gap-4">
     <div
+      v-if="customerBookPitchesData.length > 0"
       v-for="booking in customerBookPitchesData"
       :key="booking._id"
       class="px-2 py-6 rounded-lg shadow-md"
@@ -60,7 +61,16 @@ const handleDeleteBookPitch = async (id) => {
         </div>
       </div>
     </div>
+
+    <h1 v-else class="text-xl">Hiện chưa có lịch đặt sân nào</h1>
   </div>
+
+  <router-link
+    to="/list"
+    class="fixed flex items-center justify-center bottom-3 right-3 w-[38px] h-[38px] bg-slate-500 rounded-full text-white z-10"
+  >
+    <i class="pi pi-fw pi-plus"></i>
+  </router-link>
 </template>
 <style scoped>
 Button {

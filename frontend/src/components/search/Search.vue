@@ -22,11 +22,12 @@ const load = (index) => {
 const handleSearch = async () => {
   load(0);
   const dataSearch = {
-    name: name.value,
-    provice: provice.value.name,
-    city: city.value.name,
-    ward: ward.value.name,
+    name: name.value || "",
+    provice: provice?.value?.name || "",
+    city: city?.value?.name || "",
+    ward: ward?.value?.name || "",
   };
+  console.log("🚀 ~ handleSearch ~ dataSearch:", dataSearch);
   try {
     await stadiumStore.searchStadium(
       dataSearch.name,
@@ -50,6 +51,7 @@ const handleSearch = async () => {
     <InputText
       type="text"
       placeholder="Nhập tên sân "
+      name="name"
       class="inputText"
       v-model="name"
     ></InputText>
