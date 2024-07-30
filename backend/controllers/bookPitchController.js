@@ -6,10 +6,9 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const bookPitchController = {
-
 bookPitch: async (req, res) => {
   try {
-      let { phone, startTime, endTime, bookingType, weeksToBook, monthsToBook } = req.body;
+      let { phone, startTime, endTime, bookingType, timePeriodsToBook, isRecurring } = req.body;
       const { stadiumID, stadiumStyleID } = req.params;
 
       if (!phone || !startTime || !endTime) {
@@ -94,49 +93,51 @@ bookPitch: async (req, res) => {
 
       const processBooking = async () => {
           let timeSlots = [];
-          switch (bookingType || 'ngày') {  // Mặc định là 'ngày' nếu không có bookingType
-              case 'ngày':
-                  timeSlots.push({ startTime: new Date(startTime), endTime: new Date(endTime) });
-                  break;
-              case 'Hàng tuần':
-                  if (!weeksToBook) {
+          if (!isRecurring || bookingType === 'ngày') {
+              // Mặc định là 'ngày' nếu không có bookingType hoặc isRecurring là false
+              timeSlots.push({ startTime: new Date(startTime), endTime: new Date(endTime) });
+          } else {
+              switch (bookingType) {
+                  case 'Hàng tuần':
+                      if (!timePeriodsToBook) {
+                          return res.status(400).json({
+                              success: false,
+                              message: 'Ngày để đặt tuần không hợp lệ.',
+                          });
+                      }
+                      let currentStart = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
+                      const endDate = moment.tz(timePeriodsToBook, 'Asia/Ho_Chi_Minh');
+                      while (currentStart.isBefore(endDate)) {
+                          let currentEnd = moment.tz(endTime, 'Asia/Ho_Chi_Minh').year(currentStart.year()).week(currentStart.week());
+                          timeSlots.push({ startTime: currentStart.toDate(), endTime: currentEnd.toDate() });
+                          currentStart.add(1, 'week');
+                      }
+                      break;
+                  case 'Hàng tháng':
+                      if (!timePeriodsToBook) {
+                          return res.status(400).json({
+                              success: false,
+                              message: 'Danh sách tháng để đặt không hợp lệ.',
+                          });
+                      }
+                      let startMonth = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
+                      let endMonth = moment.tz(timePeriodsToBook, 'Asia/Ho_Chi_Minh');
+                      while (startMonth.isBefore(endMonth) || startMonth.isSame(endMonth, 'month')) {
+                          let monthEnd = moment(startMonth).set({
+                              'hour': moment(endTime).hour(),
+                              'minute': moment(endTime).minute(),
+                              'second': moment(endTime).second()
+                          });
+                          timeSlots.push({ startTime: startMonth.toDate(), endTime: monthEnd.toDate() });
+                          startMonth.add(1, 'month');
+                      }
+                      break;
+                  default:
                       return res.status(400).json({
                           success: false,
-                          message: 'Ngày để đặt tuần không hợp lệ.',
+                          message: 'Loại đặt sân không hợp lệ.',
                       });
-                  }
-                  let currentStart = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
-                  const endDate = moment.tz(weeksToBook, 'Asia/Ho_Chi_Minh');
-                  while (currentStart.isBefore(endDate)) {
-                      let currentEnd = moment.tz(endTime, 'Asia/Ho_Chi_Minh').year(currentStart.year()).week(currentStart.week());
-                      timeSlots.push({ startTime: currentStart.toDate(), endTime: currentEnd.toDate() });
-                      currentStart.add(1, 'week');
-                  }
-                  break;
-              case 'Hàng tháng':
-                  if (!monthsToBook) {
-                      return res.status(400).json({
-                          success: false,
-                          message: 'Danh sách tháng để đặt không hợp lệ.',
-                      });
-                  }
-                  let startMonth = moment.tz(startTime, 'Asia/Ho_Chi_Minh');
-                  let endMonth = moment.tz(monthsToBook, 'Asia/Ho_Chi_Minh');
-                  while (startMonth.isBefore(endMonth) || startMonth.isSame(endMonth, 'month')) {
-                      let monthEnd = moment(startMonth).set({
-                          'hour': moment(endTime).hour(),
-                          'minute': moment(endTime).minute(),
-                          'second': moment(endTime).second()
-                      });
-                      timeSlots.push({ startTime: startMonth.toDate(), endTime: monthEnd.toDate() });
-                      startMonth.add(1, 'month');
-                  }
-                  break;
-              default:
-                  return res.status(400).json({
-                      success: false,
-                      message: 'Loại đặt sân không hợp lệ.',
-                  });
+              }
           }
           await handleBooking(timeSlots);
       };
@@ -147,7 +148,6 @@ bookPitch: async (req, res) => {
       return res.status(500).json({ success: false, message: error.message });
   }
 },
-
   getAllBookPitches: async (req, res) => {
     try {
       const bookPitches = await BookPitch.find().populate({
@@ -302,8 +302,12 @@ bookPitch: async (req, res) => {
   },
   payBookPitches: async(req,res) => {
       try {
-        const {id} = req.params;
-        const pay = await BookPitch.findById()
+        const {idGetCustomerBookPitches} = req.params;
+        const pay = await BookPitch.findById(idGetCustomerBookPitches);
+        //const user = pay.user.idGetCustomerBookPitches;
+        //console.log(pay.time);
+        //console.log(user);
+        return res.status(200).json("Số tiền cần thanh toán");
       } catch (error) {
         return res.status(500).json({success: false, message: error.message});
       }
