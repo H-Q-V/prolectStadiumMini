@@ -22,6 +22,7 @@ router.get(
   middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.getAllStadiumsByOwner
 );
+
 router.get("/getAnStadium/:id", stadiumController.getAnStadium);
 
 router.put("/updateStadium/:id", stadiumController.updateStadium);
