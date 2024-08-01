@@ -9,9 +9,9 @@ import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
 import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
-import StadiumAdmin from "../../components/stadium/StadiumAdmin.vue";
-import ListStadiumAdmin from "../../components/stadium/ListStadiumAdmin.vue";
 import { getAddress } from "../../utils/getAddress";
+import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
+import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const visible = ref(false);
@@ -54,7 +54,7 @@ const handleSearchResults = (results) => {
   <div v-if="searchResults.length > 0">
     <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
       <div v-for="stadium in searchResults" :key="stadium._id">
-        <StadiumAdmin
+        <StadiumByOwner
           :stadiumId="stadium._id"
           :image="stadium.image"
           :stadium_name="stadium.stadium_name"
@@ -62,14 +62,15 @@ const handleSearchResults = (results) => {
           :ward="stadium.ward"
           :city="stadium.city"
           :provice="stadium.provice"
-        ></StadiumAdmin>
+        ></StadiumByOwner>
       </div>
     </div>
   </div>
 
   <div v-else>
-    <ListStadiumAdmin></ListStadiumAdmin>
+    <ListStadiumByOwner></ListStadiumByOwner>
   </div>
+
   <Button
     @click="visible = true"
     class="fixed bottom-3 right-3 w-[38px] h-[38px] bg-slate-500 rounded-full text-white z-10"

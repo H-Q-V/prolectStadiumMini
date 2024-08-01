@@ -3,27 +3,25 @@ import { onMounted, ref, watchEffect } from "vue";
 import date from "date-and-time";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
-import Button from "primevue/button";
 import { toast } from "vue3-toastify";
 import { useStadium } from "../../stores/fetchStadium";
 import { useRoute, useRouter } from "vue-router";
-import Tag from "../../components/tag/Tag.vue";
 import { useBookPitch } from "../../stores/fetchBookPitch";
-import Dialog from "primevue/dialog";
-import Calendar from "../../components/calendar/Calendar.vue";
 import Checkbox from "primevue/checkbox";
+import Dropdown from "primevue/dropdown";
+import Button from "primevue/button";
 const phone = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
 const isRecurring = ref(false);
-const recurringFrequency = ref("");
-const recurringEndDate = ref(null);
+const selectPeriodic = ref(null);
+const periodicOptions = ref([{ name: "Hàng tuần" }, { name: "Hàng tháng" }]);
+const timePeriodsToBook = ref(null);
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const bookPitchStore = useBookPitch();
 const route = useRoute();
 const router = useRouter();
-const visible = ref(false);
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(
     route.params.id,
@@ -41,10 +39,10 @@ const handleBookPitch = async () => {
     startTime: date.format(startTime.value, "YYYY/MM/DD HH:mm"),
     endTime: date.format(endTime.value, "YYYY/MM/DD HH:mm"),
     isRecurring: isRecurring.value,
-    recurringFrequency: recurringFrequency.value,
-    recurringEndDate: recurringEndDate.value
-      ? date.format(recurringEndDate.value, "YYYY/MM/DD")
-      : null,
+    bookingType: selectPeriodic?.value?.name || "",
+    timePeriodsToBook: timePeriodsToBook.value
+      ? date.format(timePeriodsToBook.value, "YYYY/MM/DD")
+      : "",
   };
   await bookPitchStore.bookPitch(
     data,
@@ -75,34 +73,16 @@ const validateInput = (e) => {
     {{ stadiumData?.stadium_style?.type }})
   </h1>
   <form @submit.prevent="handleBookPitch" class="flex flex-col gap-[20px]">
-    <div class="flex gap-[50px]">
-      <div class="w-[580px] flex flex-col gap-[10px]">
-        <h1 class="text-xl">Thông tin cá nhân</h1>
+    <div class="flex items-center justify-center">
+      <div class="w-[780px] flex flex-col gap-[10px]">
         <label for="phone">Số điện thoại</label>
-        <div class="flex items-center justify-between gap-6">
-          <InputText
-            id="phone"
-            type="text"
-            v-model="phone"
-            class="w-[65%] common"
-            @input="validateInput"
-          ></InputText>
-
-          <Button
-            label="Xem khung giờ trống"
-            @click="visible = true"
-            class="bg-primary px-[12px] py-[6px] text-white"
-          />
-
-          <Dialog
-            v-model:visible="visible"
-            modal
-            header="Xem khung giờ trống"
-            class="w-[780px] py-3 px-10 !overflow-y-hidden z-10"
-          >
-            <Calendar></Calendar>
-          </Dialog>
-        </div>
+        <InputText
+          id="phone"
+          type="text"
+          v-model="phone"
+          class="common"
+          @input="validateInput"
+        ></InputText>
 
         <label for="startTime">Thời gian bắt đầu</label>
         <DatePicker
@@ -135,47 +115,23 @@ const validateInput = (e) => {
         </div>
 
         <div v-if="isRecurring" class="flex flex-col gap-[10px]">
-          <Select
-            v-model="recurringFrequency"
-            id="frequency"
-            class="border border-[#6f6f6f] rounded-md px-2 py-4"
-          >
-            <Option value="daily">Hàng ngày</Option>
-            <Option value="weekly">Hàng tuần</Option>
-            <Option value="monthly">Hàng tháng</Option>
-          </Select>
-          <label for="recurringEndDate">Ngày kết thúc định kỳ</label>
-          <DatePicker v-model="recurringEndDate" id="recurringEndDate" />
+          <Dropdown
+            v-model="selectPeriodic"
+            :options="periodicOptions"
+            optionLabel="name"
+            name="role"
+            placeholder="Chọn lịch đặt"
+            class="w-full p-4 border border-[#334155]"
+          />
+          <label for="timePeriodsToBook">Ngày kết thúc định kỳ</label>
+          <DatePicker v-model="timePeriodsToBook" id="timePeriodsToBook" />
         </div>
-      </div>
-
-      <div class="flex flex-col gap-[10px]">
-        <h1 class="text-xl">Thông tin chi tiết sân</h1>
-
-        <Tag
-          :infor="'Số điện thoại'"
-          :value="stadiumData.phone"
-          :className="'gap-5'"
-        ></Tag>
-
-        <Tag
-          :infor="'Địa chỉ '"
-          :value="`${stadiumData.ward} ${stadiumData.city} ${stadiumData.provice}`"
-          :className="'gap-5'"
-        ></Tag>
-        <Tag
-          :infor="'Giá'"
-          :value="stadiumData?.stadium_style?.price"
-          :class="'gap-5'"
-        ></Tag>
-
-        <div class="flex items-center gap-3">
+        <div class="flex items-center justify-center gap-3 mt-2">
           <Button
             type="submit"
-            label="Đặt sân"
-            class="bg-[#286090] font-medium py-2 px-6 text-white"
-          ></Button>
-
+            class="bg-[#286090] font-medium py-2 px-10 text-white rounded-md"
+            >Đặt lịch</Button
+          >
           <router-link
             to="/list"
             class="py-2 px-6 border border-[#286090] text-[#286090] rounded-md"

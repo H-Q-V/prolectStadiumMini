@@ -5,24 +5,16 @@ import { useRouter } from "vue-router";
 import { LOCAL_STORAGE_TOKEN } from "../../utils/localStoreName";
 const model = ref([
   {
-    items: [{ label: "Trang chủ", icon: "pi pi-fw pi-home", to: "/admin" }],
-  },
-  {
     items: [
-      {
-        label: "Khách hàng",
-        icon: "pi pi-fw pi-users",
-        to: "/admin/customers",
-      },
+      { label: "Trang chủ", icon: "pi pi-fw pi-home", to: "/stadiumOwner/" },
     ],
   },
-
   {
     items: [
       {
         label: "Danh sách sân",
         icon: "pi pi-fw pi-list",
-        to: "/admin/list",
+        to: "/stadiumOwner/list",
       },
     ],
   },

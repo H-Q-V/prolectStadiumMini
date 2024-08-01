@@ -1,26 +1,34 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
+import { useStadium } from "../../stores/fetchStadium";
 import Search from "../../components/search/Search.vue";
-import ListStadium from "../../components/stadium/ListStadium.vue";
-import Stadium from "../../components/stadium/Stadium.vue";
+import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
+import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
+const stadiumData = ref([]);
+const stadiumStore = useStadium();
 const searchResults = ref([]);
-
 const handleSearchResults = (results) => {
   searchResults.value = results;
   console.log("🚀 ~ handleSearchResults ~ searchResults:", searchResults);
 };
+onMounted(async () => {
+  await stadiumStore.getAllStadium();
+});
+
+watchEffect(() => {
+  stadiumData.value = stadiumStore.stadiumData;
+});
 </script>
 <template>
   <Search @searchResults="handleSearchResults"></Search>
   <h1 class="text-[#18458b] text-[24px] font-semibold text-center mb-4">
     Danh sách sân
   </h1>
-
-  <div v-if="searchResults.length > 0">
+  <div v-if="searchResults?.length > 0">
     <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
       <div v-for="stadium in searchResults" :key="stadium._id">
-        <Stadium
-          v-if="stadium"
+        <StadiumByOwner
+          v-if="stadiumData"
           :stadiumId="stadium._id"
           :image="stadium.image"
           :stadium_name="stadium.stadium_name"
@@ -28,13 +36,13 @@ const handleSearchResults = (results) => {
           :ward="stadium.ward"
           :city="stadium.city"
           :provice="stadium.provice"
-        ></Stadium>
+        ></StadiumByOwner>
       </div>
     </div>
   </div>
 
   <div v-else>
-    <ListStadium></ListStadium>
+    <ListStadiumByOwner></ListStadiumByOwner>
   </div>
 </template>
 <style></style>

@@ -9,11 +9,11 @@ const bookPitchData = ref([]);
 const bookPitchStore = useBookPitch();
 
 onMounted(async () => {
-  await bookPitchStore.getCustomerBookPitches();
+  await bookPitchStore.getAllBookPitches();
 });
 
 watchEffect(() => {
-  bookPitchData.value = bookPitchStore.customerBookPitchesData;
+  bookPitchData.value = bookPitchStore.bookPitchData;
 });
 
 const calendarOptions = computed(() => ({

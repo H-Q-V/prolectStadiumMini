@@ -7,4 +7,4 @@ import Media from "../../components/media/Media.vue";
   <Media></Media>
   <Introduce></Introduce>
 </template>
-<style lang=""></style>
+<style scoped></style>

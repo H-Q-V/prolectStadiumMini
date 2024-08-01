@@ -7,20 +7,13 @@ import { useStadium } from "../../stores/fetchStadium";
 import { getAddress } from "../../utils/getAddress";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
-const loading = ref([false]);
 const name = ref("");
 const result = ref([]);
 const stadiumStore = useStadium();
 const emit = defineEmits(["searchResults"]);
-const load = (index) => {
-  loading.value[index] = true;
-  setTimeout(() => {
-    loading.value[index] = false;
-  }, 2000);
-};
-
+const isLoading = ref(false);
 const handleSearch = async () => {
-  load(0);
+  isLoading.value = true;
   const dataSearch = {
     name: name.value || "",
     provice: provice?.value?.name || "",
@@ -83,7 +76,6 @@ const handleSearch = async () => {
     <Button
       type="submit"
       label="Tìm kiếm"
-      :loading="loading[0]"
       icon="pi pi-search"
       class="buttonSearch"
     />
@@ -94,7 +86,6 @@ form {
   display: flex;
 }
 .inputText {
-  color: #334155;
   flex: 1;
   padding: 16px;
   border: 1px solid#334155;

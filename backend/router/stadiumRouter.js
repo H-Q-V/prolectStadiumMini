@@ -1,32 +1,58 @@
 const stadiumController = require("../controllers/stadiumController");
 //const { upload,uploadImage } = require("../uploadImage/uploadImage");
 //const cloudinary = require("./uploadImage/uploadImage")
-
+const middlewareController = require("../controllers/middlewareController");
 const router = require("express").Router();
 
 //add stadium
 //router.post("/createStadium", stadiumController.addStadium, upload.single('img'), uploadImage);
-router.post("/createStadium", stadiumController.addStadium);
+router.post(
+  "/createStadium",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
+  stadiumController.addStadium
+);
 
 //get all stadium
 router.get("/getAllStadium", stadiumController.getAllStadium);
+
+router.get(
+  "/getAllStadiumsByOwner",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
+  stadiumController.getAllStadiumsByOwner
+);
 
 router.get("/getAnStadium/:id", stadiumController.getAnStadium);
 
 router.put("/updateStadium/:id", stadiumController.updateStadium);
 
-router.delete("/deleteStadium/:id",stadiumController.deleteStadium);
+router.delete(
+  "/deleteStadium/:id",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
+  stadiumController.deleteStadium
+);
 
-router.get("/searchStadium",stadiumController.searchStadium);
+router.get("/searchStadium", stadiumController.searchStadium);
 // router để thêm stadiumstyle
-router.post("/createStadiumStyle/:id",stadiumController.addStadiumStyle);
+router.post("/createStadiumStyle/:id", stadiumController.addStadiumStyle);
 
-router.get("/getAllStadiumStyle/:id",stadiumController.getAllStadiumStyle);
+router.get("/getAllStadiumStyle/:id", stadiumController.getAllStadiumStyle);
 
-router.get("/getAnStadiumStyle/:id/:idStadiumStyle", stadiumController.getAnStadiumStyle);
+router.get(
+  "/getAnStadiumStyle/:id/:idStadiumStyle",
+  stadiumController.getAnStadiumStyle
+);
 
-router.put("/updateStadiumStyle/:id/:stadiumStyleId",stadiumController.updateStadiumStyle);
+router.put(
+  "/updateStadiumStyle/:id/:stadiumStyleId",
+  stadiumController.updateStadiumStyle
+);
 
-router.delete("/deleteStadiumStyle/:stadiumStyleId", stadiumController.deleteStadiumStyle);
+router.delete(
+  "/deleteStadiumStyle/:stadiumStyleId",
+  stadiumController.deleteStadiumStyle
+);
 
 module.exports = router;
