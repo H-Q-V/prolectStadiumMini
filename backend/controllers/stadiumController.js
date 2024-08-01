@@ -217,9 +217,9 @@ const stadiumController = {
 
       const uploadedImage = await uploadImage(image);
 
-      const formattedPrice = parseFloat(price).toLocaleString('de-DE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+      const formattedPrice = parseFloat(price).toLocaleString('vi-VN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       });
       const stadium = await Stadium.findById(id);
       if (!stadium) {
