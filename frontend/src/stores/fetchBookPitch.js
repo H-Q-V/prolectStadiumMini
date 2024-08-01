@@ -17,14 +17,13 @@ export const useBookPitch = defineStore("bookPitch", {
         },
       };
       try {
-        const response = await axios.post(
+        await axios.post(
           `${endpoint}/bookPitch/${id}/${idStadiumStyle}`,
           data,
           config
         );
-        console.log("🚀 ~ bookPitch ~ response:", response);
-        router.push({ name: "Schedule" });
-        toast.success("Đặt lịch thành công");
+        toast.success("Đặt chỗ thành công");
+        router.push(`/payment/${id}/${idStadiumStyle}`);
       } catch (error) {
         console.log("🚀 ~ bookPitch ~ error:", error);
         toast.error(error?.response?.data?.message);

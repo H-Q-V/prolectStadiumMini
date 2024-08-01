@@ -12,47 +12,40 @@ const routes = [
         path: "/",
         name: "HomePage",
         component: () => import("./pages/client/Homepage.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
       {
         path: "/list",
         name: "ListStadium",
         component: () => import("./pages/client/ListStadiumPage.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
       {
         path: "/price-list/:id",
         name: "PriceList",
         component: () => import("./components/priceList/PriceList.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
-        path: "/calendar/:id",
+        path: "/calendar",
         name: "Calendar",
         component: () => import("./components/calendar/Calendar.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/stadium-detail/:id",
         name: "StadiumDetail",
         component: () => import("./pages/StadiumDetailPage.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/book-pitch/:id/:stadiumStyleID",
         name: "BookPitch",
         component: () => import("./pages/client/BookPitchPage.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
 
       {
         path: "/schedule",
         name: "Schedule",
         component: () => import("./pages/client/SchedulePage.vue"),
-        // meta: { requiresAuth: true, role: "customer" },
       },
     ],
   },
@@ -66,7 +59,6 @@ const routes = [
         path: "/stadiumOwner",
         name: "StadiumOwner",
         component: () => import("./pages/admin/AdminPage.vue"),
-        meta: { requiresAuth: true, role: "stadiumOwner" },
       },
 
       {
@@ -74,7 +66,6 @@ const routes = [
         name: "ListStadiumOwner",
         component: () =>
           import("./pages/stadiumOwner/ListStadiumOwnerPage.vue"),
-        meta: { requiresAuth: true, role: "stadiumOwner" },
       },
     ],
   },
@@ -88,14 +79,18 @@ const routes = [
         path: "/admin/",
         name: "Admin",
         component: () => import("./pages/admin/AdminPage.vue"),
-        meta: { requiresAuth: true, role: "admin" },
       },
 
       {
         path: "/admin/customers",
-        name: "listCustomers",
+        name: "ListCustomers",
         component: () => import("./pages/admin/ListCustomersPage.vue"),
-        meta: { requiresAuth: true, role: "admin" },
+      },
+
+      {
+        path: "/admin/list",
+        name: "ListStadiumsByAdmin",
+        component: () => import("./pages/admin/ListStadiumByAdminPage.vue"),
       },
     ],
   },
@@ -104,6 +99,12 @@ const routes = [
     path: "/notfound",
     name: "NotFound",
     component: () => import("./pages/NotFoundPage.vue"),
+  },
+
+  {
+    path: "/payment/:id/:stadiumID",
+    name: "Payment",
+    component: () => import("./pages/PaymentPage.vue"),
   },
 
   {
@@ -133,26 +134,40 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
-//   const userRole = localStorage.getItem("userRole"); // Assuming you store the user role in local storage
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
+  const userRole = localStorage.getItem("userRole");
 
-//   if (to.matched.some((record) => record.meta.requiresAuth)) {
-//     if (!token) {
-//       // Redirect to login if not authenticated
-//       next({ name: "Login" });
-//     } else {
-//       // Check if the user has the required role
-//       const role = to.meta.role;
-//       if (role && role !== userRole) {
-//         // Redirect to a forbidden page or show an error if the role doesn't match
-//         next({ name: "Forbidden" });
-//       } else {
-//         next();
-//       }
-//     }
-//   } else {
-//     next(); // Proceed if the route does not require authentication
-//   }
-// });
+  const publicPages = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/forgot",
+    "/auth/send-otp",
+  ];
+  const authRequired = !publicPages.includes(to.path);
+  if (
+    to.path === "/auth/login" ||
+    to.path === "/auth/register" ||
+    to.path === "/auth/forgot"
+  ) {
+    localStorage.removeItem(LOCAL_STORAGE_TOKEN);
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
+  }
+
+  if (authRequired && !token) {
+    return next("/auth/login");
+  }
+
+  if (to.path.startsWith("/admin") && userRole !== "Admin") {
+    return next("/notfound");
+  }
+
+  if (to.path.startsWith("/stadiumOwner") && userRole !== "StadiumOwner") {
+    return next("/notfound");
+  }
+
+  next();
+});
+
 export default router;

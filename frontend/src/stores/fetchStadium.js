@@ -25,7 +25,6 @@ export const useStadium = defineStore("stadium", {
       try {
         const response = await axios.get(`${endpoint}/getAllStadium`);
         this.stadiumData = response?.data.data;
-        console.log("🚀 ~ getAllStadium ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ getAllStadium ~ error:", error);
       }
@@ -38,7 +37,6 @@ export const useStadium = defineStore("stadium", {
           config
         );
         this.stadiumData = response?.data.data;
-        console.log("🚀 ~ getAllStadiumsByOwner ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ getAllStadiumsByOwner ~ error:", error);
       }
@@ -56,7 +54,11 @@ export const useStadium = defineStore("stadium", {
     async deleteStadium(id, toast) {
       try {
         await axios.delete(`${endpoint}/deleteStadium/${id}`, config);
-        this.getAllStadiumsByOwner();
+        if (localStorage.getItem("userRole") === "Admin") {
+          this.getAllStadium();
+        } else if (localStorage.getItem("userRole") === "StadiumByOwner") {
+          this.getAllStadiumsByOwner();
+        }
         toast.success("Xóa thành công");
       } catch (error) {
         console.log("🚀 ~ deleteStadium ~ error:", error);

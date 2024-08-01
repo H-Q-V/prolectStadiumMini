@@ -9,7 +9,7 @@ const router = require("express").Router();
 router.post(
   "/createStadium",
   middlewareController.verifyToken,
-  middlewareController.authorize(["stadiumOwner", "admin"]),
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.addStadium
 );
 
@@ -19,7 +19,7 @@ router.get("/getAllStadium", stadiumController.getAllStadium);
 router.get(
   "/getAllStadiumsByOwner",
   middlewareController.verifyToken,
-  middlewareController.authorize(["stadiumOwner", "admin"]),
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.getAllStadiumsByOwner
 );
 router.get("/getAnStadium/:id", stadiumController.getAnStadium);
@@ -29,7 +29,7 @@ router.put("/updateStadium/:id", stadiumController.updateStadium);
 router.delete(
   "/deleteStadium/:id",
   middlewareController.verifyToken,
-  middlewareController.authorize(["stadiumOwner", "admin"]),
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.deleteStadium
 );
 

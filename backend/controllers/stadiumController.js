@@ -267,6 +267,7 @@ const stadiumController = {
       const style = stadium.stadium_styles.id(idStadiumStyle);
       return res.status(200).json({
         stadium_style: style,
+        _id: stadium._id,
         stadium_name: stadium.stadium_name,
         address: stadium.address,
         phone: stadium.phone,
