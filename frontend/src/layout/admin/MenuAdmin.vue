@@ -16,6 +16,16 @@ const model = ref([
       },
     ],
   },
+
+  {
+    items: [
+      {
+        label: "Danh sách sân",
+        icon: "pi pi-fw pi-list",
+        to: "/admin/list",
+      },
+    ],
+  },
   {
     items: [
       {

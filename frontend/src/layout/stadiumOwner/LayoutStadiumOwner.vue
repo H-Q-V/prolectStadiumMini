@@ -10,10 +10,10 @@ const handleMenuToggle = () => {
   sidebarActive.value = !sidebarActive.value;
 };
 
-const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
-if (!token) {
-  router.push({ name: "Login" });
-}
+// const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
+// if (!token) {
+//   router.push({ name: "Login" });
+// }
 </script>
 <template>
   <div class="layout-wrapper">

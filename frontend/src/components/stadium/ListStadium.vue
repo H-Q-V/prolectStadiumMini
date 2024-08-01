@@ -3,7 +3,6 @@ import { onMounted, ref, watchEffect } from "vue";
 import { useStadium } from "../../stores/fetchStadium";
 import Stadium from "./Stadium.vue";
 const stadiumData = ref([]);
-console.log("🚀 ~ stadiumData:", stadiumData);
 const stadiumStore = useStadium();
 onMounted(async () => {
   await stadiumStore.getAllStadium();
