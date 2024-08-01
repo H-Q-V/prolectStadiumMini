@@ -3,7 +3,7 @@ import axios from "axios";
 import { endpoint } from "../utils/endpoint";
 import { config } from "../utils/config";
 
-export const useStadium = defineStore("stadium", {
+const useStadium = defineStore("stadium", {
   state: () => ({
     stadiumData: [],
     resultSearch: [],
@@ -88,3 +88,5 @@ export const useStadium = defineStore("stadium", {
     },
   },
 });
+
+export default useStadium;

@@ -3,8 +3,8 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import { ref, watchEffect } from "vue";
-import { useStadium } from "../../stores/fetchStadium";
 import { getAddress } from "../../utils/getAddress";
+import { useStadium } from "../../stores";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const name = ref("");
@@ -12,6 +12,7 @@ const result = ref([]);
 const stadiumStore = useStadium();
 const emit = defineEmits(["searchResults"]);
 const isLoading = ref(false);
+
 const handleSearch = async () => {
   isLoading.value = true;
   const dataSearch = {
@@ -33,9 +34,11 @@ const handleSearch = async () => {
       result.value = stadiumStore.resultSearch;
       emit("searchResults", result.value);
       console.log("🚀 ~ watchEffect ~ result:", result);
+      isLoading.value = false;
     });
   } catch (error) {
     console.log("🚀 ~ handleSearch ~ error:", error);
+    isLoading.value = false;
   }
 };
 </script>

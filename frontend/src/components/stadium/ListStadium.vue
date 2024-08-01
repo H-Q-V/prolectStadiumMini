@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import { useStadium } from "../../stores/fetchStadium";
 import Stadium from "./Stadium.vue";
+import { useStadium } from "../../stores";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
