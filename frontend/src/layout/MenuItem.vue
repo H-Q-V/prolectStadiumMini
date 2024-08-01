@@ -11,7 +11,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["menuClick"]);
-
 const handleClick = (menuItem) => {
   emit("menuClick", menuItem);
 };

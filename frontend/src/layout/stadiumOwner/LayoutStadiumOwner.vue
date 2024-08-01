@@ -1,7 +1,7 @@
 <script setup>
-import Sidebar from "./Sidebar.vue";
+import Topbar from "../client/Topbar.vue";
 import { ref } from "vue";
-import Topbar from "./Topbar.vue";
+import SidebarStadiumOwner from "./SidebarStadiumOwner.vue";
 import { LOCAL_STORAGE_TOKEN } from "../../utils/localStoreName";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -20,7 +20,7 @@ if (!token) {
     <Topbar :onMenuToogle="handleMenuToggle"></Topbar>
 
     <div :class="['layout-sidebar', { active: sidebarActive }]">
-      <Sidebar></Sidebar>
+      <SidebarStadiumOwner></SidebarStadiumOwner>
     </div>
 
     <div :class="['layout-main-container', { actives: sidebarActive }]">
@@ -60,6 +60,7 @@ if (!token) {
   min-height: 100vh;
   padding: 7rem 2rem 2rem calc(300px + 70px);
   transition: all 0.2s ease-in;
+  z-index: -1;
 }
 
 .layout-main-container.actives {

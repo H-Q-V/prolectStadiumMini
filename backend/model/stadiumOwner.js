@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const stadiumOwnerSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -8,10 +8,12 @@ const stadiumOwnerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: String,
-    required: true,
-  },
+  stadium: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Stadium",
+    },
+  ],
 });
-let StadiumOwner = mongoose.model('StadiumOwner', stadiumOwnerSchema);
+let StadiumOwner = mongoose.model("StadiumOwner", stadiumOwnerSchema);
 module.exports = { StadiumOwner };

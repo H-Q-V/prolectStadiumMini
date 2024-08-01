@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { endpoint } from "../utils/endpoint";
-import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
+import { config } from "../utils/config";
 
 export const useStadium = defineStore("stadium", {
   state: () => ({
@@ -12,9 +12,9 @@ export const useStadium = defineStore("stadium", {
   actions: {
     async createStadium(data, toast) {
       try {
-        await axios.post(`${endpoint}/createStadium`, data);
+        await axios.post(`${endpoint}/createStadium`, data, config);
         toast.success("Thêm mới thành công");
-        this.getAllStadium();
+        this.getAllStadiumsByOwner();
       } catch (error) {
         console.log("🚀 ~ createStadium ~ error:", error);
         toast.error(error?.response?.data?.message);
@@ -25,8 +25,22 @@ export const useStadium = defineStore("stadium", {
       try {
         const response = await axios.get(`${endpoint}/getAllStadium`);
         this.stadiumData = response?.data.data;
+        console.log("🚀 ~ getAllStadium ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ getAllStadium ~ error:", error);
+      }
+    },
+
+    async getAllStadiumsByOwner() {
+      try {
+        const response = await axios.get(
+          `${endpoint}/getAllStadiumsByOwner`,
+          config
+        );
+        this.stadiumData = response?.data.data;
+        console.log("🚀 ~ getAllStadiumsByOwner ~ response:", response);
+      } catch (error) {
+        console.log("🚀 ~ getAllStadiumsByOwner ~ error:", error);
       }
     },
 
@@ -41,8 +55,8 @@ export const useStadium = defineStore("stadium", {
 
     async deleteStadium(id, toast) {
       try {
-        await axios.delete(`${endpoint}/deleteStadium/${id}`);
-        this.getAllStadium();
+        await axios.delete(`${endpoint}/deleteStadium/${id}`, config);
+        this.getAllStadiumsByOwner();
         toast.success("Xóa thành công");
       } catch (error) {
         console.log("🚀 ~ deleteStadium ~ error:", error);
