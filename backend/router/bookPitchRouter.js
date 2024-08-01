@@ -22,9 +22,4 @@ router.put("/updateBookPitches/:id", middlewareController.verifyToken, bookPitch
 
 router.get("/payBookPitches/:idGetCustomerBookPitches", middlewareController.verifyToken, bookPitchController.payBookPitches);
 
-//router.post("/monthly_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.monthlyBooking);
-
-//router.post("/week_booking/:stadiumID/:stadiumStyleID", middlewareController.verifyToken, bookPitchController.weeklyBooking);
-
-
 module.exports = router;

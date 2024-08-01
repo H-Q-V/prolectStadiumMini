@@ -81,7 +81,7 @@ bookPitch: async (req, res) => {
              // bankaccount: req.bankaccount.id,
               stadium: stadiumID,
               stadiumStyle: stadiumStyleID,
-              status: 'confirmed',
+              status: 'pending',
               originalStartTime: new Date(startTime),
               originalEndTime: new Date(endTime),
           });
@@ -329,7 +329,7 @@ bookPitch: async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: `So Tien Ma ${bankaccount.name} Can Phai Đat Coc La`,    
+            message: `Ta Co Tong Tien La ${(pricePerSlot * total).toLocaleString('vi-VN')} So Tien Ma ${bankaccount.name} Can Phai Đat Coc La ${formattedTotalMoney}`,    
             totaltmoney: formattedTotalMoney,
             acc: bankaccount.acc,
             bank: bankaccount.bank,
