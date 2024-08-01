@@ -2,7 +2,9 @@ const BookPitch = require('../model/bookPitch');
 const moment = require('moment-timezone');
 const cron = require('node-cron');
 const { Stadium } = require('../model/stadium');
+//const { BankAccount } = require('../model/bankAccount');
 const mongoose = require('mongoose');
+const bankAccount = require('../model/bankAccount');
 const ObjectId = mongoose.Types.ObjectId;
 
 const bookPitchController = {
@@ -76,6 +78,7 @@ bookPitch: async (req, res) => {
               phone: phone,
               time: timeSlots,
               user: req.customer.id,
+             // bankaccount: req.bankaccount.id,
               stadium: stadiumID,
               stadiumStyle: stadiumStyleID,
               status: 'confirmed',
@@ -311,15 +314,31 @@ bookPitch: async (req, res) => {
       try {
         const {idGetCustomerBookPitches} = req.params;
         const pay = await BookPitch.findById(idGetCustomerBookPitches);
-        //const user = pay.user.idGetCustomerBookPitches;
-        console.log(pay.time);
-        //console.log(user);
-        return res.status(200).json("Số tiền cần thanh toán");
+        var total = 0;
+        for(let i = 0; i< pay.time.length; i++){
+          total++;
+        }
+        console.log("b", total);
+        const bankaccount = await bankAccount.findOne({customer:pay.user._id});
+        const stadium = await Stadium.findById(pay.stadium);
+        const stadiumStyle = stadium.stadium_styles.id(pay.stadiumStyle);
+        // Đảm bảo stadiumStyle.price là một số
+        const pricePerSlot = parseFloat(stadiumStyle.price.replace(/\./g, ''));
+        const totalMoney = (pricePerSlot * total) * 0.7;
+        const formattedTotalMoney = totalMoney.toLocaleString('vi-VN');
+
+        return res.status(200).json({
+            success: true,
+            message: `So Tien Ma ${bankaccount.name} Can Phai Đat Coc La`,    
+            totaltmoney: formattedTotalMoney,
+            acc: bankaccount.acc,
+            bank: bankaccount.bank,
+        });
+        
       } catch (error) {
         return res.status(500).json({success: false, message: error.message});
       }
   },
-
 };
 
 
