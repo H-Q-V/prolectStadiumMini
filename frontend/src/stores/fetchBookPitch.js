@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { endpoint } from "../utils/endpoint";
 import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 
-export const useBookPitch = defineStore("bookPitch", {
+const useBookPitch = defineStore("bookPitch", {
   state: () => ({
     bookPitchData: [],
     customerBookPitchesData: [],
@@ -77,3 +77,5 @@ export const useBookPitch = defineStore("bookPitch", {
     },
   },
 });
+
+export default useBookPitch;

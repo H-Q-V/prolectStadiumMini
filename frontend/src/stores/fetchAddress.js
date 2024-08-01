@@ -1,6 +1,6 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-export const useAddress = defineStore("address", {
+const useAddress = defineStore("address", {
   state: () => ({
     provinceData: [],
     cityData: [],
@@ -42,3 +42,5 @@ export const useAddress = defineStore("address", {
     },
   },
 });
+
+export default useAddress;

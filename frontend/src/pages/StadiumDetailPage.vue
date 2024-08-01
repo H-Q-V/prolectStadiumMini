@@ -2,7 +2,7 @@
 import Evaluate from "../components/evaluate/Evaluate.vue";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useStadium } from "../stores/fetchStadium";
+import { useStadium } from "../stores";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const route = useRoute();

@@ -2,8 +2,8 @@
 import Button from "primevue/button";
 import Tag from "../components/tag/Tag.vue";
 import { onMounted, ref, watchEffect } from "vue";
-import { useStadium } from "../stores/fetchStadium";
 import { useRoute } from "vue-router";
+import { useStadium } from "../stores";
 const stadiumStore = useStadium();
 const stadiumData = ref([]);
 const route = useRoute();
@@ -13,6 +13,7 @@ onMounted(async () => {
 
 watchEffect(() => {
   stadiumData.value = stadiumStore.stadiumData;
+  console.log("🚀 ~ watchEffect ~ stadiumData:", stadiumData);
 });
 </script>
 <template>

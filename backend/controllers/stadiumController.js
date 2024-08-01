@@ -283,7 +283,9 @@ const stadiumController = {
         stadium_style: style,
         _id: stadium._id,
         stadium_name: stadium.stadium_name,
-        address: stadium.address,
+        ward: stadium.ward,
+        city: stadium.city,
+        provice: stadium.provice,
         phone: stadium.phone,
       });
     } catch (err) {
