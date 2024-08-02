@@ -2,8 +2,8 @@
 import FullCalendar from "@fullcalendar/vue3";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useBookPitch } from "../../stores/fetchBookPitch";
 import { onMounted, ref, computed, watchEffect } from "vue";
+import { useBookPitch } from "../../stores";
 
 const bookPitchData = ref([]);
 const bookPitchStore = useBookPitch();
