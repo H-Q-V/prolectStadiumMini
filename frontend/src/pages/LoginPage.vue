@@ -4,7 +4,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import { toast } from "vue3-toastify";
 import { useRouter } from "vue-router";
-import { useUser } from "../stores/fetchAuth";
+import { useUser } from "../stores";
 const router = useRouter();
 const userStore = useUser();
 const email = ref("");

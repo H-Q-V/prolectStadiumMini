@@ -8,7 +8,6 @@ import router from "./router";
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
 import { createPinia } from "pinia";
-import VueSkeletonLoader from "skeleton-loader-vue";
 const app = createApp(App);
 const pinia = createPinia();
 app.use(PrimeVue, {
@@ -24,5 +23,4 @@ app.use(PrimeVue, {
 
 app.use(router);
 app.use(pinia);
-app.component("VueSkeletonLoader", VueSkeletonLoader);
 app.mount("#app");

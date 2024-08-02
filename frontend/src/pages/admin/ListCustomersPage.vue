@@ -1,10 +1,10 @@
 <script setup>
 import { computed, onMounted, ref, watchEffect } from "vue";
-import { useUser } from "../../stores/fetchAuth";
 import { toast } from "vue3-toastify";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Dialog from "primevue/dialog";
+import { useUser } from "../../stores";
 const userData = ref([]);
 const userStore = useUser();
 

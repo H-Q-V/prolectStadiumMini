@@ -7,11 +7,11 @@ import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
-import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
 import { getAddress } from "../../utils/getAddress";
 import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
 import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
+import { useStadium } from "../../stores";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const visible = ref(false);
