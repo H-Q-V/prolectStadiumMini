@@ -1,15 +1,8 @@
-const webhook = require("express").Router();
+const express = require('express');
+const webhook = express.Router();
+const { handlePaymentWebhook } = require('../controllers/paymentController');
+const middlewareController = require("../controllers/middlewareController");
 
-webhook.all('/app', (req, res)=> {
-    console.log(req.body);
-    const transferType = req.body;
-    
-    if(transferType.transferType == 'in'){
-        console.log("Giao dịch thành công");
+webhook.all('/app', handlePaymentWebhook, middlewareController.verifyToken);
 
-    }else 
-        console.log("Giao dịch thất bại");
-    
-})
-
-module.exports = webhook
+module.exports = webhook;
