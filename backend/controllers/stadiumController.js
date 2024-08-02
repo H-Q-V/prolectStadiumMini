@@ -49,7 +49,7 @@ const stadiumController = {
         stadium_owner: req.customer.id,
         phone: phone,
       });
-      return res.json({ success: true, data: response });
+      return res.status(200).json({ success: true, data: response });
     } catch (err) {
       console.log("🚀 ~ addStadium: ~ err:", err);
       return res
