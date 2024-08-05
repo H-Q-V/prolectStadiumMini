@@ -25,12 +25,6 @@ const routes = [
       },
 
       {
-        path: "/calendar",
-        name: "Calendar",
-        component: () => import("./components/calendar/Calendar.vue"),
-      },
-
-      {
         path: "/stadium-detail/:id",
         name: "StadiumDetail",
         component: () => import("./pages/StadiumDetailPage.vue"),
@@ -67,6 +61,12 @@ const routes = [
         component: () =>
           import("./pages/stadiumOwner/ListStadiumOwnerPage.vue"),
       },
+
+      {
+        path: "/stadiumOwner/schedule",
+        name: "ScheduleOwner",
+        component: () => import("./pages/stadiumOwner/Schedule.vue"),
+      },
     ],
   },
 
@@ -93,6 +93,12 @@ const routes = [
         component: () => import("./pages/admin/ListStadiumByAdminPage.vue"),
       },
     ],
+  },
+
+  {
+    path: "/calendar",
+    name: "Calendar",
+    component: () => import("./components/calendar/Calendar.vue"),
   },
 
   {

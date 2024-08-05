@@ -4,4 +4,4 @@ import MenuStadiumOwner from "./MenuStadiumOwner.vue";
 <template>
   <MenuStadiumOwner></MenuStadiumOwner>
 </template>
-<style lang=""></style>
+<style></style>

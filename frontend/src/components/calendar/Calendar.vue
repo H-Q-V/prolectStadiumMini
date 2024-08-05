@@ -14,6 +14,7 @@ onMounted(async () => {
 
 watchEffect(() => {
   bookPitchData.value = bookPitchStore.bookPitchData;
+  console.log("🚀 ~ watchEffect ~ bookPitchData:", bookPitchData);
 });
 
 const calendarOptions = computed(() => ({
@@ -56,5 +57,9 @@ const calendarOptions = computed(() => ({
 
 ::v-deep .fc-scroller {
   overflow-y: hidden !important;
+}
+
+::v-deep .fc-media-screen {
+  padding: 20px 20px;
 }
 </style>

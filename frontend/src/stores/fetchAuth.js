@@ -43,7 +43,7 @@ const useUser = defineStore("user", {
 
     async getAllCustomers() {
       try {
-        const response = await axios.get(`${endpoint}/getAllCustomer`);
+        const response = await axios.get(`${endpoint}/getAllCustomer`, config);
         this.userData = response?.data;
       } catch (error) {
         console.log("🚀 ~ getAllCustomers ~ error:", error);
