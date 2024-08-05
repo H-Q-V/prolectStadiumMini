@@ -309,52 +309,6 @@ bookPitch: async (req, res) => {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
-  /*
-  payBookPitches: async (req, res) => {
-    try {
-        const userId = req.customer.id;
-        const bookings = await BookPitch.findOne({ user: userId }).populate('stadium');
-        if (!bookings || bookings.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy đặt sân của khách hàng',
-            });
-        }
-        let totalAmount = 0;
-        for (let booking of bookings) {
-            const stadium = booking.stadium;
-            const stadiumStyle = stadium.stadium_styles.id(booking.stadiumStyle);
-            if (stadiumStyle) {
-                const pricePerSlot = parseFloat(stadiumStyle.price.replace(/\./g, ''));
-                totalAmount += pricePerSlot * booking.time.length;
-            }
-        }
-        const totalMoney = totalAmount * 0.7; // Tiền đặt cọc
-        const formattedTotalMoney = totalMoney.toLocaleString('vi-VN');
-        const formattedTotalAmount = totalAmount.toLocaleString('vi-VN');
-
-        // Tìm tài khoản ngân hàng của khách hàng
-        const bankaccount = await bankAccount.findOne({ customer: userId });
-        if (!bankaccount) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy tài khoản ngân hàng của khách hàng',
-            });
-        }
-        return res.status(200).json({
-            success: true,
-            message: `Tong so tien la ${formattedTotalAmount}. So tien dat coc can thanh toan là ${formattedTotalMoney}.`,
-            totaltmoney: totalMoney,
-            acc: bankaccount.acc,
-            bank: bankaccount.bank,
-        });
-    } catch (error) {
-        console.error('🚀 ~ payBookPitches: ~ error:', error);
-        return res.status(500).json({ success: false, message: error.message });
-    }
-    
-},
-*/
 };
 
 
