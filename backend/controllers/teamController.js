@@ -95,36 +95,39 @@ const teamController = {
   },
   searchTeam: async(req,res) => {
     try {
-      const { search,name, averageAge, job} = req.query;
+      const { search,name,averageAge,job } = req.query;
       let queries = [];
       if(search){
         queries.push({
           $or: [
             { name: { $regex: search, $options: "i" } },
-            { averageAge: { $regex: search, $options: "i" } },
+            //{ averageAge: { $regex: search, $options: "i" } },
           ],
         });
       }
       if (name) {
         queries.push({name: { $regex:name, $options: "i"}});
       }
+      
       if (averageAge) {
-        queries.push({averageAge: { $regex:averageAge, $options: "i"}});
+        const averageAgeNumber = Number(averageAge);
+        if (!isNaN(averageAgeNumber)) {
+          queries.push({ averageAge: averageAgeNumber });
+        }
       }
       if (job) {
-        queries.push({averageAge: { $regex:job, $options: "i"}});
+        queries.push({job: { $regex:job, $options: "i"}});
       }
-      const query = queries.length.length > 0 ? {$and: queries} : {};
+      const query = queries.length > 0 ? { $and: queries } : {};
       const projection = {
         _id: 1,
         name: 1,
         averageAge: 1,
         job: 1,
+        teamFounder: 1,
       };
-      const teams = await Team.find(query, projection).populate(
-        "Team"
-      );
-      return res.status(200).json({message: "tìm kiếm thành công",data:teams})
+       const teams = await Team.find(query, projection);
+       return res.status(200).json({message: "tìm kiếm thành công",data:teams})
     } catch (error) {
        return res.status(500).json(error);
     }

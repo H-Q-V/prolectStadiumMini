@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const { Stadium } = require('../model/stadium');
 //const { BankAccount } = require('../model/bankAccount');
 const mongoose = require('mongoose');
-const bankAccount = require('../model/bankAccount');
+//const bankAccount = require('../model/bankAccount');
 const ObjectId = mongoose.Types.ObjectId;
 
 const bookPitchController = {
@@ -309,7 +309,7 @@ bookPitch: async (req, res) => {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
-  
+  /*
   payBookPitches: async (req, res) => {
     try {
         const userId = req.customer.id;
@@ -352,8 +352,9 @@ bookPitch: async (req, res) => {
         console.error('🚀 ~ payBookPitches: ~ error:', error);
         return res.status(500).json({ success: false, message: error.message });
     }
+    
 },
-
+*/
 };
 
 
