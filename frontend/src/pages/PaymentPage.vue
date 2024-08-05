@@ -3,12 +3,14 @@ import Button from "primevue/button";
 import Tag from "../components/tag/Tag.vue";
 import { onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { useStadium } from "../stores";
+import { useBookPitch, useStadium } from "../stores";
 const stadiumStore = useStadium();
+const bookStore = useBookPitch();
 const stadiumData = ref([]);
 const route = useRoute();
 onMounted(async () => {
   await stadiumStore.getAnStadiumStyle(route.params.id, route.params.stadiumID);
+  await bookStore.payment();
 });
 
 watchEffect(() => {

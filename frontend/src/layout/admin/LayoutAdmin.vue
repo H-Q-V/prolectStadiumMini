@@ -15,7 +15,7 @@ const handleMenuToggle = () => {
       <SidebarAdmin></SidebarAdmin>
     </div>
 
-    <div :class="['layout-main-container', { actives: sidebarActive }]">
+    <div class="layout-main-container">
       <div class="layout-main">
         <router-view></router-view>
       </div>
@@ -30,40 +30,43 @@ const handleMenuToggle = () => {
 .layout-sidebar {
   position: fixed;
   width: 300px;
-  height: calc(100vh - 9rem);
-  z-index: 999;
+  height: 100vh;
+  top: 100px;
+  left: -450px;
+  background-color: #fff;
+  padding: 10px 10px;
+  border-radius: 6px;
   overflow-y: auto;
-  user-select: none;
-  top: 7rem;
-  left: 2rem;
-  transition: all 0.5s ease;
-  border-radius: 12px;
-  padding: 0.5rem 1.5rem;
+  transition: 0.6s ease;
+  transition-property: left;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05),
     0px 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+.layout-sidebar::-webkit-scrollbar {
+  width: 0px;
+}
+
 .layout-sidebar.active {
-  left: -300px;
-  transition: all 0.5s ease-in;
+  left: 20px;
+  height: 100%;
 }
 
 .layout-main-container {
   min-height: 100vh;
-  padding: 7rem 2rem 2rem calc(300px + 70px);
+  padding: 7rem;
   transition: all 0.2s ease-in;
-  z-index: -1;
-}
-
-.layout-main-container.actives {
-  padding-right: 100px;
-  padding-left: 100px;
-  transition: all 0.5s ease-in;
 }
 
 .layout-main {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+@media (max-width: 480px) {
+  .layout-main-container {
+    padding: 7rem 20px;
+  }
 }
 </style>

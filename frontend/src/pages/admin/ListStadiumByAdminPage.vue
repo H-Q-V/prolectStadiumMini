@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import { useStadium } from "../../stores/fetchStadium";
 import Search from "../../components/search/Search.vue";
 import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
 import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
+import useStadium from "../../stores/fetchStadium";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 const searchResults = ref([]);

@@ -3,7 +3,7 @@ import Stadium from "../image/stadium.png";
 import Calendar from "../image/calendar.png";
 </script>
 <template lang="">
-  <div class="flex items-center text-center">
+  <div class="wrapper flex items-center text-center">
     <div class="flex flex-col items-center gap-2">
       <img :src="Stadium" alt="" class="w-[86px] h-[86px] object-cover" />
       <h1 class="text-xl font-bold">Tìm kiếm vị trí sân</h1>
@@ -32,4 +32,11 @@ import Calendar from "../image/calendar.png";
     </div>
   </div>
 </template>
-<style lang=""></style>
+<style scoped>
+@media screen and (max-width: 768px) {
+  .wrapper{
+    display: flex ;
+    flex-direction: column;
+  }
+}
+</style>

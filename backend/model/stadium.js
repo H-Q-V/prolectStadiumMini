@@ -2,31 +2,24 @@ const mongoose = require("mongoose");
 const stadiumSchema = new mongoose.Schema({
   stadium_name: {
     type: String,
-    required: true,
   },
   ward: {
     type: String,
-    required: true,
   },
   city: {
     type: String,
-    required: true,
   },
   provice: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
-    required: true,
   },
   phone: {
     type: String,
-    required: true,
   },
   describe: {
     type: String,
-    required: true,
   },
   stadium_styles: [
     {
@@ -51,6 +44,13 @@ const stadiumSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
   },
+
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
 });
 stadiumSchema.index({ stadium_name: "text", address: "text", phone: "text" });
 let Stadium = mongoose.model("Stadium", stadiumSchema);

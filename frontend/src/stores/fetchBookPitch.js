@@ -22,7 +22,9 @@ const useBookPitch = defineStore("bookPitch", {
           data,
           config
         );
-        toast.success("Đặt chỗ thành công");
+        toast.success(
+          "Đăng kí giữ giỗ thành công. Thời gian giữ chỗ sẽ hết sau 15 phút"
+        );
         router.push(`/payment/${id}/${idStadiumStyle}`);
       } catch (error) {
         console.log("🚀 ~ bookPitch ~ error:", error);
@@ -56,6 +58,15 @@ const useBookPitch = defineStore("bookPitch", {
         console.log("🚀 ~ deleteBookPitch ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ deleteBookPitch ~ error:", error);
+      }
+    },
+
+    async payment() {
+      try {
+        const respone = await axios.all(`${endpoint}/app`);
+        console.log("🚀 ~ payment ~ respone:", respone.data);
+      } catch (error) {
+        console.log("🚀 ~ payment ~ error:", error);
       }
     },
 

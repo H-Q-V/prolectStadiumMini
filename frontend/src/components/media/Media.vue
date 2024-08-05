@@ -33,11 +33,6 @@ const carouselResponsiveOptions = ref([
     numScroll: 3,
   },
   {
-    breakpoint: "768px",
-    numVisible: 2,
-    numScroll: 2,
-  },
-  {
     breakpoint: "560px",
     numVisible: 1,
     numScroll: 1,
@@ -45,27 +40,25 @@ const carouselResponsiveOptions = ref([
 ]);
 </script>
 <template>
-  <div class="grid">
-    <div class="w-full">
-      <div class="card shadow-md">
-        <Carousel
-          :value="products"
-          :numVisible="3"
-          :numScroll="3"
-          :responsiveOptions="carouselResponsiveOptions"
-        >
-          <template #item="slotProps">
-            <div class="media-list border border-[#e2e8f0] p-3 rounded-xl mr-4">
-              <div class="relative mx-auto">
-                <img
-                  :src="slotProps.data.image"
-                  class="w-full md:h-[200px] h-[70px] rounded-xl object-cover"
-                />
-              </div>
+  <div class="w-full -z-10">
+    <div class="card shadow-md">
+      <Carousel
+        :value="products"
+        :numVisible="3"
+        :numScroll="3"
+        :responsiveOptions="carouselResponsiveOptions"
+      >
+        <template #item="slotProps">
+          <div class="media-list border border-[#e2e8f0] p-3 rounded-xl mr-4">
+            <div class="relative mx-auto">
+              <img
+                :src="slotProps.data.image"
+                class="w-full md:h-[200px] h-[70px] rounded-xl object-cover"
+              />
             </div>
-          </template>
-        </Carousel>
-      </div>
+          </div>
+        </template>
+      </Carousel>
     </div>
   </div>
 </template>

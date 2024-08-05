@@ -13,7 +13,7 @@ watchEffect(() => {
 });
 </script>
 <template>
-  <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
+  <div class="grid md:grid-cols-4 grid-cols-1 gap-6">
     <div v-for="stadium of stadiumData">
       <Stadium
         :stadiumId="stadium?._id"

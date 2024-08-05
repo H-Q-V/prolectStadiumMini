@@ -154,7 +154,6 @@ const stadiumController = {
   getAllStadiumsByOwner: async (req, res) => {
     try {
       const ownerID = req.customer.id;
-      console.log("🚀 ~ getAllStadiumsByOwner: ~ ownerID:", ownerID);
       const stadiums = await Stadium.find({
         stadium_owner: ownerID,
       }).populate("stadium_owner");

@@ -16,11 +16,29 @@ router.get(
   bookPitchController.getCustomerBookPitches
 );
 
-router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
+router.get(
+  "/getStadiumOwnerBookPitch",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner"]),
+  bookPitchController.getStadiumOwnerBookPitch
+);
+router.delete(
+  "/deleteBookPitches/:id",
+  middlewareController.verifyToken,
+  bookPitchController.deleteBookPitchs
+);
 
-router.put("/updateBookPitches/:id", middlewareController.verifyToken, bookPitchController.updateBookPitch);
+router.put(
+  "/updateBookPitches/:id",
+  middlewareController.verifyToken,
+  bookPitchController.updateBookPitch
+);
 
 //router.get("/payBookPitches/:idGetCustomerBookPitches", middlewareController.verifyToken, bookPitchController.payBookPitches);
-router.get("/payBookPitches", middlewareController.verifyToken, bookPitchController.payBookPitches);
+router.get(
+  "/payBookPitches",
+  middlewareController.verifyToken,
+  bookPitchController.payBookPitches
+);
 
 module.exports = router;
