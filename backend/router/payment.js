@@ -1,15 +1,11 @@
-const webhook = require("express").Router();
 
-webhook.all('/app', (req, res)=> {
-    console.log(req.body);
-    const transferType = req.body;
-    
-    if(transferType.transferType == 'in'){
-        console.log("Giao dịch thành công");
+const express = require('express');
+const webhook = express.Router();
+const payment = require('../controllers/paymentController')
+const middlewareController = require("../controllers/middlewareController");
 
-    }else 
-        console.log("Giao dịch thất bại");
-    
-})
+webhook.post('/payment', middlewareController.verifyToken, payment.createPayment)
+webhook.all('/status-payment', payment.AuthenPay)
 
-module.exports = webhook
+module.exports = webhook;
+

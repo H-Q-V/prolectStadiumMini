@@ -6,7 +6,7 @@ import Dropdown from "primevue/dropdown";
 import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { convertBase64 } from "../../utils/uploadimage";
+import { convertBase64, onFileChange } from "../../utils/uploadimage";
 import { toast } from "vue3-toastify";
 import { getAddress } from "../../utils/getAddress";
 import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";

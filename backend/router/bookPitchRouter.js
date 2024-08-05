@@ -34,11 +34,5 @@ router.put(
   bookPitchController.updateBookPitch
 );
 
-//router.get("/payBookPitches/:idGetCustomerBookPitches", middlewareController.verifyToken, bookPitchController.payBookPitches);
-router.get(
-  "/payBookPitches",
-  middlewareController.verifyToken,
-  bookPitchController.payBookPitches
-);
 
 module.exports = router;
