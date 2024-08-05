@@ -7,9 +7,9 @@ router.get("/getAllCustomer", middlewareController.verifyToken, customerControll
 // delete customer
 router.delete("/deleteCustomer/:id", middlewareController.verifyTokenAndAdminAuth, customerController.deleteCustomer);
 //router.delete("/deleteCustomer/:id", customerController.deleteCustomer);
-router.post("/addAccountBank/:idCustomer", middlewareController.verifyToken, customerController.addAccountBank);
+//router.post("/addAccountBank/:idCustomer", middlewareController.verifyToken, customerController.addAccountBank);
 
-router.put("/updateAccountBank/:id", middlewareController.verifyToken, customerController.updateAccountBank);
+//router.put("/updateAccountBank/:id", middlewareController.verifyToken, customerController.updateAccountBank);
 
-router.delete("/deleteAccountBank/:id", middlewareController.verifyToken, customerController.deleteAccountBank);
+//router.delete("/deleteAccountBank/:id", middlewareController.verifyToken, customerController.deleteAccountBank);
 module.exports = router;

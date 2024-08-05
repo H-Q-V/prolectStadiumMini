@@ -14,7 +14,7 @@ const teamSchema = new mongoose.Schema({
      },
      phone:{
         type: String,
-        require: true,
+        required: true,
      },
      teamFounder:{
         type: mongoose.Schema.Types.ObjectId,

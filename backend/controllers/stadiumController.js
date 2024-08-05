@@ -220,7 +220,7 @@ const stadiumController = {
       if (!name || !type || !price) {
         return res
           .status(500)
-          .json({ status: false, message: "Nhập sai thông tin" });
+          .json({ status: false, message: "Nhập thiếu thông tin" });
       }
       const priceRegex = /^\d+$/;
       if (!priceRegex.test(price)) {
