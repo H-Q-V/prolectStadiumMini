@@ -12,6 +12,10 @@ const stadiumSchema = new mongoose.Schema({
   provice: {
     type: String,
   },
+  address:{
+    type: String,
+    required: true,
+  },
   image: {
     type: String,
   },
@@ -38,6 +42,10 @@ const stadiumSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      time: {
+        type: String,
+        required: true,
+      }
     },
   ],
   stadium_owner: {
