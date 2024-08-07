@@ -6,7 +6,8 @@ const payStatusSchema = new mongoose.Schema({
     Amount: { type: Number, required: true },
     Status: { type: String, required: true }, // You may consider using an enum for status values
     //payment: { type: String, default: null },
-    Code: { type: String, default: null }
+    Code: { type: String, default: null },
+    
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
 });

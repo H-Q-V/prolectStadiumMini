@@ -36,7 +36,10 @@ router.delete(
 
 router.get("/searchStadium", stadiumController.searchStadium);
 // router để thêm stadiumstyle
-router.post("/createStadiumStyle/:id", stadiumController.addStadiumStyle);
+router.post("/createStadiumStyle", 
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]), 
+  stadiumController.addStadiumStyle);
 
 router.get("/getAllStadiumStyle/:id", stadiumController.getAllStadiumStyle);
 
@@ -46,7 +49,9 @@ router.get(
 );
 
 router.put(
-  "/updateStadiumStyle/:id/:stadiumStyleId",
+  "/updateStadiumStyle",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]), 
   stadiumController.updateStadiumStyle
 );
 
