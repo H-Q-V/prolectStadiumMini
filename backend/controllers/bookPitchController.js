@@ -82,17 +82,20 @@ const bookPitchController = {
       };
 
       const createBooking = async (timeSlots) => {
-        return await BookPitch.create({
-          phone: phone,
-          time: timeSlots,
-          user: req.customer.id,
-          // bankaccount: req.bankaccount.id,
-          stadium: stadiumID,
-          stadiumStyle: stadiumStyleID,
-          status: "pending",
-          originalStartTime: new Date(startTime),
-          originalEndTime: new Date(endTime),
-        });
+
+          return await BookPitch.create({
+              phone: phone,
+              time: timeSlots,
+              user: req.customer.id,
+             // bankaccount: req.bankaccount.id,
+              stadium: stadiumID,
+              stadiumStyle: stadiumStyleID,
+              status: 'pending',
+              periodic: bookingType,
+              originalStartTime: new Date(startTime),
+              originalEndTime: new Date(endTime),
+          });
+
       };
 
       const handleBooking = async (timeSlots) => {
@@ -305,6 +308,7 @@ const bookPitchController = {
     }
   },
 
+
   deleteBookPitchs: async (req, res) => {
     try {
       await BookPitch.findByIdAndDelete(req.params.id);
@@ -378,52 +382,65 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
-  /*
-  payBookPitches: async (req, res) => {
-    try {
-        const userId = req.customer.id;
-        const bookings = await BookPitch.findOne({ user: userId }).populate('stadium');
-        if (!bookings || bookings.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy đặt sân của khách hàng',
-            });
-        }
-        let totalAmount = 0;
-        for (let booking of bookings) {
-            const stadium = booking.stadium;
-            const stadiumStyle = stadium.stadium_styles.id(booking.stadiumStyle);
-            if (stadiumStyle) {
-                const pricePerSlot = parseFloat(stadiumStyle.price.replace(/\./g, ''));
-                totalAmount += pricePerSlot * booking.time.length;
-            }
-        }
-        const totalMoney = totalAmount * 0.7; // Tiền đặt cọc
-        const formattedTotalMoney = totalMoney.toLocaleString('vi-VN');
-        const formattedTotalAmount = totalAmount.toLocaleString('vi-VN');
-
-        // Tìm tài khoản ngân hàng của khách hàng
-        const bankaccount = await bankAccount.findOne({ customer: userId });
-        if (!bankaccount) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy tài khoản ngân hàng của khách hàng',
-            });
-        }
-        return res.status(200).json({
-            success: true,
-            message: `Tong so tien la ${formattedTotalAmount}. So tien dat coc can thanh toan là ${formattedTotalMoney}.`,
-            totaltmoney: totalMoney,
-            acc: bankaccount.acc,
-            bank: bankaccount.bank,
-        });
-    } catch (error) {
-        console.error('🚀 ~ payBookPitches: ~ error:', error);
-        return res.status(500).json({ success: false, message: error.message });
-    }
-    
+getAnBookPitch: async (req, res) => {
+  try {
+      const idCustomer = req.customer.id;
+      const bookPitch = await BookPitch.findOne({
+          user: idCustomer
+      });
+      if (!bookPitch) {
+          return res.status(404).json({
+              success: false,
+              message: "Book pitch not found"
+          });
+      }
+      const stadium = await Stadium.findOne({
+          "stadium_styles._id": bookPitch.stadiumStyle,
+      });
+      if (!stadium) {
+          return res.status(404).json({
+              success: false,
+              message: "Stadium not found"
+          });
+      }
+      const st = stadium.stadium_styles.find(
+          (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
+      );
+      if (!st) {
+          return res.status(404).json({
+              success: false,
+              message: "Stadium style not found"
+          });
+      }
+      const convertedTimeSlots = bookPitch.time.map(slot => ({
+          startTime: moment.utc(slot.startTime).tz('Asia/Ho_Chi_Minh').format(),
+          endTime: moment.utc(slot.endTime).tz('Asia/Ho_Chi_Minh').format(),
+      }));
+      const data = {
+          ...stadium._doc,
+          ...st._doc,
+          ...bookPitch._doc,
+          time: convertedTimeSlots,
+          originalStartTime: moment.utc(bookPitch.originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
+          originalEndTime: moment.utc(bookPitch.originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
+      };
+      delete data.stadium_styles;
+      return res.status(200).json({
+          success: true,
+          data: [data]
+      });
+  } catch (error) {
+      console.log("🚀 ~ getAnBookPitch: ~ error:", error);
+      return res.status(500).json(error);
+  }
 },
-*/
+  getFreeTime: async(req,res) => {
+    try {
+      
+    } catch (error) {
+      return res.status(400).json(error)
+    }
+  }
 };
 
 cron.schedule("0 0 * * *", async () => {
