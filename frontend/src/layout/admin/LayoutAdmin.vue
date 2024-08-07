@@ -11,7 +11,7 @@ const handleMenuToggle = () => {
   <div class="layout-wrapper">
     <Topbar :onMenuToogle="handleMenuToggle"></Topbar>
 
-    <div :class="['layout-sidebar', { active: sidebarActive }]">
+    <div :class="['layout-sidebar z-10', { active: sidebarActive }]">
       <SidebarAdmin></SidebarAdmin>
     </div>
 

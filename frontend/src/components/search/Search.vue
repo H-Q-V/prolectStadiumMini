@@ -3,12 +3,13 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import { ref, watchEffect } from "vue";
-import { getAddress } from "../../utils/getAddress";
 import { useStadium } from "../../stores";
+import { getAddress } from "../../utils";
 
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const name = ref("");
+const address = ref("");
 const result = ref([]);
 const stadiumStore = useStadium();
 const emit = defineEmits(["searchResults", "loadingStateChange"]);
@@ -84,6 +85,13 @@ const handleSearch = async () => {
       optionLabel="name"
       placeholder="Chọn phường xã"
       :disabled="!city"
+      class="inputText"
+    />
+
+    <InputText
+      v-model="address"
+      placeholder="Nhập địa chỉ"
+      :disabled="!ward"
       class="inputText"
     />
     <Button

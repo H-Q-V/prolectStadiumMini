@@ -1,8 +1,6 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-import { endpoint } from "../utils/endpoint";
-import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
-
+import { config, endpoint } from "../utils";
 const useBookPitch = defineStore("bookPitch", {
   state: () => ({
     bookPitchData: [],
@@ -11,11 +9,6 @@ const useBookPitch = defineStore("bookPitch", {
   getters: {},
   actions: {
     async bookPitch(data, toast, router, id, idStadiumStyle) {
-      const config = {
-        headers: {
-          token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
-        },
-      };
       try {
         await axios.post(
           `${endpoint}/bookPitch/${id}/${idStadiumStyle}`,
@@ -25,7 +18,7 @@ const useBookPitch = defineStore("bookPitch", {
         toast.success(
           "Đăng kí giữ giỗ thành công. Thời gian giữ chỗ sẽ hết sau 15 phút"
         );
-        router.push(`/payment/${id}/${idStadiumStyle}`);
+        router.push(`/payment`);
       } catch (error) {
         console.log("🚀 ~ bookPitch ~ error:", error);
         toast.error(error?.response?.data?.message);
@@ -43,11 +36,6 @@ const useBookPitch = defineStore("bookPitch", {
     },
 
     async deleteBookPitch(id, toast) {
-      const config = {
-        headers: {
-          token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
-        },
-      };
       try {
         const response = await axios.delete(
           `${endpoint}/deleteBookPitches/${id}`,
@@ -63,19 +51,14 @@ const useBookPitch = defineStore("bookPitch", {
 
     async payment() {
       try {
-        const respone = await axios.all(`${endpoint}/app`);
-        console.log("🚀 ~ payment ~ respone:", respone.data);
+        const response = await axios.post(`${endpoint}/payment`, config);
+        console.log("🚀 ~ payment ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ payment ~ error:", error);
       }
     },
 
     async getCustomerBookPitches() {
-      const config = {
-        headers: {
-          token: `Bearer ${localStorage.getItem(LOCAL_STORAGE_TOKEN)}`,
-        },
-      };
       try {
         const response = await axios.get(
           `${endpoint}/getCustomerBookPitches`,
@@ -84,6 +67,19 @@ const useBookPitch = defineStore("bookPitch", {
         this.customerBookPitchesData = response?.data?.message;
       } catch (error) {
         console.log("🚀 ~ getCustomerBookPitches ~ error:", error);
+      }
+    },
+
+    async getStadiumOwnerBookings() {
+      try {
+        const response = await axios.get(
+          `${endpoint}/getStadiumOwnerBookings`,
+          config
+        );
+        console.log("🚀 ~ getStadiumOwnerBookings ~ response:", response);
+        this.bookPitchData = response?.data?.message;
+      } catch (error) {
+        console.log("🚀 ~ getStadiumOwnerBookings ~ error:", error);
       }
     },
   },

@@ -17,10 +17,10 @@ router.get(
 );
 
 router.get(
-  "/getStadiumOwnerBookPitch",
+  "/getStadiumOwnerBookings",
   middlewareController.verifyToken,
   middlewareController.authorize(["StadiumOwner"]),
-  bookPitchController.getStadiumOwnerBookPitch
+  bookPitchController.getStadiumOwnerBookings
 );
 router.delete(
   "/deleteBookPitches/:id",
@@ -33,6 +33,5 @@ router.put(
   middlewareController.verifyToken,
   bookPitchController.updateBookPitch
 );
-
 
 module.exports = router;
