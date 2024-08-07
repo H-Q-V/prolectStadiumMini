@@ -4,9 +4,6 @@ const customerSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      minlength: 6,
-      maxlength: 20,
-      unique: true,
     },
     email: {
       type: String,
@@ -21,12 +18,12 @@ const customerSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
-    img:[
+    img: [
       {
         image: {
           type: String,
         },
-      }
+      },
     ],
     role: {
       type: String,

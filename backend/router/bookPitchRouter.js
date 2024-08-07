@@ -22,10 +22,10 @@ router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchContr
 router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
 
 router.get(
-  "/getStadiumOwnerBookPitch",
+  "/getStadiumOwnerBookings",
   middlewareController.verifyToken,
   middlewareController.authorize(["StadiumOwner"]),
-  bookPitchController.getStadiumOwnerBookPitch
+  bookPitchController.getStadiumOwnerBookings
 );
 router.delete(
   "/deleteBookPitches/:id",
@@ -41,5 +41,6 @@ router.put(
 );
 
 router.get("/getFreeTime", middlewareController.verifyToken, bookPitchController.getFreeTime);
+
 
 module.exports = router;

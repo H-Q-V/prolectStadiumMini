@@ -2,65 +2,70 @@
 import Button from "primevue/button";
 import Tag from "../components/tag/Tag.vue";
 import { onMounted, ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
-import { useBookPitch, useStadium } from "../stores";
-const stadiumStore = useStadium();
+import { useBookPitch } from "../stores";
 const bookStore = useBookPitch();
-const stadiumData = ref([]);
-const route = useRoute();
+const bookData = ref([]);
 onMounted(async () => {
-  await stadiumStore.getAnStadiumStyle(route.params.id, route.params.stadiumID);
-  await bookStore.payment();
+  await bookStore.getCustomerBookPitches();
 });
 
+const handlePayment = async () => {
+  await bookStore.payment();
+};
+
 watchEffect(() => {
-  stadiumData.value = stadiumStore.stadiumData;
-  console.log("🚀 ~ watchEffect ~ stadiumData:", stadiumData);
+  bookData.value = bookStore.customerBookPitchesData;
 });
 </script>
 <template>
-  <div class="flex flex-col gap-10 items-center justify-center h-screen">
-    <div class="w-[680px] flex items-center gap-10">
-      <img
-        class="w-[200px] h-[200px]"
-        src="https://qr.sepay.vn/img?acc=0010000000355&bank=Vietcombank&amount=100000&des=ung%20ho%20quy%20bao%20tro%20tre%20em"
-        alt="QR code"
-      />
+  <form
+    @submit.prevent="handlePayment"
+    class="flex items-center justify-center h-screen"
+  >
+    <div v-for="book in bookData" class="flex flex-col gap-3">
+      <h1 class="text-2xl font-bold">Thông tin chi tiết sân</h1>
 
-      <div class="flex flex-col gap-[10px]">
-        <h1 class="text-xl">Thông tin chi tiết sân</h1>
+      <Tag
+        :infor="'Số điện thoại'"
+        :value="book.phone"
+        :className="'gap-5'"
+      ></Tag>
 
-        <Tag
-          :infor="'Số điện thoại'"
-          :value="stadiumData.phone"
-          :className="'gap-5'"
-        ></Tag>
+      <Tag
+        :infor="'Sân vận động'"
+        :value="book.stadium_name"
+        :className="'gap-5'"
+      ></Tag>
 
-        <Tag
-          :infor="'Địa chỉ '"
-          :value="`${stadiumData.ward} ${stadiumData.city} ${stadiumData.provice}`"
-          :className="'gap-5'"
-        ></Tag>
-        <Tag
-          :infor="'Giá'"
-          :value="stadiumData?.stadium_style?.price"
-          :class="'gap-5'"
-        ></Tag>
+      <Tag
+        :infor="'Kiểu sân'"
+        :value="`Sân ${book.type}`"
+        :className="'gap-5'"
+      ></Tag>
 
-        <div class="flex items-center gap-3">
-          <Button
-            class="bg-[#286090] font-medium py-2 px-6 text-white rounded-md"
-            >Đặt sân</Button
-          >
+      <Tag :infor="'Vị trí'" :value="`${book.name}`" :className="'gap-5'"></Tag>
 
-          <router-link
-            to="/list"
-            class="py-2 px-6 border border-[#286090] text-[#286090] rounded-md"
-            >Hủy</router-link
-          >
-        </div>
+      <Tag
+        :infor="'Địa chỉ '"
+        :value="`${book.ward} ${book.city} ${book.provice}`"
+        :className="'gap-5'"
+      ></Tag>
+      <Tag :infor="'Giá'" :value="book.price" :class="'gap-5'"></Tag>
+
+      <div class="flex items-center gap-3">
+        <Button
+          type="submit"
+          label="Thanh toán"
+          class="bg-[#286090] font-medium py-2 px-6 text-white rounded-md"
+        ></Button>
+
+        <router-link
+          to="/list"
+          class="py-2 px-6 border border-[#286090] text-[#286090] rounded-md"
+          >Hủy</router-link
+        >
       </div>
     </div>
-  </div>
+  </form>
 </template>
 <style></style>
