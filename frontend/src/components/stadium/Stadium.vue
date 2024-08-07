@@ -29,7 +29,9 @@ const props = defineProps({
       </div>
       <div class="flex items-center gap-2 text-sm">
         <i class="pi pi-fw pi-map-marker"></i>
-        <p class="capitalize">{{ ward }} {{ city }} {{ provice }}</p>
+        <p class="capitalize line-clamp-1">
+          {{ ward }} {{ city }} {{ provice }}
+        </p>
       </div>
     </router-link>
   </div>

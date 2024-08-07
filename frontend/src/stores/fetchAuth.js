@@ -4,7 +4,7 @@ import { endpoint } from "../utils/endpoint";
 import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 import { config } from "../utils/config";
 
-export const useUser = defineStore("user", {
+const useUser = defineStore("user", {
   state: () => ({
     userData: [],
   }),
@@ -43,7 +43,7 @@ export const useUser = defineStore("user", {
 
     async getAllCustomers() {
       try {
-        const response = await axios.get(`${endpoint}/getAllCustomer`);
+        const response = await axios.get(`${endpoint}/getAllCustomer`, config);
         this.userData = response?.data;
       } catch (error) {
         console.log("🚀 ~ getAllCustomers ~ error:", error);
@@ -90,3 +90,5 @@ export const useUser = defineStore("user", {
     },
   },
 });
+
+export default useUser;

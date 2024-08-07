@@ -1,8 +1,7 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import { useStadium } from "../../stores/fetchStadium";
 import StadiumByOwner from "./StadiumByOwner.vue";
-
+import useStadium from "../../stores/fetchStadium";
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
 onMounted(async () => {
@@ -14,7 +13,7 @@ watchEffect(() => {
 });
 </script>
 <template>
-  <div class="grid md:grid-cols-3 grid-cols-1 gap-6">
+  <div class="grid md:grid-cols-4 grid-cols-1 gap-6">
     <div
       v-if="stadiumData.length > 0"
       v-for="stadium in stadiumData"

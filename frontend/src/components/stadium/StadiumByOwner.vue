@@ -1,6 +1,7 @@
 <script setup>
 import { toast } from "vue3-toastify";
-import { useStadium } from "../../stores/fetchStadium";
+import useStadium from "../../stores/fetchStadium";
+
 const props = defineProps({
   stadiumId: { type: String, required: true },
   image: { type: String, required: true },

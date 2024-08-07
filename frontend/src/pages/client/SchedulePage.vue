@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import { useBookPitch } from "../../stores/fetchBookPitch";
 import Button from "primevue/button";
 import date from "date-and-time";
 import { toast } from "vue3-toastify";
+import { useBookPitch } from "../../stores";
 const customerBookPitchesData = ref([]);
 const bookPitchStore = useBookPitch();
 onMounted(async () => {

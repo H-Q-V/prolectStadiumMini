@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed } from "vue";
-import { useUser } from "../../stores/fetchAuth";
 const props = defineProps({
   onMenuToogle: {
     type: Function,

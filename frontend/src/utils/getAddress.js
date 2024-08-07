@@ -1,5 +1,5 @@
 import { onMounted, ref, watch, watchEffect } from "vue";
-import { useAddress } from "../stores/fetchAddress";
+import { useAddress } from "../stores";
 
 export const getAddress = () => {
   const addressStore = useAddress();
