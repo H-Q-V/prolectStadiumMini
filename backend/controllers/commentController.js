@@ -5,6 +5,14 @@ const commentController = {
     try {
       const { comments } = req.body;
       const stadium = await Stadium.findById(req.params.stadiumID);
+      if (!comments) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "Vui lòng để lại đánh giá của bạn",
+          });
+      }
       if (!stadium) {
         return res
           .status(404)

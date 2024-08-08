@@ -6,13 +6,12 @@ import Dropdown from "primevue/dropdown";
 import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import { convertBase64, onFileChange } from "../../utils/uploadimage";
 import { toast } from "vue3-toastify";
-import { getAddress } from "../../utils/getAddress";
 import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
 import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
 import { useStadium } from "../../stores";
 import "../../components/primevuecss/dialog.css";
+import { convertBase64, getAddress } from "../../utils";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const visible = ref(false);
@@ -20,6 +19,7 @@ const image = ref("");
 const imageUrl = ref("");
 const stadium_name = ref(null);
 const phone = ref(null);
+const address = ref("");
 const describe = ref(null);
 const stadiumStore = useStadium();
 
@@ -31,6 +31,7 @@ const handleAddStadium = async () => {
     city: city.value.name,
     ward: ward.value.name,
     phone: phone.value,
+    address: address.value,
     describe: describe.value,
   };
   await stadiumStore.createStadium(data, toast);
@@ -40,6 +41,7 @@ const handleAddStadium = async () => {
   ward.value = "";
   phone.value = "";
   describe.value = "";
+  address.value = "";
   image.value = "";
 };
 
@@ -171,6 +173,11 @@ const previewImage = (event) => {
           :disabled="!city"
           class="input-text"
         />
+      </div>
+
+      <div class="flex items-center gap-4">
+        <label for="address" class="font-semibold w-24">Địa chỉ</label>
+        <InputText id="address" name="address" placeholder="" class="input-text" v-model="address"</InputText>
       </div>
 
       <div class="flex items-center gap-4">

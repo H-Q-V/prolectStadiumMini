@@ -208,6 +208,7 @@ const bookPitchController = {
     }
   },
 
+
   getCustomerBookPitches: async (req, res) => {
     try {
       const bookPitch = await BookPitch.find({
@@ -321,6 +322,7 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
+
 getAnBookPitch: async (req, res) => {
   try {
       const idCustomer = req.customer.id;
@@ -371,6 +373,8 @@ getAnBookPitch: async (req, res) => {
       return res.status(500).json(error);
   }
 },
+
+
 isTimeSlotFree: (slot, bookings) => {
   return bookings.every(booking => {
     return slot.endTime <= booking.startTime || slot.startTime >= booking.endTime;
@@ -435,6 +439,7 @@ getFreeTime: async (req, res) => {
     });
   }
 },
+
 };
 
 

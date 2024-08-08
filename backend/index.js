@@ -12,8 +12,9 @@ const stadiumRoute = require("./router/stadiumRouter");
 const authRouter = require("./router/authRouter");
 const bookPitchRouter = require("./router/bookPitchRouter");
 const customerRouter = require("./router/customerRouter");
-const webhook = require('./router/payment');
-const teamRouter = require('./router/teamRouter');
+const commentRouter = require("./router/commentRouter");
+const webhook = require("./router/payment");
+const teamRouter = require("./router/teamRouter");
 //const otpRoutes = require("./router/otpRouter");
 dotenv.config();
 app.use(
@@ -51,6 +52,7 @@ app.use("/api", bookPitchRouter);
 app.use("/api", customerRouter);
 app.use("/api", webhook);
 app.use("/api", teamRouter);
+app.use("/api", commentRouter);
 //app.use("/api", otpRoutes);
 app.listen(3000, () => {
   console.log("server is running http://localhost:3000/");

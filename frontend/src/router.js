@@ -76,7 +76,7 @@ const routes = [
     component: LayoutAdmin,
     children: [
       {
-        path: "/admin/",
+        path: "/admin",
         name: "Admin",
         component: () => import("./pages/admin/AdminPage.vue"),
       },
@@ -108,7 +108,7 @@ const routes = [
   },
 
   {
-    path: "/payment/:id/:stadiumID",
+    path: "/payment",
     name: "Payment",
     component: () => import("./pages/PaymentPage.vue"),
   },
@@ -173,6 +173,14 @@ router.beforeEach((to, from, next) => {
     return next("/notfound");
   }
 
+  if (to.path === "/") {
+    if (userRole === "StadiumOwner") {
+      return next({ name: "StadiumOwner" });
+    }
+    if (userRole === "Admin") {
+      return next({ name: "Admin" });
+    }
+  }
   next();
 });
 
