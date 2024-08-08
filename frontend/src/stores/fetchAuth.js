@@ -1,14 +1,20 @@
 import axios from "axios";
 import { defineStore } from "pinia";
-import { endpoint } from "../utils/endpoint";
+import { config, endpoint } from "../utils";
 import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
-import { config } from "../utils/config";
 
 const useUser = defineStore("user", {
   state: () => ({
     userData: [],
   }),
-  getters: {},
+  getters: {
+    currentUser: () => {
+      const username = localStorage.getItem("username");
+      const role = localStorage.getItem("userRole");
+      const email = localStorage.getItem("email");
+      return { username, role, email };
+    },
+  },
   actions: {
     async register(data, toast, router) {
       try {
@@ -26,6 +32,7 @@ const useUser = defineStore("user", {
         const response = await axios.post(`${endpoint}/login`, data);
         toast.success("Đăng nhập thành công");
         localStorage.setItem(LOCAL_STORAGE_TOKEN, response?.data?.accessToken);
+        localStorage.setItem("email", response?.data?.email);
         localStorage.setItem("username", response?.data?.username);
         localStorage.setItem("userRole", response?.data?.role);
         if (response?.data?.role === "Admin") {
@@ -41,6 +48,16 @@ const useUser = defineStore("user", {
       }
     },
 
+    async addCustomers(data, toast) {
+      try {
+        await axios.post(`${endpoint}/addUsers`, data, config);
+        toast.success("Thêm khách hàng thành công");
+      } catch (error) {
+        console.log("🚀 ~ addCustomers ~ error:", error);
+        toast.error(error?.response?.data?.message);
+      }
+    },
+
     async getAllCustomers() {
       try {
         const response = await axios.get(`${endpoint}/getAllCustomer`, config);
@@ -50,11 +67,11 @@ const useUser = defineStore("user", {
       }
     },
 
-    async updateCustomer(customerId, role, toast) {
+    async updateCustomer(customerId, data, toast) {
       try {
         const response = await axios.put(
           `${endpoint}/updateCustomer/${customerId}`,
-          { role },
+          data,
           config
         );
         this.getAllCustomers();
@@ -66,11 +83,7 @@ const useUser = defineStore("user", {
 
     async deleteCustomer(customerId, toast) {
       try {
-        const response = await axios.delete(
-          `${endpoint}/deleteCustomer/${customerId}`,
-          config
-        );
-        console.log("🚀 ~ deleteCustomer ~ response:", response);
+        await axios.delete(`${endpoint}/deleteCustomer/${customerId}`, config);
         this.getAllCustomers();
         toast.success("Xóa thành công");
       } catch (error) {

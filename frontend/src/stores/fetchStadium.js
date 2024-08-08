@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { endpoint } from "../utils/endpoint";
-import { config } from "../utils/config";
-
+import { config, endpoint } from "../utils";
 const useStadium = defineStore("stadium", {
   state: () => ({
     stadiumData: [],
@@ -88,7 +86,7 @@ const useStadium = defineStore("stadium", {
       }
     },
 
-    async commment(content, stadiumID) {
+    async commment(content, stadiumID, toast) {
       try {
         const response = await axios.post(
           `${endpoint}/createComment/${stadiumID}`,
@@ -97,6 +95,7 @@ const useStadium = defineStore("stadium", {
         );
       } catch (error) {
         console.log("🚀 ~ commment ~ error:", error);
+        toast.error(error?.response?.data?.message);
       }
     },
 

@@ -1,11 +1,34 @@
 const customerController = require("../controllers/customerController");
 const middlewareController = require("../controllers/middlewareController");
 const router = require("express").Router();
+
+router.post(
+  "/addUsers",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["Admin"]),
+  customerController.addUsers
+);
 // get all customer
-router.get("/getAllCustomer", middlewareController.verifyToken, customerController.getAllCustomer);
+router.get(
+  "/getAllCustomer",
+  middlewareController.verifyToken,
+  customerController.getAllCustomer
+);
+
+router.put(
+  "/updateCustomer/:id",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["Admin"]),
+  customerController.updateCustomer
+);
 
 // delete customer
-router.delete("/deleteCustomer/:id", middlewareController.verifyTokenAndAdminAuth, customerController.deleteCustomer);
+router.delete(
+  "/deleteCustomer/:id",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["Admin"]),
+  customerController.deleteCustomer
+);
 //router.delete("/deleteCustomer/:id", customerController.deleteCustomer);
 //router.post("/addAccountBank/:idCustomer", middlewareController.verifyToken, customerController.addAccountBank);
 

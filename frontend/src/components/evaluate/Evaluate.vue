@@ -6,6 +6,7 @@ import Button from "primevue/button";
 import { onMounted, ref, watchEffect } from "vue";
 import useStadium from "../../stores/fetchStadium";
 import { useRoute } from "vue-router";
+import { toast } from "vue3-toastify";
 const comments = ref("");
 const route = useRoute();
 const stadiumStore = useStadium();
@@ -15,7 +16,7 @@ const handleComment = async () => {
     comments: comments.value,
   };
 
-  await stadiumStore.commment(commmentData, route.params.id);
+  await stadiumStore.commment(commmentData, route.params.id, toast);
   comments.value = "";
   await stadiumStore.getComments(route.params.id);
 };
