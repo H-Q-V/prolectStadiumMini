@@ -82,20 +82,18 @@ const bookPitchController = {
       };
 
       const createBooking = async (timeSlots) => {
-
-          return await BookPitch.create({
-              phone: phone,
-              time: timeSlots,
-              user: req.customer.id,
-             // bankaccount: req.bankaccount.id,
-              stadium: stadiumID,
-              stadiumStyle: stadiumStyleID,
-              status: 'pending',
-              periodic: bookingType,
-              originalStartTime: new Date(startTime),
-              originalEndTime: new Date(endTime),
-          });
-
+        return await BookPitch.create({
+          phone: phone,
+          time: timeSlots,
+          user: req.customer.id,
+          // bankaccount: req.bankaccount.id,
+          stadium: stadiumID,
+          stadiumStyle: stadiumStyleID,
+          status: "pending",
+          periodic: bookingType,
+          originalStartTime: new Date(startTime),
+          originalEndTime: new Date(endTime),
+        });
       };
 
       const handleBooking = async (timeSlots) => {
@@ -222,70 +220,70 @@ const bookPitchController = {
     }
   },
 
-  getCustomerBookPitches: async (req, res) => {
-    try {
-      const bookPitch = await BookPitch.find({
-        user: req.customer.id,
-      });
-      const data = [];
+  // getCustomerBookPitches: async (req, res) => {
+  //   try {
+  //     const bookPitch = await BookPitch.find({
+  //       user: req.customer?.id,
+  //     });
+  //     const data = [];
 
-      for (let i = 0; i < bookPitch.length; i++) {
-        let stadiumStyleId = bookPitch[i].stadiumStyle;
+  //     for (let i = 0; i < bookPitch.length; i++) {
+  //       let stadiumStyleId = bookPitch[i].stadiumStyle;
 
-        const stadium = await Stadium.findOne({
-          "stadium_styles._id": stadiumStyleId,
-        });
+  //       const stadium = await Stadium.findOne({
+  //         "stadium_styles._id": stadiumStyleId,
+  //       });
 
-        if (!stadium) {
-          console.error(
-            `Stadium not found for stadiumStyleId: ${stadiumStyleId}`
-          );
-          continue;
-        }
+  //       if (!stadium) {
+  //         console.error(
+  //           `Stadium not found for stadiumStyleId: ${stadiumStyleId}`
+  //         );
+  //         continue;
+  //       }
 
-        const st = stadium.stadium_styles.find(
-          (style) => style._id.toString() === stadiumStyleId.toString()
-        );
+  //       const st = stadium.stadium_styles.find(
+  //         (style) => style._id.toString() === stadiumStyleId.toString()
+  //       );
 
-        if (!st) {
-          console.error(
-            `Stadium style not found for stadiumStyleId: ${stadiumStyleId}`
-          );
-          continue; // Skip this iteration if no stadium style is found
-        }
+  //       if (!st) {
+  //         console.error(
+  //           `Stadium style not found for stadiumStyleId: ${stadiumStyleId}`
+  //         );
+  //         continue; // Skip this iteration if no stadium style is found
+  //       }
 
-        let oject = {};
-        const { stadium_styles, ...datas } = stadium._doc;
+  //       let oject = {};
+  //       const { stadium_styles, ...datas } = stadium._doc;
 
-        const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
-          startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-          endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
-        }));
+  //       const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
+  //         startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
+  //         endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
+  //       }));
 
-        oject = {
-          ...datas,
-          ...st._doc,
-          ...bookPitch[i]._doc,
-          time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
-          originalStartTime: moment
-            .utc(bookPitch[i].originalStartTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format(),
-          originalEndTime: moment
-            .utc(bookPitch[i].originalEndTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format(),
-        };
+  //       oject = {
+  //         ...datas,
+  //         ...st._doc,
+  //         ...bookPitch[i]._doc,
+  //         time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
+  //         originalStartTime: moment
+  //           .utc(bookPitch[i].originalStartTime)
+  //           .tz("Asia/Ho_Chi_Minh")
+  //           .format(),
+  //         originalEndTime: moment
+  //           .utc(bookPitch[i].originalEndTime)
+  //           .tz("Asia/Ho_Chi_Minh")
+  //           .format(),
+  //       };
 
-        data.push(oject);
-      }
+  //       data.push(oject);
+  //     }
 
-      return res.status(200).json({ success: true, message: data });
-    } catch (error) {
-      console.log("🚀 ~ getAnBookPitches: ~ error:", error);
-      return res.status(500).json(error);
-    }
-  },
+  //     return res.status(200).json({ success: true, message: data });
+  //   } catch (error) {
+  //     console.log("🚀 ~ getAnBookPitches: ~ error:", error);
+  //     return res.status(500).json(error);
+  //   }
+  // },
 
   getStadiumOwnerBookings: async (req, res) => {
     try {
@@ -307,7 +305,6 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
-
 
   deleteBookPitchs: async (req, res) => {
     try {
@@ -382,65 +379,70 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
-getAnBookPitch: async (req, res) => {
-  try {
-      const idCustomer = req.customer.id;
+  getAnBookPitch: async (req, res) => {
+    try {
+      const idCustomer = req.customer?.id;
       const bookPitch = await BookPitch.findOne({
-          user: idCustomer
+        user: idCustomer,
       });
       if (!bookPitch) {
-          return res.status(404).json({
-              success: false,
-              message: "Book pitch not found"
-          });
+        return res.status(404).json({
+          success: false,
+          message: "Book pitch not found",
+        });
       }
       const stadium = await Stadium.findOne({
-          "stadium_styles._id": bookPitch.stadiumStyle,
+        "stadium_styles._id": bookPitch.stadiumStyle,
       });
       if (!stadium) {
-          return res.status(404).json({
-              success: false,
-              message: "Stadium not found"
-          });
+        return res.status(404).json({
+          success: false,
+          message: "Stadium not found",
+        });
       }
       const st = stadium.stadium_styles.find(
-          (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
+        (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
       );
       if (!st) {
-          return res.status(404).json({
-              success: false,
-              message: "Stadium style not found"
-          });
+        return res.status(404).json({
+          success: false,
+          message: "Stadium style not found",
+        });
       }
-      const convertedTimeSlots = bookPitch.time.map(slot => ({
-          startTime: moment.utc(slot.startTime).tz('Asia/Ho_Chi_Minh').format(),
-          endTime: moment.utc(slot.endTime).tz('Asia/Ho_Chi_Minh').format(),
+      const convertedTimeSlots = bookPitch.time.map((slot) => ({
+        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
+        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
       }));
       const data = {
-          ...stadium._doc,
-          ...st._doc,
-          ...bookPitch._doc,
-          time: convertedTimeSlots,
-          originalStartTime: moment.utc(bookPitch.originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
-          originalEndTime: moment.utc(bookPitch.originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
+        ...stadium._doc,
+        ...st._doc,
+        ...bookPitch._doc,
+        time: convertedTimeSlots,
+        originalStartTime: moment
+          .utc(bookPitch.originalStartTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format(),
+        originalEndTime: moment
+          .utc(bookPitch.originalEndTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format(),
       };
       delete data.stadium_styles;
       return res.status(200).json({
-          success: true,
-          data: [data]
+        success: true,
+        data: [data],
       });
-  } catch (error) {
+    } catch (error) {
       console.log("🚀 ~ getAnBookPitch: ~ error:", error);
       return res.status(500).json(error);
-  }
-},
-  getFreeTime: async(req,res) => {
-    try {
-      
-    } catch (error) {
-      return res.status(400).json(error)
     }
-  }
+  },
+  getFreeTime: async (req, res) => {
+    try {
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
 };
 
 cron.schedule("0 0 * * *", async () => {

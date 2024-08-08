@@ -6,24 +6,24 @@ import { useBookPitch } from "../stores";
 const bookStore = useBookPitch();
 const bookData = ref([]);
 onMounted(async () => {
-  await bookStore.getCustomerBookPitches();
+  await bookStore.getBookPitch();
+});
+
+watchEffect(() => {
+  bookData.value = bookStore.bookPitchData;
 });
 
 const handlePayment = async () => {
   await bookStore.payment();
 };
-
-watchEffect(() => {
-  bookData.value = bookStore.customerBookPitchesData;
-});
 </script>
 <template>
   <form
     @submit.prevent="handlePayment"
     class="flex items-center justify-center h-screen"
   >
-    <div v-for="book in bookData" class="flex flex-col gap-3">
-      <h1 class="text-2xl font-bold">Thông tin chi tiết sân</h1>
+    <div v-if="bookData" v-for="book in bookData" class="flex flex-col gap-3">
+      <h1 class="text-2xl font-bold">Thông tin thanh toán</h1>
 
       <Tag
         :infor="'Số điện thoại'"
@@ -45,11 +45,6 @@ watchEffect(() => {
 
       <Tag :infor="'Vị trí'" :value="`${book.name}`" :className="'gap-5'"></Tag>
 
-      <Tag
-        :infor="'Địa chỉ '"
-        :value="`${book.ward} ${book.city} ${book.provice}`"
-        :className="'gap-5'"
-      ></Tag>
       <Tag :infor="'Giá'" :value="book.price" :class="'gap-5'"></Tag>
 
       <div class="flex items-center gap-3">

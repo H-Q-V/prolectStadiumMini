@@ -36,6 +36,7 @@ const customerController = {
           .status(400)
           .json({ success: false, message: "Email đã tồn tại" });
       }
+
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const response = await Customer.create({

@@ -6,7 +6,6 @@ const {
 } = require("../uploadImage/uploadImage");
 
 const stadiumController = {
-  
   addStadium: async (req, res) => {
     try {
       const {
@@ -22,7 +21,8 @@ const stadiumController = {
         stadium_owner,
       } = req.body;
 
-      if (!stadium_name || !ward || !city || !provice || !address || !phone) { // Cập nhật kiểm tra
+      if (!stadium_name || !ward || !city || !provice || !address || !phone) {
+        // Cập nhật kiểm tra
         return res
           .status(400)
           .json({ status: false, message: "Vui lòng điền đầy đủ thông tin" });
@@ -79,21 +79,28 @@ const stadiumController = {
     }
   },
 
-  
   updateStadium: async (req, res) => {
     try {
       const stadium = await Stadium.findById(req.params.id);
       const updates = {};
-      const { stadium_name, ward, city, provice, address, phone, image, describe } =
-        req.body;
-  
+      const {
+        stadium_name,
+        ward,
+        city,
+        provice,
+        address,
+        phone,
+        image,
+        describe,
+      } = req.body;
+
       const phoneRegex = /^[0-9]{10}$/;
       if (phone && !phoneRegex.test(phone)) {
         return res
           .status(400)
           .json({ status: false, message: "Nhập sai thông tin" });
       }
-  
+
       if (stadium_name) {
         updates.stadium_name = stadium_name;
       }
@@ -106,14 +113,15 @@ const stadiumController = {
       if (provice) {
         updates.provice = provice;
       }
-      if (address) { // Thêm trường address
+      if (address) {
+        // Thêm trường address
         updates.address = address;
       }
       if (image) {
         const updateimage = await imageUpdater(stadium.image, image);
         updates.image = updateimage.secure_url;
       }
-  
+
       if (phone) {
         updates.phone = phone;
       }
@@ -125,16 +133,15 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Không có dữ liệu được cập nhật" });
       }
-  
+
       await stadium.updateOne({ $set: updates });
       return res
         .status(200)
-        .json({ status: true, message: "Updated successfully" });
+        .json({ status: true, message: "Cập nhật thành công" });
     } catch (err) {
       return res.status(500).json(err);
     }
   },
-  
 
   // Delete a stadium
   deleteStadium: async (req, res) => {
@@ -213,13 +220,13 @@ const stadiumController = {
       const stadiums = await Stadium.find(query, projection).populate(
         "stadium_owner"
       );
-      if(stadiums.length === 0){
+      if (stadiums.length === 0) {
         return res.status(400).json({
           success: false,
           message: "Khồng tìm thấy thông tin sân",
         });
       }
-      return res.status(200).json({success: true, message:stadiums});
+      return res.status(200).json({ success: true, message: stadiums });
     } catch (err) {
       return res.status(500).json(err);
     }
@@ -227,51 +234,53 @@ const stadiumController = {
 
   addStadiumStyle: async (req, res) => {
     try {
-        const id = req.customer.id;
-        const { nameStadium } = req.body;
-        const { name, type, image, price, time } = req.body;
-        if (!name || !type || !price || !time) {
-            return res
-                .status(400)
-                .json({ status: false, message: "Nhập thiếu thông tin" });
-        }
-        const priceRegex = /^\d+$/;
-        if (!priceRegex.test(price)) {
-            return res
-                .status(400)
-                .json({ status: false, message: "Nhập sai giá tiền" });
-        }
-        const uploadedImage = await uploadImage(image);
-        const formattedPrice = parseFloat(price).toLocaleString("vi-VN", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        });
-        // Tìm stadium theo stadium_owner
-        const stadium = await Stadium.findOne({ stadium_name: nameStadium, stadium_owner: id });
-        if (!stadium) {
-            return res
-                .status(404)
-                .json({ status: false, message: "Stadium not found" });
-        }
-        const stadiumStyle = {
-            name,
-            type,
-            image: uploadedImage.secure_url,
-            price: formattedPrice,
-            time
-        };
-        stadium.stadium_styles.push(stadiumStyle);
-        const updatedStadium = await stadium.save();
-        return res.status(200).json({ status: true, data: updatedStadium });
-    } catch (err) {
-        console.error("Error occurred in addStadiumStyle:", err);
+      const id = req.customer.id;
+      const { nameStadium } = req.body;
+      const { name, type, image, price, time } = req.body;
+      if (!name || !type || !price || !time) {
         return res
-            .status(500)
-            .json({ status: false, message: "Thêm thông tin thất bại" });
+          .status(400)
+          .json({ status: false, message: "Nhập thiếu thông tin" });
+      }
+      const priceRegex = /^\d+$/;
+      if (!priceRegex.test(price)) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Nhập sai giá tiền" });
+      }
+      const uploadedImage = await uploadImage(image);
+      const formattedPrice = parseFloat(price).toLocaleString("vi-VN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+      // Tìm stadium theo stadium_owner
+      const stadium = await Stadium.findOne({
+        stadium_name: nameStadium,
+        stadium_owner: id,
+      });
+      if (!stadium) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Stadium not found" });
+      }
+      const stadiumStyle = {
+        name,
+        type,
+        image: uploadedImage.secure_url,
+        price: formattedPrice,
+        time,
+      };
+      stadium.stadium_styles.push(stadiumStyle);
+      const updatedStadium = await stadium.save();
+      return res.status(200).json({ status: true, data: updatedStadium });
+    } catch (err) {
+      console.error("Error occurred in addStadiumStyle:", err);
+      return res
+        .status(500)
+        .json({ status: false, message: "Thêm thông tin thất bại" });
     }
-},
+  },
 
-  
   getAllStadiumStyle: async (req, res) => {
     try {
       const { id } = req.params;
@@ -311,7 +320,7 @@ const stadiumController = {
     try {
       //const { id, stadiumStyleId } = req.params;
       const id = req.customer.id;
-      const {nameStadium, nameStadiumStyle} = req.body;
+      const { nameStadium, nameStadiumStyle } = req.body;
       const update = {};
       const { name, type, image, price } = req.body;
       if (name) {
@@ -333,11 +342,11 @@ const stadiumController = {
         });
         update.price = formattedPrice;
       }
-      const stadium = await Stadium.findById({id, stadium_name: nameStadium});
+      const stadium = await Stadium.findById({ id, stadium_name: nameStadium });
       if (!stadium) {
         return res.status(404).json("Stadium not found");
       }
-      const style = stadium.stadium_styles.id({name:nameStadiumStyle});
+      const style = stadium.stadium_styles.id({ name: nameStadiumStyle });
       if (!style) {
         return res.status(404).json("StadiumStyle not found");
       }
