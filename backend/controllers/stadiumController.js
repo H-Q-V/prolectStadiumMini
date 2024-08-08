@@ -236,7 +236,7 @@ const stadiumController = {
     try {
       const id = req.customer.id;
       const { nameStadium } = req.body;
-      const { name, type, image, price, time } = req.body;
+      const { name, type, price, time } = req.body;
       if (!name || !type || !price || !time) {
         return res
           .status(400)
@@ -248,7 +248,6 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Nhập sai giá tiền" });
       }
-      const uploadedImage = await uploadImage(image);
       const formattedPrice = parseFloat(price).toLocaleString("vi-VN", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
@@ -261,12 +260,11 @@ const stadiumController = {
       if (!stadium) {
         return res
           .status(404)
-          .json({ status: false, message: "Stadium not found" });
+          .json({ status: false, message: "Sân vận động không tìm thấy" });
       }
       const stadiumStyle = {
         name,
         type,
-        image: uploadedImage.secure_url,
         price: formattedPrice,
         time,
       };
@@ -318,52 +316,67 @@ const stadiumController = {
   },
   updateStadiumStyle: async (req, res) => {
     try {
-        const id = req.customer.id;
-        const { nameStadium, nameStadiumStyle, name, type, image, price, time } = req.body;
-        const update = {};
+      const id = req.customer.id;
+      const { nameStadium, nameStadiumStyle, name, type, image, price, time } =
+        req.body;
+      const update = {};
 
-        if (name) update.name = name;
-        if (type) update.type = type;
-        if (time) update.time = time;
-        if (price) {
-            const priceRegex = /^\d+$/;
-            if (!priceRegex.test(price)) {
-                return res.status(400).json({ status: false, message: "Nhập sai giá tiền" });
-            }
-            const formattedPrice = parseFloat(price).toLocaleString("vi-VN", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            });
-            update.price = formattedPrice;
+      if (name) update.name = name;
+      if (type) update.type = type;
+      if (time) update.time = time;
+      if (price) {
+        const priceRegex = /^\d+$/;
+        if (!priceRegex.test(price)) {
+          return res
+            .status(400)
+            .json({ status: false, message: "Nhập sai giá tiền" });
         }
+        const formattedPrice = parseFloat(price).toLocaleString("vi-VN", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+        update.price = formattedPrice;
+      }
 
-        const stadium = await Stadium.findOne({ stadium_name: nameStadium, stadium_owner: id });
-        if (!stadium) {
-            return res.status(404).json({ status: false, message: "Stadium not found" });
+      const stadium = await Stadium.findOne({
+        stadium_name: nameStadium,
+        stadium_owner: id,
+      });
+      if (!stadium) {
+        return res
+          .status(404)
+          .json({ status: false, message: "Stadium not found" });
+      }
+
+      const style = stadium.stadium_styles.find(
+        (style) => style.name === nameStadiumStyle
+      );
+      if (!style) {
+        return res
+          .status(404)
+          .json({ status: false, message: "StadiumStyle not found" });
+      }
+
+      if (image) {
+        const updateImage = await imageUpdater(style.image, image);
+        if (!updateImage || !updateImage.secure_url) {
+          return res
+            .status(500)
+            .json({ status: false, message: "Upload hình ảnh thất bại" });
         }
+        update.image = updateImage.secure_url;
+      }
 
-        const style = stadium.stadium_styles.find(style => style.name === nameStadiumStyle);
-        if (!style) {
-            return res.status(404).json({ status: false, message: "StadiumStyle not found" });
-        }
-
-        if (image) {
-            const updateImage = await imageUpdater(style.image, image);
-            if (!updateImage || !updateImage.secure_url) {
-                return res.status(500).json({ status: false, message: "Upload hình ảnh thất bại" });
-            }
-            update.image = updateImage.secure_url;
-        }
-
-        style.set(update);
-        await stadium.save();
-        return res.status(200).json({ status: true, data: style });
+      style.set(update);
+      await stadium.save();
+      return res.status(200).json({ status: true, data: style });
     } catch (err) {
-        console.error("Error occurred in updateStadiumStyle:", err);
-        return res.status(500).json({ status: false, message: "Cập nhật thông tin thất bại" });
+      console.error("Error occurred in updateStadiumStyle:", err);
+      return res
+        .status(500)
+        .json({ status: false, message: "Cập nhật thông tin thất bại" });
     }
-},
-
+  },
 
   deleteStadiumStyle: async (req, res) => {
     try {
