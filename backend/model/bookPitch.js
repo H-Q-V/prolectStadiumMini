@@ -4,10 +4,10 @@ const bookPitchSchema = new mongoose.Schema({
     type: String,
   },
   totalAmount:{
-    type: Number,
+    type: String,
   },
   deposit:{
-    type: Number,
+    type: String,
   },
   periodic:{
     type: String,

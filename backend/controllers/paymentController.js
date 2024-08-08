@@ -43,11 +43,11 @@ const payment = {
         }
       }
       const totalMoney = totalAmount * 0.15; // Tiền đặt cọc
-      for (let booking of bookings) {
-        booking.totalAmount = totalAmount;
-        booking.deposit = totalMoney;
-        await booking.save();
-      }
+      //for (let booking of bookings) {
+        //booking.totalAmount = totalAmount;
+        //booking.deposit = totalMoney;
+        //await booking.save();
+      //}
       const desc = Helper.random(9);
       const codeOrder = Helper.generateOrderCode();
       const order = {
