@@ -16,7 +16,7 @@ async createPayment(req, res) {
       if (!username) {
         return res.status(500).json({ message: 'Không thể tìm thấy người dùng này!' });
       }
-      const bookings = await BookPitch.find({user:userId.id}).populate('stadium');
+      const bookings = await BookPitch.find({status:"pending",user:userId.id}).populate('stadium');
       if (!bookings) {
         return res.status(500).json({ message: 'Không thể tìm thấy lịch đặt!' });
       }

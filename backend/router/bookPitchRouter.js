@@ -24,12 +24,12 @@ router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchContr
 
 router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
 
-router.get(
-  "/getStadiumOwnerBookPitch",
-  middlewareController.verifyToken,
-  middlewareController.authorize(["StadiumOwner"]),
-  bookPitchController.getStadiumOwnerBookPitch
-);
+// router.get(
+//   "/getStadiumOwnerBookPitch",
+//   middlewareController.verifyToken,
+//   middlewareController.authorize(["StadiumOwner"]),
+//   bookPitchController.getStadiumOwnerBookPitch
+// );
 router.delete(
   "/deleteBookPitches/:id",
   middlewareController.verifyToken,
