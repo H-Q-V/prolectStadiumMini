@@ -374,72 +374,46 @@ getAnBookPitch: async (req, res) => {
   }
 },
 
-
-isTimeSlotFree: (slot, bookings) => {
-  return bookings.every(booking => {
-    return slot.endTime <= booking.startTime || slot.startTime >= booking.endTime;
-  });
-},
-
-generateTimeSlots: (start, end, interval) => {
-  let slots = [];
-  let currentStart = moment(start);
-  let currentEnd = moment(start).add(interval, 'minutes');
-  while (currentEnd.isSameOrBefore(end)) {
-    slots.push({ startTime: currentStart.toDate(), endTime: currentEnd.toDate() });
-    currentStart = currentStart.add(interval, 'minutes');
-    currentEnd = currentEnd.add(interval, 'minutes');
-  }
-  return slots;
-},
-
-// Controller to get free time slots
-getFreeTime: async (req, res) => {
+cancelpayment: async (req,res) => {
   try {
-    const { stadiumID } = req.params;
-    const startOfDay = moment().startOf('day').add(5, 'hours'); // 5 AM
-    const endOfDay = moment().startOf('day').add(23, 'hours'); // 11 PM
-    // Find the stadium and its styles
-    const stadium = await Stadium.findById(stadiumID).populate('stadium_styles');
-    if (!stadium) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy sân',
-      });
-    }
-    // Get all bookings for the stadium
-    const bookings = await BookPitch.find({
-      stadium: stadiumID,
-      status: 'confirmed',
-    }).populate('stadiumStyle');
-    // Process each stadium style
-    let results = [];
-    for (const style of stadium.stadium_styles) {
-      const timeSlots = generateTimeSlots(startOfDay, endOfDay, 90); // 30 minutes slots
-      const freeSlots = timeSlots.filter(slot => {
-        const isFree = isTimeSlotFree(slot, bookings.filter(booking => booking.stadiumStyle.toString() === style._id.toString()));
-        return isFree;
-      });
-      results.push({
-        stadiumStyle: style.name,
-        freeSlots: freeSlots.map(slot => ({
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-        })),
-      });
-    }
+    const id = req.customer.id;
+    await BookPitch.findOneAndDelete({status:"pending",user: id});
     return res.status(200).json({
       success: true,
-      data: results,
-    });
+      message: "Xóa thanh toán thành công"
+    })
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json(error);
   }
 },
 
+  getFreeTime: async (req,res) => {
+      try {
+        const idStadium = req.params;
+        const bookings = await BookPitch.find({stadium: idStadium,status:"confirmed"});
+        const stadium = await Stadium.find({_id: bookings.stadium});
+        if(!stadium){
+          return res.status(400).json({
+            success: false,
+            message: "Sân không tồn tại",
+          })
+        }
+        const stadium_style = stadium.stadium_styles({_id: bookings.stadiumStyle});
+        if(!stadium_style){
+          return res.status(400).json({
+            success: false,
+            message: "Kiểu sân không tồn tại"
+          })
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: bookings,
+        })
+      } catch (error) {
+        return res.status(500).json(error);
+      }
+  },
 };
 
 

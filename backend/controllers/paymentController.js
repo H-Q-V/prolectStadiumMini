@@ -55,7 +55,7 @@ const payment = {
         buyerName: username.username,
         buyerEmail: username.email,
         returnUrl: `https://chatgpt.com/c/dbf6dad5-9f56-4f71-bc91-f08378dd208f`,
-        cancelUrl: `https://chatgpt.com/c/dbf6dad5-9f56-4f71-bc91-f08378dd208f`,
+        cancelUrl: `https://payos.vn/docs/du-lieu-tra-ve/return-url/`,
       };
       console.log(order);
       //2: Đang chờ
@@ -82,16 +82,14 @@ const payment = {
   },
   async AuthenPay(req, res) {
     try {
+      console.log(req.body)
       if (req.body.code == "00") {
         const code = req.body.data.description;
-        console.log("a:", code);
-        //const amount = req.body.data.amount;
         const inforDonate = await PayStatus.findOneAndUpdate(
           { Code: code },
           { Status: "confirmed" },
           { new: true }
         );
-
         const bookingStatus = await BookPitch.findOne({
           user: inforDonate.User,
         });
@@ -105,7 +103,6 @@ const payment = {
         bookingStatus.status = "confirmed"; // For example
         await bookingStatus.save();
       }
-
       return res.status(200).json({
         success: true,
         message: "Trạng thái đặt sân đã được cập nhật",
@@ -116,12 +113,13 @@ const payment = {
     }
   },
 };
+
 cron.schedule("*/1 * * * *", async () => {
   // Chạy mỗi phút
   try {
     console.log("Cron job bắt đầu chạy...");
     const now = new Date();
-    const oneMinuteAgo = new Date(now.getTime() - 15 * 60 * 1000);
+    const oneMinuteAgo = new Date(now.getTime() - 2 * 60 * 1000);
     console.log("Thời gian 1 phút trước:", oneMinuteAgo);
     const bookingsToDelete = await BookPitch.find({
       status: "pending",
