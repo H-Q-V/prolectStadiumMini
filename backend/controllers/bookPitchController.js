@@ -197,6 +197,7 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
+
   getAllBookPitches: async (req, res) => {
     try {
       const bookPitches = await BookPitch.find().populate({
@@ -375,146 +376,98 @@ const bookPitchController = {
     }
   },
 
-  getAnBookPitch: async (req, res) => {
-    try {
-      const idCustomer = req.customer?.id;
-      const bookPitch = await BookPitch.findOne({
-        user: idCustomer,
-      });
+getAnBookPitch: async (req, res) => {
+  try {
+      const idCustomer = req.customer.id;
+      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
       if (!bookPitch) {
-        return res.status(404).json({
-          success: false,
-          message: "Book pitch not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Book pitch not found"
+          });
       }
       const stadium = await Stadium.findOne({
-        "stadium_styles._id": bookPitch.stadiumStyle,
+          "stadium_styles._id": bookPitch.stadiumStyle,
       });
       if (!stadium) {
-        return res.status(404).json({
-          success: false,
-          message: "Stadium not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Stadium not found"
+          });
       }
       const st = stadium.stadium_styles.find(
-        (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
+          (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
       );
       if (!st) {
-        return res.status(404).json({
-          success: false,
-          message: "Stadium style not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Stadium style not found"
+          });
       }
-      const convertedTimeSlots = bookPitch.time.map((slot) => ({
-        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
+      const convertedTimeSlots = bookPitch.time.map(slot => ({
+          startTime: moment.utc(slot.startTime).tz('Asia/Ho_Chi_Minh').format(),
+          endTime: moment.utc(slot.endTime).tz('Asia/Ho_Chi_Minh').format(),
       }));
       const data = {
-        ...stadium._doc,
-        ...st._doc,
-        ...bookPitch._doc,
-        time: convertedTimeSlots,
-        originalStartTime: moment
-          .utc(bookPitch.originalStartTime)
-          .tz("Asia/Ho_Chi_Minh")
-          .format(),
-        originalEndTime: moment
-          .utc(bookPitch.originalEndTime)
-          .tz("Asia/Ho_Chi_Minh")
-          .format(),
+          ...stadium._doc,
+          ...st._doc,
+          ...bookPitch._doc,
+          time: convertedTimeSlots,
+          originalStartTime: moment.utc(bookPitch.originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
+          originalEndTime: moment.utc(bookPitch.originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
       };
       delete data.stadium_styles;
       return res.status(200).json({
-        success: true,
-        data: [data],
+          success: true,
+          data: [data]
       });
-    } catch (error) {
+  } catch (error) {
       console.log("🚀 ~ getAnBookPitch: ~ error:", error);
       return res.status(500).json(error);
-    }
-  },
-  getFreeTime: async (req, res) => {
-    try {
-    } catch (error) {
-      return res.status(400).json(error);
+
     }
   },
 
-  isTimeSlotFree: (slot, bookings) => {
-    return bookings.every((booking) => {
-      return (
-        slot.endTime <= booking.startTime || slot.startTime >= booking.endTime
-      );
-    });
-  },
+cancelpayment: async (req,res) => {
+  try {
+    const id = req.customer.id;
+    await BookPitch.findOneAndDelete({status:"pending",user: id});
+    return res.status(200).json({
+      success: true,
+      message: "Xóa thanh toán thành công"
+    })
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+},
 
-  generateTimeSlots: (start, end, interval) => {
-    let slots = [];
-    let currentStart = moment(start);
-    let currentEnd = moment(start).add(interval, "minutes");
-    while (currentEnd.isSameOrBefore(end)) {
-      slots.push({
-        startTime: currentStart.toDate(),
-        endTime: currentEnd.toDate(),
-      });
-      currentStart = currentStart.add(interval, "minutes");
-      currentEnd = currentEnd.add(interval, "minutes");
-    }
-    return slots;
-  },
+  getFreeTime: async (req,res) => {
+      try {
+        const idStadium = req.params;
+        const bookings = await BookPitch.find({stadium: idStadium,status:"confirmed"});
+        const stadium = await Stadium.find({_id: bookings.stadium});
+        if(!stadium){
+          return res.status(400).json({
+            success: false,
+            message: "Sân không tồn tại",
+          })
+        }
+        const stadium_style = stadium.stadium_styles({_id: bookings.stadiumStyle});
+        if(!stadium_style){
+          return res.status(400).json({
+            success: false,
+            message: "Kiểu sân không tồn tại"
+          })
+        }
 
-  // Controller to get free time slots
-  getFreeTime: async (req, res) => {
-    try {
-      const { stadiumID } = req.params;
-      const startOfDay = moment().startOf("day").add(5, "hours"); // 5 AM
-      const endOfDay = moment().startOf("day").add(23, "hours"); // 11 PM
-      // Find the stadium and its styles
-      const stadium =
-        await Stadium.findById(stadiumID).populate("stadium_styles");
-      if (!stadium) {
-        return res.status(404).json({
-          success: false,
-          message: "Không tìm thấy sân",
-        });
+        return res.status(200).json({
+          success: true,
+          data: bookings,
+        })
+      } catch (error) {
+        return res.status(500).json(error);
       }
-      // Get all bookings for the stadium
-      const bookings = await BookPitch.find({
-        stadium: stadiumID,
-        status: "confirmed",
-      }).populate("stadiumStyle");
-      // Process each stadium style
-      let results = [];
-      for (const style of stadium.stadium_styles) {
-        const timeSlots = generateTimeSlots(startOfDay, endOfDay, 90); // 30 minutes slots
-        const freeSlots = timeSlots.filter((slot) => {
-          const isFree = isTimeSlotFree(
-            slot,
-            bookings.filter(
-              (booking) =>
-                booking.stadiumStyle.toString() === style._id.toString()
-            )
-          );
-          return isFree;
-        });
-        results.push({
-          stadiumStyle: style.name,
-          freeSlots: freeSlots.map((slot) => ({
-            startTime: slot.startTime,
-            endTime: slot.endTime,
-          })),
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        data: results,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
+
   },
 };
 
