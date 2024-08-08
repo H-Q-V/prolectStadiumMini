@@ -32,12 +32,12 @@ router.delete(
 
 router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchController.getAnBookPitch);
 
-router.get(
-  "/getStadiumOwnerBookings",
-  middlewareController.verifyToken,
-  middlewareController.authorize(["StadiumOwner"]),
-  bookPitchController.getStadiumOwnerBookings
-);
+// router.get(
+//   "/getStadiumOwnerBookings",
+//   middlewareController.verifyToken,
+//   middlewareController.authorize(["StadiumOwner"]),
+//   bookPitchController.getStadiumOwnerBookings
+// );
 
 router.delete(
   "/deleteBookPitches/:id",
@@ -51,8 +51,12 @@ router.put(
   bookPitchController.updateBookPitch
 );
 
-
-router.get("/getFreeTime/:stadiumID", middlewareController.verifyToken, bookPitchController.getFreeTime);
+router.delete(
+  "/cancelpayment/",
+  middlewareController.verifyToken,
+  bookPitchController.cancelpayment
+);
+router.get("/getFreeTime/:idStadium", middlewareController.verifyToken, bookPitchController.getFreeTime);
 
 
 
