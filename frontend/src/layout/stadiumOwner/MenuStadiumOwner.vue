@@ -45,6 +45,7 @@ const handleLogout = () => {
   localStorage.removeItem(LOCAL_STORAGE_TOKEN);
   localStorage.removeItem("username");
   localStorage.removeItem("userRole");
+  localStorage.removeItem("email");
   router.push("/auth/login");
 };
 

@@ -46,6 +46,7 @@ const routes = [
 
   //stadium owner
   {
+    path: "/stadiumOwner",
     component: LayoutStadiumOwner,
     children: [
       {
@@ -71,6 +72,7 @@ const routes = [
 
   //admin
   {
+    path: "/admin",
     component: LayoutAdmin,
     children: [
       {

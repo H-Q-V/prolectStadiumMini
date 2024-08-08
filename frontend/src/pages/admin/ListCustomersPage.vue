@@ -10,6 +10,7 @@ import { useUser } from "../../stores";
 
 const userData = ref([]);
 const userStore = useUser();
+
 const email = ref("");
 const username = ref("");
 const password = ref("");
@@ -31,12 +32,12 @@ watchEffect(() => {
 });
 
 const currentUser = computed(() => userStore.currentUser);
-
 const filteredUserData = computed(() => {
   return userData.value.filter(
     (user) => !(user.role === "Admin" && user.email === currentUser.value.email)
   );
 });
+
 const handleAddCustomer = async () => {
   const data = {
     email: email.value,
@@ -46,6 +47,7 @@ const handleAddCustomer = async () => {
   };
   await userStore.addCustomers(data, toast);
   await userStore.getAllCustomers();
+  visibleDialog.value = false;
 };
 
 const handleUpdateUser = async () => {

@@ -10,10 +10,23 @@ router.post(
 
 router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
 
+// router.get(
+//   "/getCustomerBookPitches",
+//   middlewareController.verifyToken,
+//   bookPitchController.getCustomerBookPitches
+// );
+
 router.get(
-  "/getCustomerBookPitches",
+  "/getAnBookPitches",
   middlewareController.verifyToken,
-  bookPitchController.getCustomerBookPitches
+  bookPitchController.getAnBookPitch
+);
+
+
+router.delete(
+  "/deleteBookPitches/:id",
+  middlewareController.verifyToken,
+  bookPitchController.deleteBookPitchs
 );
 
 
@@ -22,7 +35,8 @@ router.get(
 router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchController.getAnBookPitch);
 
 
-router.delete("/deleteBookPitches/:id", middlewareController.verifyToken, bookPitchController.deleteBookPitchs);
+
+
 
 router.get(
   "/getStadiumOwnerBookings",
@@ -36,14 +50,15 @@ router.delete(
   bookPitchController.deleteBookPitchs
 );
 
-
 router.put(
   "/updateBookPitches/:id",
   middlewareController.verifyToken,
   bookPitchController.updateBookPitch
 );
 
+
 router.get("/getFreeTime/:stadiumID", middlewareController.verifyToken, bookPitchController.getFreeTime);
+
 
 
 module.exports = router;

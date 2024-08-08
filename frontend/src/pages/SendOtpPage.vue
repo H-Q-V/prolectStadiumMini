@@ -2,7 +2,8 @@
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { ref } from "vue";
-import { useUser } from "../stores/fetchAuth";
+// import { useUser } from "../stores/fetchAuth";
+import { useUser } from "../stores";
 import { useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
 const otp = ref("");
