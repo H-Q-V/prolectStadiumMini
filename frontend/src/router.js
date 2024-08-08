@@ -63,6 +63,18 @@ const routes = [
       },
 
       {
+        path: "/stadium-owner-detail/:id",
+        name: "StadiumOwnerDetail",
+        component: () => import("./pages/stadiumOwner/StadiumOwnerDetail.vue"),
+      },
+
+      {
+        path: "/stadiumOwner/stadium_style",
+        name: "StadiumStylesOwner",
+        component: () => import("./pages/stadiumOwner/StadiumStylesOwner.vue"),
+      },
+
+      {
         path: "/stadiumOwner/schedule",
         name: "ScheduleOwner",
         component: () => import("./pages/stadiumOwner/Schedule.vue"),

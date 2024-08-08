@@ -4,6 +4,7 @@ import { config, endpoint } from "../utils";
 const useStadium = defineStore("stadium", {
   state: () => ({
     stadiumData: [],
+    stadiumStyleData: [],
     commentData: [],
     resultSearch: [],
   }),
@@ -16,6 +17,16 @@ const useStadium = defineStore("stadium", {
         this.getAllStadiumsByOwner();
       } catch (error) {
         console.log("🚀 ~ createStadium ~ error:", error);
+        toast.error(error?.response?.data?.message);
+      }
+    },
+
+    async addStadiumStyle(data, toast) {
+      try {
+        await axios.post(`${endpoint}/createStadiumStyle`, data, config);
+        toast.success("Thêm mới thành công");
+      } catch (error) {
+        console.log("🚀 ~ addStadiumStyle ~ error:", error);
         toast.error(error?.response?.data?.message);
       }
     },
@@ -61,6 +72,18 @@ const useStadium = defineStore("stadium", {
         toast.success("Xóa thành công");
       } catch (error) {
         console.log("🚀 ~ deleteStadium ~ error:", error);
+      }
+    },
+
+    async getStadiumsStyle(id) {
+      try {
+        const response = await axios.get(
+          `${endpoint}/getAllStadiumStyle/${id}`
+        );
+        console.log("🚀 ~ getStadiumsStyle ~ response:", response);
+        this.stadiumStyleData = response?.data;
+      } catch (error) {
+        console.log("🚀 ~ getStadiumsStyle ~ error:", error);
       }
     },
 

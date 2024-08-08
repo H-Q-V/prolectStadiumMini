@@ -10,18 +10,17 @@ router.post(
 
 router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
 
-// router.get(
-//   "/getCustomerBookPitches",
-//   middlewareController.verifyToken,
-//   bookPitchController.getCustomerBookPitches
-// );
+router.get(
+  "/getCustomerBookPitches",
+  middlewareController.verifyToken,
+  bookPitchController.getCustomerBookPitches
+);
 
 router.get(
   "/getAnBookPitches",
   middlewareController.verifyToken,
   bookPitchController.getAnBookPitch
 );
-
 
 router.delete(
   "/deleteBookPitches/:id",
@@ -30,14 +29,13 @@ router.delete(
 );
 
 
-router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchController.getAnBookPitch);
+router.get(
+  "/getStadiumOwnerBookings",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner"]),
+  bookPitchController.getStadiumOwnerBookings
+);
 
-// router.get(
-//   "/getStadiumOwnerBookings",
-//   middlewareController.verifyToken,
-//   middlewareController.authorize(["StadiumOwner"]),
-//   bookPitchController.getStadiumOwnerBookings
-// );
 
 router.delete(
   "/deleteBookPitches/:id",
