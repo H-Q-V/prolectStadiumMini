@@ -168,6 +168,7 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
+
   getAllBookPitches: async (req, res) => {
     try {
       const bookPitches = await BookPitch.find().populate({
@@ -322,70 +323,57 @@ const bookPitchController = {
     }
   },
 
-  getAnBookPitch: async (req, res) => {
-    try {
-      const idCustomer = req.customer?.id;
-      const bookPitch = await BookPitch.findOne({
-        user: idCustomer,
-      });
+getAnBookPitch: async (req, res) => {
+  try {
+      const idCustomer = req.customer.id;
+      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
       if (!bookPitch) {
-        return res.status(404).json({
-          success: false,
-          message: "Book pitch not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Book pitch not found"
+          });
       }
       const stadium = await Stadium.findOne({
-        "stadium_styles._id": bookPitch.stadiumStyle,
+          "stadium_styles._id": bookPitch.stadiumStyle,
       });
       if (!stadium) {
-        return res.status(404).json({
-          success: false,
-          message: "Stadium not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Stadium not found"
+          });
       }
       const st = stadium.stadium_styles.find(
-        (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
+          (style) => style._id.toString() === bookPitch.stadiumStyle.toString()
       );
       if (!st) {
-        return res.status(404).json({
-          success: false,
-          message: "Stadium style not found",
-        });
+          return res.status(404).json({
+              success: false,
+              message: "Stadium style not found"
+          });
       }
-      const convertedTimeSlots = bookPitch.time.map((slot) => ({
-        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
+      const convertedTimeSlots = bookPitch.time.map(slot => ({
+          startTime: moment.utc(slot.startTime).tz('Asia/Ho_Chi_Minh').format(),
+          endTime: moment.utc(slot.endTime).tz('Asia/Ho_Chi_Minh').format(),
       }));
       const data = {
-        ...stadium._doc,
-        ...st._doc,
-        ...bookPitch._doc,
-        time: convertedTimeSlots,
-        originalStartTime: moment
-          .utc(bookPitch.originalStartTime)
-          .tz("Asia/Ho_Chi_Minh")
-          .format(),
-        originalEndTime: moment
-          .utc(bookPitch.originalEndTime)
-          .tz("Asia/Ho_Chi_Minh")
-          .format(),
+          ...stadium._doc,
+          ...st._doc,
+          ...bookPitch._doc,
+          time: convertedTimeSlots,
+          originalStartTime: moment.utc(bookPitch.originalStartTime).tz('Asia/Ho_Chi_Minh').format(),
+          originalEndTime: moment.utc(bookPitch.originalEndTime).tz('Asia/Ho_Chi_Minh').format(),
       };
       delete data.stadium_styles;
       return res.status(200).json({
-        success: true,
-        data: [data],
+          success: true,
+          data: [data]
       });
-    } catch (error) {
+  } catch (error) {
       console.log("🚀 ~ getAnBookPitch: ~ error:", error);
       return res.status(500).json(error);
-    }
-  },
-  getFreeTime: async (req, res) => {
-    try {
-    } catch (error) {
-      return res.status(400).json(error);
-    }
-  },
+  }
+},
+
 
 isTimeSlotFree: (slot, bookings) => {
   return bookings.every(booking => {

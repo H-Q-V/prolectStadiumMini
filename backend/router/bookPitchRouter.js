@@ -30,13 +30,7 @@ router.delete(
 );
 
 
-
-
 router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchController.getAnBookPitch);
-
-
-
-
 
 router.get(
   "/getStadiumOwnerBookings",
@@ -44,6 +38,7 @@ router.get(
   middlewareController.authorize(["StadiumOwner"]),
   bookPitchController.getStadiumOwnerBookings
 );
+
 router.delete(
   "/deleteBookPitches/:id",
   middlewareController.verifyToken,
