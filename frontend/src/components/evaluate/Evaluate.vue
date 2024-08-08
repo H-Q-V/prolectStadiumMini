@@ -3,49 +3,62 @@ import Carousel from "primevue/carousel";
 import product1 from "../../components/image/product1.png";
 import Textarea from "primevue/textarea";
 import Button from "primevue/button";
-import { ref } from "vue";
-const products = ref([
-  { name: "Product 1", image: product1 },
-  { name: "Product 2", image: product1 },
-  { name: "Product 3", image: product1 },
-  { name: "Product 4", image: product1 },
-]);
+import { onMounted, ref, watchEffect } from "vue";
+import useStadium from "../../stores/fetchStadium";
+import { useRoute } from "vue-router";
 const comments = ref("");
-
-const onComment = () => {
+const route = useRoute();
+const stadiumStore = useStadium();
+const commentInfo = ref([]);
+const handleComment = async () => {
   const commmentData = {
     comments: comments.value,
   };
-  console.log("🚀 ~ onComment ~ commmentData:", commmentData);
+
+  await stadiumStore.commment(commmentData, route.params.id);
+  comments.value = "";
+  await stadiumStore.getComments(route.params.id);
 };
+
+onMounted(async () => {
+  await stadiumStore.getComments(route.params.id);
+});
+
+watchEffect(() => {
+  commentInfo.value = stadiumStore.commentData;
+});
 </script>
 <template>
   <h1 class="text-2xl font-bold">Đánh giá khách hàng</h1>
 
-  <Carousel :value="products" :numVisible="3" :numScroll="3">
-    <template #item="slotProps">
+  <div v-if="commentInfo.length === 0" class="text-lg text-gray-500">
+    Chưa có đánh giá nào
+  </div>
+
+  <Carousel v-else :value="commentInfo" :numVisible="3">
+    <template #item="comment">
       <div
         class="card flex flex-col border border-[#e7e7e7] p-5 rounded-lg mr-4"
       >
         <div class="flex items-center gap-4">
           <img
-            :src="slotProps.data.image"
+            :src="product1"
             class="w-[32px] h-[32px] rounded-full object-cover"
           />
-          <span class="font-bold">{{ slotProps.data.name }}</span>
-        </div>
 
-        <p>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores
-          libero, illum deserunt nihil ducimus minus vero consequuntur sed
-          magnam possimus, ratione explicabo repellendus cupiditate accusantium!
-          Inventore maiores ratione aliquid dolorem.
-        </p>
+          <div class="flex flex-col">
+            <span class="capitalize font-bold">{{
+              comment?.data?.user?.username
+            }}</span>
+
+            <p>{{ comment?.data?.comments }}</p>
+          </div>
+        </div>
       </div>
     </template>
   </Carousel>
 
-  <form class="w-full flex flex-col gap-2" @submit.prevent="onComment">
+  <form class="w-full flex flex-col gap-2" @submit.prevent="handleComment">
     <div class="flex gap-2">
       <img
         :src="product1"
@@ -67,4 +80,4 @@ const onComment = () => {
     </div>
   </form>
 </template>
-<style scoped></style>
+<style></style>

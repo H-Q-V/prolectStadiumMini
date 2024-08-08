@@ -3,9 +3,10 @@ import axios from "axios";
 import { endpoint } from "../utils/endpoint";
 import { config } from "../utils/config";
 
-export const useStadium = defineStore("stadium", {
+const useStadium = defineStore("stadium", {
   state: () => ({
     stadiumData: [],
+    commentData: [],
     resultSearch: [],
   }),
   getters: {},
@@ -56,7 +57,7 @@ export const useStadium = defineStore("stadium", {
         await axios.delete(`${endpoint}/deleteStadium/${id}`, config);
         if (localStorage.getItem("userRole") === "Admin") {
           this.getAllStadium();
-        } else if (localStorage.getItem("userRole") === "StadiumByOwner") {
+        } else if (localStorage.getItem("userRole") === "StadiumOwner") {
           this.getAllStadiumsByOwner();
         }
         toast.success("Xóa thành công");
@@ -86,5 +87,30 @@ export const useStadium = defineStore("stadium", {
         console.log("🚀 ~ searchStadium ~ error:", error);
       }
     },
+
+    async commment(content, stadiumID) {
+      try {
+        const response = await axios.post(
+          `${endpoint}/createComment/${stadiumID}`,
+          content,
+          config
+        );
+      } catch (error) {
+        console.log("🚀 ~ commment ~ error:", error);
+      }
+    },
+
+    async getComments(stadiumID) {
+      try {
+        const response = await axios.get(
+          `${endpoint}/getComments/${stadiumID}`
+        );
+        this.commentData = response?.data?.message;
+      } catch (error) {
+        console.log("🚀 ~ getComments ~ error:", error);
+      }
+    },
   },
 });
+
+export default useStadium;

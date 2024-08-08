@@ -7,23 +7,21 @@ import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import { convertBase64, onFileChange } from "../../utils/uploadimage";
-import { useStadium } from "../../stores/fetchStadium";
 import { toast } from "vue3-toastify";
 import { getAddress } from "../../utils/getAddress";
 import ListStadiumByOwner from "../../components/stadium/ListStadiumByOwner.vue";
 import StadiumByOwner from "../../components/stadium/StadiumByOwner.vue";
+import { useStadium } from "../../stores";
+import "../../components/primevuecss/dialog.css";
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const visible = ref(false);
 const image = ref("");
+const imageUrl = ref("");
 const stadium_name = ref(null);
 const phone = ref(null);
 const describe = ref(null);
 const stadiumStore = useStadium();
-
-const handleFileChange = (e) => {
-  onFileChange(e, image);
-};
 
 const handleAddStadium = async () => {
   const data = {
@@ -36,6 +34,13 @@ const handleAddStadium = async () => {
     describe: describe.value,
   };
   await stadiumStore.createStadium(data, toast);
+  stadium_name.value = "";
+  provice.value = "";
+  city.value = "";
+  ward.value = "";
+  phone.value = "";
+  describe.value = "";
+  image.value = "";
 };
 
 const searchResults = ref([]);
@@ -43,6 +48,22 @@ const searchResults = ref([]);
 const handleSearchResults = (results) => {
   searchResults.value = results;
   console.log("🚀 ~ handleSearchResults ~ searchResults:", searchResults);
+};
+
+const previewImage = (event) => {
+  let file = event.target.files[0];
+  if (file && file.type.startsWith("image/")) {
+    let reader = new FileReader();
+    reader.onload = () => {
+      imageUrl.value = reader.result;
+    };
+    reader.readAsDataURL(file);
+    image.value = file;
+  } else {
+    console.error("Không có tệp hợp lệ được chọn.");
+    imageUrl.value = "";
+    image.value = "";
+  }
 };
 </script>
 <template>
@@ -80,29 +101,36 @@ const handleSearchResults = (results) => {
 
   <Dialog
     v-model:visible="visible"
+    header="Thêm sân vận động"
     modal
-    header="Thêm sân"
-    class="w-[580px] py-3 px-10 z-10"
+    class="w-[780px] py-3 px-10 z-10"
   >
     <form @submit.prevent="handleAddStadium" class="flex flex-col gap-4">
       <div class="flex items-center gap-4">
         <label for="image" class="font-semibold w-24">Ảnh</label>
-        <InputText id="image" name="iamge" class="input-text relative">
-        </InputText>
         <label
-          for="file"
-          class="absolute right-10 -translate-x-1/2 cursor-pointer"
+          for="image"
+          class="flex items-center justify-center h-[300px] w-full rounded-md border border-[#cbd5e1] cursor-pointer overflow-hidden"
         >
-          <i class="pi pi-upload"></i>
+          <input
+            id="image"
+            type="file"
+            name="image"
+            class="hidden"
+            @change="previewImage"
+          />
+          <div class="w-full" v-if="imageUrl">
+            <img
+              :src="imageUrl"
+              class="w-full h-[300px] object-cover rounded-md"
+            />
+          </div>
+          <div class="img-view" v-else>
+            <i class="pi pi-fw pi-upload"></i>
+          </div>
         </label>
-        <input
-          id="file"
-          type="file"
-          name="file"
-          class="hidden"
-          @change="handleFileChange"
-        />
       </div>
+
       <div class="flex items-center gap-4">
         <label for="stadium_name" class="font-semibold w-24">Tên sân</label>
         <InputText

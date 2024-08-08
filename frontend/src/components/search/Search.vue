@@ -3,24 +3,25 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import { ref, watchEffect } from "vue";
-import { useStadium } from "../../stores/fetchStadium";
 import { getAddress } from "../../utils/getAddress";
+import { useStadium } from "../../stores";
+
 const { provice, city, ward, proviceOptions, cityOptions, wardOptions } =
   getAddress();
 const name = ref("");
 const result = ref([]);
 const stadiumStore = useStadium();
-const emit = defineEmits(["searchResults"]);
+const emit = defineEmits(["searchResults", "loadingStateChange"]);
 const isLoading = ref(false);
 const handleSearch = async () => {
   isLoading.value = true;
+  emit("loadingStateChange", true);
   const dataSearch = {
     name: name.value || "",
     provice: provice?.value?.name || "",
     city: city?.value?.name || "",
     ward: ward?.value?.name || "",
   };
-  console.log("🚀 ~ handleSearch ~ dataSearch:", dataSearch);
   try {
     await stadiumStore.searchStadium(
       dataSearch.name,
@@ -32,10 +33,22 @@ const handleSearch = async () => {
     watchEffect(() => {
       result.value = stadiumStore.resultSearch;
       emit("searchResults", result.value);
-      console.log("🚀 ~ watchEffect ~ result:", result);
+      setTimeout(() => {
+        isLoading.value = false;
+        emit("loadingStateChange", false);
+      }, 3000);
     });
+
+    name.value = "";
+    provice.value = "";
+    city.value = "";
+    ward.value = "";
   } catch (error) {
     console.log("🚀 ~ handleSearch ~ error:", error);
+    setTimeout(() => {
+      isLoading.value = false;
+      emit("loadingStateChange", false);
+    }, 3000);
   }
 };
 </script>
@@ -86,9 +99,9 @@ form {
   display: flex;
 }
 .inputText {
-  flex: 1;
   padding: 16px;
   border: 1px solid#334155;
+  flex: 1;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 0;
@@ -103,5 +116,12 @@ form {
   border: 1px solid#334155;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+@media (max-width: 768px) {
+  form {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

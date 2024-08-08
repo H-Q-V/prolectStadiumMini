@@ -1,7 +1,7 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { useStadium } from "../../stores/fetchStadium";
 import { onMounted, ref } from "vue";
+import { useStadium } from "../../stores";
 
 const stadiumData = ref([]);
 const stadiumStore = useStadium();
