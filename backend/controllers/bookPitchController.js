@@ -2,10 +2,8 @@ const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
 const cron = require("node-cron");
 const { Stadium } = require("../model/stadium");
-//const moment = require('moment');
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
-
+const RevenueRecord = require("../model/revenueRecord");
 const bookPitchController = {
   bookPitch: async (req, res) => {
     try {
@@ -98,12 +96,15 @@ const bookPitchController = {
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         });
+
+        const userID = req.customer.id;
+        console.log("🚀 ~ createBooking ~ userID:", userID);
         return await BookPitch.create({
           phone,
           totalAmount: formattedtotalAmount,
           deposit: formattedeposit,
           time: timeSlots,
-          user: req?.customer?.id,
+          user: userID,
           stadium: stadiumID,
           stadiumStyle: stadiumStyleID,
           status: "pending",
@@ -284,17 +285,51 @@ const bookPitchController = {
 
   getStadiumOwnerBookings: async (req, res) => {
     try {
-      const booking = await BookPitch.find().populate("stadium").populate({
-        path: "user",
-        select: "username",
-      });
-      const filteredBookings = booking.filter(
+      const booking = await BookPitch.find()
+        .populate("stadium")
+        .populate({ path: "user", select: "username" });
+      const customerBooking = booking.filter(
         (book) =>
           book.stadium &&
           book.stadium.stadium_owner &&
           book.stadium.stadium_owner.toString() === req.customer.id.toString()
       );
-      return res.status(200).json({ success: true, message: filteredBookings });
+
+      const stadiumStyleIds = customerBooking
+        .filter((booking) => booking.stadiumStyle)
+        .map((booking) => booking.stadiumStyle.toString());
+
+      const matchingStadiumStyles = customerBooking
+        .filter(
+          (booking) =>
+            booking.stadiumStyle &&
+            stadiumStyleIds.includes(booking.stadiumStyle.toString())
+        )
+        .map((booking) => booking.stadium.stadium_styles)
+        .flat()
+        .filter(
+          (style, index, self) =>
+            index ===
+            self.findIndex((s) => s._id.toString() === style._id.toString())
+        );
+
+      const updatedBookings = customerBooking.map((booking) => {
+        const updatedStadiumStyle = matchingStadiumStyles.find(
+          (style) => style._id.toString() === booking.stadiumStyle.toString()
+        );
+        console.log(
+          "🚀 ~ updatedBookings ~ updatedStadiumStyle:",
+          updatedStadiumStyle
+        );
+        return {
+          ...booking.toObject(),
+          stadium: {
+            ...booking.stadium.toObject(),
+            stadium_styles: updatedStadiumStyle ? [updatedStadiumStyle] : [],
+          },
+        };
+      });
+      return res.status(200).json({ success: true, message: updatedBookings });
     } catch (error) {
       console.log("🚀 ~ getStadiumOwnerBookPitch: ~ error:", error);
       return res.status(500).json(error);
@@ -377,8 +412,9 @@ const bookPitchController = {
 
   getAnBookPitch: async (req, res) => {
     try {
-      const idCustomer = req.customer?.id;
+      const idCustomer = req.customer.id;
       const bookPitch = await BookPitch.findOne({
+        status: "pending",
         user: idCustomer,
       });
       if (!bookPitch) {
@@ -433,6 +469,7 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
+
   getFreeTime: async (req, res) => {
     try {
     } catch (error) {
@@ -478,12 +515,11 @@ const bookPitchController = {
           message: "Không tìm thấy sân",
         });
       }
-      // Get all bookings for the stadium
       const bookings = await BookPitch.find({
         stadium: stadiumID,
         status: "confirmed",
       }).populate("stadiumStyle");
-      // Process each stadium style
+
       let results = [];
       for (const style of stadium.stadium_styles) {
         const timeSlots = generateTimeSlots(startOfDay, endOfDay, 90); // 30 minutes slots
@@ -518,29 +554,31 @@ const bookPitchController = {
   },
 };
 
-cron.schedule("0 0 * * *", async () => {
-  const now = new Date();
+cron.schedule("25 8 * * *", async () => {
   try {
-    const bookings = await BookPitch.find({});
-    for (let booking of bookings) {
-      const updatedTimeSlots = booking.time.filter(
-        (slot) => new Date(slot.endTime) >= now
-      );
-      if (updatedTimeSlots.length > 0) {
-        await BookPitch.findByIdAndUpdate(booking._id, {
-          time: updatedTimeSlots,
-        });
-      } else {
-        await BookPitch.findByIdAndDelete(booking._id);
-      }
+    const expiredBookings = await BookPitch.find({
+      "time.endTime": { $lt: new Date() },
+      status: "confirmed",
+    }).populate("stadium");
+    for (let booking of expiredBookings) {
+      const amount = parseFloat(booking.totalAmount.replace(/\./g, ""));
+      const deposit = parseFloat(booking.deposit.replace(/\./g, ""));
+      await RevenueRecord.create({
+        bookingId: booking._id,
+        ownerId: booking.stadium.stadium_owner,
+        stadiumId: booking.stadium._id,
+        amount: amount,
+        deposit: deposit,
+        startTime: booking.time[0].startTime,
+        endTime: booking.time[0].endTime,
+      });
+
+      await BookPitch.findByIdAndDelete(booking._id);
     }
 
-    console.log("Đã xóa các đặt sân và phần tử đã hết hạn thành công.");
-  } catch (error) {
-    console.error(
-      "Có lỗi xảy ra khi xóa các đặt sân và phần tử đã hết hạn:",
-      error
-    );
+    console.log("Đã lưu và xóa các đơn đặt sân đã quá thời gian.");
+  } catch (err) {
+    console.error("Lỗi khi xử lý các đơn đặt sân:", err);
   }
 });
 

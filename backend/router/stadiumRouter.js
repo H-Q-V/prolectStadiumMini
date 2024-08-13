@@ -51,7 +51,7 @@ router.get(
 );
 
 router.put(
-  "/updateStadiumStyle",
+  "/updateStadiumStyle/:stadiumStyleID",
   middlewareController.verifyToken,
   middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.updateStadiumStyle
@@ -59,6 +59,8 @@ router.put(
 
 router.delete(
   "/deleteStadiumStyle/:stadiumStyleId",
+  middlewareController.verifyToken,
+  middlewareController.authorize(["StadiumOwner", "Admin"]),
   stadiumController.deleteStadiumStyle
 );
 

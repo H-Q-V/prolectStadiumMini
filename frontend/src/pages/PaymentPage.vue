@@ -3,6 +3,7 @@ import Button from "primevue/button";
 import Tag from "../components/tag/Tag.vue";
 import { onMounted, ref, watchEffect } from "vue";
 import { useBookPitch } from "../stores";
+import { formatTime } from "../utils";
 const bookStore = useBookPitch();
 const bookData = ref([]);
 onMounted(async () => {
@@ -44,8 +45,13 @@ const handlePayment = async () => {
       ></Tag>
 
       <Tag :infor="'Vị trí'" :value="`${book.name}`" :className="'gap-5'"></Tag>
-
-      <Tag :infor="'Giá'" :value="book.price" :class="'gap-5'"></Tag>
+      <Tag
+        :infor="'Bắt đầu'"
+        :value="formatTime(book.time[0]?.startTime)"
+      ></Tag>
+      <Tag :infor="'Kết thúc'" :value="formatTime(book.time[0]?.endTime)"></Tag>
+      <Tag :infor="'Giá'" :value="book.totalAmount" :class="'gap-5'"></Tag>
+      <Tag :infor="'Tiền cọc'" :value="book.deposit" :class="'gap-5'"></Tag>
 
       <div class="flex items-center gap-3">
         <Button

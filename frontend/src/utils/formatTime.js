@@ -1,5 +1,5 @@
 import date from "date-and-time";
-export const formatBookingTime = (time) => {
+export const formatTime = (time) => {
   if (time) {
     const dateTime = new Date(time);
     if (!isNaN(dateTime.getTime())) {
