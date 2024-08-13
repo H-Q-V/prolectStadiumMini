@@ -236,54 +236,7 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: err.message });
     }
   },
-/*
-  getCustomerBookPitches: async (req, res) => {
-    try {
-      const bookPitch = await BookPitch.find({
-        user: req.customer.id,
-      });
-      const data = [];
-      for (let i = 0; i < bookPitch.length; i++) {
-        let stadiumStyleId = bookPitch[i].stadiumStyle;
 
-        const stadium = await Stadium.findOne({
-          "stadium_styles._id": stadiumStyleId,
-        });
-        const st = stadium.stadium_styles.find(
-          (style) => style._id.toString() === stadiumStyleId.toString()
-        );
-        let oject = {};
-        const { stadium_styles, ...datas } = stadium._doc;
-
-        const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
-          startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-          endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
-        }));
-
-        oject = {
-          ...datas,
-          ...st._doc,
-          ...bookPitch[i]._doc,
-          time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
-          originalStartTime: moment
-            .utc(bookPitch[i].originalStartTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format('YYYY/MM/DD HH:mm'),
-          originalEndTime: moment
-            .utc(bookPitch[i].originalEndTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format('YYYY/MM/DD HH:mm'),
-        };
-        data.push(oject);
-      }
-
-      return res.status(200).json({ success: true, message: data });
-    } catch (error) {
-      console.log("🚀 ~ getAnBookPitches: ~ error:", error);
-      return res.status(500).json(error);
-    }
-  },
-*/
 getCustomerBookPitches: async (req, res) => {
   try {
     const bookPitch = await BookPitch.find({
