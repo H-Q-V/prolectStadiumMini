@@ -413,7 +413,7 @@ getCustomerBookPitches: async (req, res) => {
   getAnBookPitch: async (req, res) => {
     try {
       const idCustomer = req.customer.id;
-      const bookPitch = await BookPitch.findOne({status:"confirmed",user: idCustomer});
+      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
       if (!bookPitch) {
         return res.status(404).json({
           success: false,
