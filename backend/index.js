@@ -16,6 +16,10 @@ const commentRouter = require("./router/commentRouter");
 const revenueRecordRouter = require("./router/revenueRecordRouter");
 const webhook = require("./router/payment");
 const teamRouter = require("./router/teamRouter");
+
+require("./cronjob/payment.js");
+require('./cronjob/bookpitch');
+
 //const otpRoutes = require("./router/otpRouter");
 dotenv.config();
 app.use(

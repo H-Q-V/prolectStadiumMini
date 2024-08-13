@@ -1,5 +1,7 @@
 const customerController = require("../controllers/customerController");
-const middlewareController = require("../controllers/middlewareController");
+//const middlewareController = require("../controllers/middlewareController");
+const middlewareController = require("../middleware/middleware");
+
 const router = require("express").Router();
 
 router.post(

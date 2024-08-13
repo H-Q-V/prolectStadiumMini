@@ -38,7 +38,11 @@ const commentController = {
       const comments = await Comment.find({
         stadium: req.params.stadiumID,
       }).populate("user");
-      return res.status(200).json({ success: true, message: comments });
+
+      return res.status(200).json({ 
+        success: true,
+         message: comments 
+        });
     } catch (error) {
       console.log("🚀 ~ getComments: ~ error:", error);
       return res.status(500).json({ success: false, message: error });

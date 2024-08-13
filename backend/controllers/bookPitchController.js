@@ -198,6 +198,7 @@ const bookPitchController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
+
   getAllBookPitches: async (req, res) => {
     try {
       const bookPitches = await BookPitch.find().populate({
@@ -414,7 +415,7 @@ const bookPitchController = {
     try {
       const idCustomer = req.customer.id;
       const bookPitch = await BookPitch.findOne({
-        status: "pending",
+        status: "confirmed",
         user: idCustomer,
       });
       if (!bookPitch) {
@@ -552,6 +553,102 @@ const bookPitchController = {
       });
     }
   },
+
+  cancelpayment: async (req, res) => {
+    try {
+      const id = req.customer.id;
+      await BookPitch.findOneAndDelete({ status: "pending", user: id });
+      return res.status(200).json({
+        success: true,
+        message: "Xóa thanh toán thành công",
+      });
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+
+  getFreeTime: async (req, res) => {
+    try {
+      const { idStadium } = req.params;
+      const book = await BookPitch.find({
+        status: "confirmed",
+        stadium: idStadium,
+      });
+      const stadium = await Stadium.findById(idStadium);
+      if (!stadium) {
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy sân",
+        });
+      }
+      const styles = stadium.stadium_styles;
+      if (!styles) {
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy kiểu sân",
+        });
+      }
+      const currentMonth = moment().tz("Asia/Ho_Chi_Minh").month();
+      const availableTimesByStyle = styles.map((style) => {
+        const bookedTimesForStyle = book
+          .flatMap((booking) =>
+            booking.time.filter((t) => t.time === styles.time)
+          )
+          ?.map((t) => ({
+            startTime: moment(t.startTime).tz("Asia/Ho_Chi_Minh"),
+            endTime: moment(t.endTime).tz("Asia/Ho_Chi_Minh"),
+          }));
+        console.log(
+          `Thời gian đã đặt cho kiểu sân ${style.name}:`,
+          bookedTimesForStyle
+        );
+
+        const generateAvailableTimes = (month) => {
+          const now = moment().tz("Asia/Ho_Chi_Minh").toDate();
+          const timeslots = [];
+          const year = now.getFullYear();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          for (let day = 1; day <= daysInMonth; day++) {
+            let slotTime = moment
+              .tz(new Date(year, month, day, 5, 0), "Asia/Ho_Chi_Minh")
+              .toDate();
+            const slotDuration = style.time;
+            while (slotTime.getHours() < 23) {
+              if (slotTime >= now) {
+                const isBooked = bookedTimesForStyle.some((book) =>
+                  moment(slotTime).isBetween(
+                    book.startTime,
+                    book.endTime,
+                    null,
+                    "[)"
+                  )
+                );
+                //console.log(isBooked)
+                timeslots.push({
+                  time: moment(slotTime).format("M/D/YYYY, h:mm:ss A"),
+                  book: isBooked,
+                });
+              }
+              slotTime = moment(slotTime).add(slotDuration, "minutes").toDate();
+            }
+          }
+          return timeslots;
+        };
+        const availableTimes = generateAvailableTimes(currentMonth);
+        return {
+          style: style.name,
+          availableTimes: availableTimes,
+        };
+      });
+      return res.status(200).json({
+        success: true,
+        data: availableTimesByStyle,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
 };
 
 cron.schedule("25 8 * * *", async () => {
@@ -580,6 +677,5 @@ cron.schedule("25 8 * * *", async () => {
   } catch (err) {
     console.error("Lỗi khi xử lý các đơn đặt sân:", err);
   }
-});
-
-module.exports = bookPitchController;
+}),
+  (module.exports = bookPitchController);
