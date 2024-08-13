@@ -43,6 +43,7 @@ const handleBookPitch = async () => {
       ? date.format(timePeriodsToBook.value, "YYYY/MM/DD")
       : "",
   };
+  console.log("🚀 ~ handleBookPitch ~ data:", data);
   await bookPitchStore.bookPitch(
     data,
     toast,
@@ -106,7 +107,8 @@ const validateInput = (e) => {
         <div class="flex items-center gap-2">
           <Checkbox
             v-model="isRecurring"
-            id="periodic"
+            id="isRecurring"
+            name="isRecurring"
             binary
             class="border border-solid border-[#6f6f6f] rounded-md"
           ></Checkbox>
@@ -123,7 +125,11 @@ const validateInput = (e) => {
             class="w-full p-4 border border-[#334155]"
           />
           <label for="timePeriodsToBook">Ngày kết thúc định kỳ</label>
-          <DatePicker v-model="timePeriodsToBook" id="timePeriodsToBook" />
+          <DatePicker
+            v-model="timePeriodsToBook"
+            id="timePeriodsToBook"
+            name="timePeriodsToBook"
+          />
         </div>
         <div class="flex items-center justify-center gap-3 mt-2">
           <Button

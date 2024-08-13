@@ -23,6 +23,7 @@ watchEffect(() => {
         :ward="stadium?.ward"
         :city="stadium?.city"
         :provice="stadium?.provice"
+        :address="stadium?.address"
       ></Stadium>
     </div>
   </div>

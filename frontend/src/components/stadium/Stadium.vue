@@ -7,6 +7,7 @@ const props = defineProps({
   ward: { type: String, required: true },
   city: { type: String, required: true },
   provice: { type: String, required: true },
+  address: { type: String, required: true },
 });
 </script>
 <template>
@@ -30,7 +31,7 @@ const props = defineProps({
       <div class="flex items-center gap-2 text-sm">
         <i class="pi pi-fw pi-map-marker"></i>
         <p class="capitalize line-clamp-1">
-          {{ ward }} {{ city }} {{ provice }}
+          {{ ward }} {{ city }} {{ provice }} {{ address }}
         </p>
       </div>
     </router-link>
