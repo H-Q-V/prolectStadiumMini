@@ -237,53 +237,52 @@ const bookPitchController = {
     }
   },
 
-  getCustomerBookPitches: async (req, res) => {
-    try {
-      const bookPitch = await BookPitch.find({
-        user: req.customer.id,
+getCustomerBookPitches: async (req, res) => {
+  try {
+    const bookPitch = await BookPitch.find({
+      user: req.customer.id,
+    });
+    const data = [];
+    for (let i = 0; i < bookPitch.length; i++) {
+      let stadiumStyleId = bookPitch[i].stadiumStyle;
+
+      const stadium = await Stadium.findOne({
+        "stadium_styles._id": stadiumStyleId,
       });
-      const data = [];
-      for (let i = 0; i < bookPitch.length; i++) {
-        let stadiumStyleId = bookPitch[i].stadiumStyle;
+      const st = stadium.stadium_styles.find(
+        (style) => style._id.toString() === stadiumStyleId.toString()
+      );
+      let oject = {};
+      const { stadium_styles, ...datas } = stadium._doc;
 
-        const stadium = await Stadium.findOne({
-          "stadium_styles._id": stadiumStyleId,
-        });
-        const st = stadium.stadium_styles.find(
-          (style) => style._id.toString() === stadiumStyleId.toString()
-        );
-        let oject = {};
-        const { stadium_styles, ...datas } = stadium._doc;
+      const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
+        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
+        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
+      }));
 
-        const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
-          startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-          endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
-        }));
-
-        oject = {
-          ...datas,
-          ...st._doc,
-          ...bookPitch[i]._doc,
-          time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
-          originalStartTime: moment
-            .utc(bookPitch[i].originalStartTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format(),
-          originalEndTime: moment
-            .utc(bookPitch[i].originalEndTime)
-            .tz("Asia/Ho_Chi_Minh")
-            .format(),
-        };
-        data.push(oject);
-      }
-
-      return res.status(200).json({ success: true, message: data });
-    } catch (error) {
-      console.log("🚀 ~ getAnBookPitches: ~ error:", error);
-      return res.status(500).json(error);
+      oject = {
+        ...datas,
+        ...st._doc,
+        ...bookPitch[i]._doc,
+        time: convertedTimeSlots, // Cập nhật thời gian đã chuyển đổi
+        originalStartTime: moment
+          .utc(bookPitch[i].originalStartTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format('YYYY/MM/DD HH:mm'),
+        originalEndTime: moment
+          .utc(bookPitch[i].originalEndTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format('YYYY/MM/DD HH:mm'),
+      };
+      data.push(oject);
     }
-  },
 
+    return res.status(200).json({ success: true, message: data });
+  } catch (error) {
+    console.log("🚀 ~ getAnBookPitches: ~ error:", error);
+    return res.status(500).json(error);
+  }
+},
   getStadiumOwnerBookings: async (req, res) => {
     try {
       const booking = await BookPitch.find()
@@ -414,7 +413,7 @@ const bookPitchController = {
   getAnBookPitch: async (req, res) => {
     try {
       const idCustomer = req.customer.id;
-      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
+      const bookPitch = await BookPitch.findOne({status:"confirmed",user: idCustomer});
       if (!bookPitch) {
         return res.status(404).json({
           success: false,
@@ -440,8 +439,8 @@ const bookPitchController = {
         });
       }
       const convertedTimeSlots = bookPitch.time.map((slot) => ({
-        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format(),
-        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format(),
+        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
+        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
       }));
       const data = {
         ...stadium._doc,
@@ -451,11 +450,11 @@ const bookPitchController = {
         originalStartTime: moment
           .utc(bookPitch.originalStartTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format(),
+          .format('YYYY/MM/DD HH:mm'),
         originalEndTime: moment
           .utc(bookPitch.originalEndTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format(),
+          .format('YYYY/MM/DD HH:mm'),
       };
       delete data.stadium_styles;
       return res.status(200).json({

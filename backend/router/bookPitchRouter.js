@@ -17,7 +17,11 @@ router.get(
   middlewareController.verifyToken,
   bookPitchController.getCustomerBookPitches
 );
-
+router.get(
+  "/getAnBookPitches",
+  middlewareController.verifyToken,
+  bookPitchController.getAnBookPitch
+);
 router.delete(
   "/deleteBookPitches/:id",
   middlewareController.verifyToken,
