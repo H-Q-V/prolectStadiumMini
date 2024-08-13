@@ -43,7 +43,7 @@ const stadiumSchema = new mongoose.Schema({
         required: true,
       },
       time: {
-        type: String,
+        type: Number,
         required: true,
       }
     },

@@ -6,6 +6,7 @@ const PayStatus = require("../model/payStatus.js");
 const cron = require("node-cron");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+//require("../cronjob/payment.js");
 
 const payment = {
   async createPayment(req, res) {
@@ -90,6 +91,7 @@ const payment = {
           { Status: "confirmed" },
           { new: true }
         );
+        // comment bắt đầu ở đây để thay linh payos
         const bookingStatus = await BookPitch.findOne({
           user: inforDonate.User,
         });
@@ -102,6 +104,7 @@ const payment = {
         console.log("Oke");
         bookingStatus.status = "confirmed"; // For example
         await bookingStatus.save();
+        //comment kết thuc sở đây để thay linh Payos
       }
       return res.status(200).json({
         success: true,
@@ -114,31 +117,5 @@ const payment = {
   },
 };
 
-cron.schedule("*/1 * * * *", async () => {
-  // Chạy mỗi phút
-  try {
-    console.log("Cron job bắt đầu chạy...");
-    const now = new Date();
-    const oneMinuteAgo = new Date(now.getTime() - 2 * 60 * 1000);
-    console.log("Thời gian 1 phút trước:", oneMinuteAgo);
-    const bookingsToDelete = await BookPitch.find({
-      status: "pending",
-      createdAt: { $lt: oneMinuteAgo },
-    });
-    console.log("Các bản ghi tìm thấy:", bookingsToDelete);
-    if (bookingsToDelete.length > 0) {
-      const deleteResult = await BookPitch.deleteMany({
-        _id: { $in: bookingsToDelete.map((b) => b._id) },
-      });
-      console.log(
-        `${deleteResult.deletedCount} booking(s) đã được xóa do không thanh toán.`
-      );
-    } else {
-      console.log("Không có booking nào cần xóa.");
-    }
-  } catch (err) {
-    console.error("Lỗi khi thực hiện cron job:", err);
-  }
-});
 
 module.exports = payment;
