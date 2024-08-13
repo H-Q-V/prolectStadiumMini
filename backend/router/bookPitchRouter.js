@@ -1,5 +1,7 @@
 const bookPitchController = require("../controllers/bookPitchController");
-const middlewareController = require("../controllers/middlewareController");
+//const middlewareController = require("../controllers/middlewareController");
+const middlewareController = require("../middleware/middleware");
+
 const router = require("express").Router();
 
 router.post(
@@ -30,7 +32,10 @@ router.delete(
 );
 
 
-router.get("/getAnBookPitches", middlewareController.verifyToken, bookPitchController.getAnBookPitch);
+router.get("/getAnBookPitches",
+middlewareController.verifyToken, 
+bookPitchController.getAnBookPitch
+);
 
 // router.get(
 //   "/getStadiumOwnerBookings",
@@ -56,8 +61,10 @@ router.delete(
   middlewareController.verifyToken,
   bookPitchController.cancelpayment
 );
-router.get("/getFreeTime/:idStadium", middlewareController.verifyToken, bookPitchController.getFreeTime);
 
-
+router.get("/getFreeTime/:idStadium", 
+middlewareController.verifyToken, 
+bookPitchController.getFreeTime
+);
 
 module.exports = router;

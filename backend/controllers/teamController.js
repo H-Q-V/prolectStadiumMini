@@ -11,21 +11,20 @@ const teamController = {
           message: "Không được nhập thiếu thông tin"
         });
       }
-      
-      // Kiểm tra kiểu dữ liệu
+      /*
       if (typeof name !== 'string' || typeof job !== 'string' || typeof averageAge !== 'number' || averageAge <= 0) {
         return res.status(400).json({
           success: false,
           message: "Thông tin không hợp lệ"
         });
       }
+        */
       const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
         return res
           .status(400)
           .json({ status: false, message: "Số điện thoại không hợp lệ" });
       }
-      // Tạo đội bóng
       const response = await Team.create({
         name: name,
         averageAge: averageAge,
@@ -40,7 +39,7 @@ const teamController = {
         message: "Thêm đội bóng thành công"
       });
     } catch (error) {
-      console.error('Lỗi khi thêm đội bóng:', error); // Ghi log lỗi chi tiết hơn
+      console.error('Lỗi khi thêm đội bóng:', error); 
       return res.status(500).json({
         success: false,
         message: "Đã xảy ra lỗi, vui lòng thử lại sau"
@@ -56,7 +55,7 @@ const teamController = {
       if (averageAge) update.averageAge = averageAge;
       if (job) update.job = job;
       if (phone) update.phone = phone;
-      // Kiểm tra xem ít nhất một trường được cung cấp
+      
       if (Object.keys(update).length === 0) {
         return res.status(400).json({
             success: false,
@@ -124,6 +123,7 @@ const teamController = {
         name: 1,
         averageAge: 1,
         job: 1,
+        phone:1,
         teamFounder: 1,
       };
        const teams = await Team.find(query, projection);

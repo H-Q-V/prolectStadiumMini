@@ -1,7 +1,9 @@
 const stadiumController = require("../controllers/stadiumController");
 //const { upload,uploadImage } = require("../uploadImage/uploadImage");
 //const cloudinary = require("./uploadImage/uploadImage")
-const middlewareController = require("../controllers/middlewareController");
+//const middlewareController = require("../controllers/middlewareController");
+const middlewareController = require("../middleware/middleware");
+
 const router = require("express").Router();
 
 //add stadium
