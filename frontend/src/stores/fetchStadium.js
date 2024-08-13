@@ -80,7 +80,6 @@ const useStadium = defineStore("stadium", {
         const response = await axios.get(
           `${endpoint}/getAllStadiumStyle/${id}`
         );
-        console.log("🚀 ~ getStadiumsStyle ~ response:", response);
         this.stadiumStyleData = response?.data;
       } catch (error) {
         console.log("🚀 ~ getStadiumsStyle ~ error:", error);
@@ -95,6 +94,16 @@ const useStadium = defineStore("stadium", {
         this.stadiumData = response?.data;
       } catch (error) {
         console.log("🚀 ~ getAnStadiumStyle ~ error:", error);
+      }
+    },
+
+    async deleteStadiumStyle(id, toast) {
+      try {
+        await axios.delete(`${endpoint}/deleteStadiumStyle/${id}`, config);
+        toast.success("Xóa thành công");
+      } catch (error) {
+        console.log("🚀 ~ deleteStadiumStyle ~ error:", error);
+        toast.error(error?.response?.data?.message);
       }
     },
 

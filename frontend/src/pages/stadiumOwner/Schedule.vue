@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
 import { useBookPitch } from "../../stores";
-import { formatBookingTime } from "../../utils";
+import { formatTime } from "../../utils";
 const bookStore = useBookPitch();
 const bookData = ref([]);
 onMounted(async () => {
@@ -48,7 +48,7 @@ watchEffect(() => {
             Bắt đầu từ:
             {{
               book?.time
-                ?.map((bookStyle) => formatBookingTime(bookStyle.startTime))
+                ?.map((bookStyle) => formatTime(bookStyle.startTime))
                 .join(", ")
             }}
           </p>
@@ -57,7 +57,7 @@ watchEffect(() => {
             Kết thúc
             {{
               book?.time
-                ?.map((bookStyle) => formatBookingTime(bookStyle.endTime))
+                ?.map((bookStyle) => formatTime(bookStyle.endTime))
                 .join(", ")
             }}
           </p>
@@ -71,14 +71,7 @@ watchEffect(() => {
             <span class="capitalize">{{ book?.user?.username }}</span>
           </h3>
           <p>Số điện thoại: {{ book.phone }}</p>
-          <span
-            >Giá:
-            {{
-              book?.stadium?.stadium_styles
-                ?.map((bookStyle) => bookStyle.price)
-                .join(", ")
-            }}</span
-          >
+          <span>Giá: {{ book?.totalAmount }}</span>
         </div>
       </div>
     </div>

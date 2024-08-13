@@ -3,7 +3,7 @@ import { onMounted, ref, watchEffect } from "vue";
 import Button from "primevue/button";
 import { toast } from "vue3-toastify";
 import { useBookPitch } from "../../stores";
-import { formatBookingTime } from "../../utils";
+import { formatTime } from "../../utils/formatTime";
 const customerBookPitchesData = ref([]);
 const bookPitchStore = useBookPitch();
 onMounted(async () => {
@@ -41,10 +41,8 @@ const handleDeleteBookPitch = async (id) => {
           >Địa chỉ: {{ booking.ward }} {{ booking.city }}
           {{ booking.provice }}</span
         >
-        <span
-          >Bắt đầu: {{ formatBookingTime(booking.time[0]?.startTime) }}</span
-        >
-        <span>Kết thúc: {{ formatBookingTime(booking.time[0]?.endTime) }}</span>
+        <span>Bắt đầu: {{ formatTime(booking.time[0]?.startTime) }}</span>
+        <span>Kết thúc: {{ formatTime(booking.time[0]?.endTime) }}</span>
 
         <div class="flex items-center justify-center gap-4">
           <Button class="bg-blue-500">Sửa lịch</Button>

@@ -13,6 +13,7 @@ const authRouter = require("./router/authRouter");
 const bookPitchRouter = require("./router/bookPitchRouter");
 const customerRouter = require("./router/customerRouter");
 const commentRouter = require("./router/commentRouter");
+const revenueRecordRouter = require("./router/revenueRecordRouter");
 const webhook = require("./router/payment");
 const teamRouter = require("./router/teamRouter");
 
@@ -57,6 +58,7 @@ app.use("/api", customerRouter);
 app.use("/api", webhook);
 app.use("/api", teamRouter);
 app.use("/api", commentRouter);
+app.use("/api", revenueRecordRouter);
 //app.use("/api", otpRoutes);
 app.listen(3000, () => {
   console.log("server is running http://localhost:3000/");

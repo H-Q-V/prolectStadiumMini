@@ -1,7 +1,6 @@
 import axios from "axios";
 import { defineStore } from "pinia";
 import { config, endpoint } from "../utils";
-import { LOCAL_STORAGE_TOKEN } from "../utils/localStoreName";
 const useBookPitch = defineStore("bookPitch", {
   state: () => ({
     bookPitchData: [],
@@ -30,7 +29,6 @@ const useBookPitch = defineStore("bookPitch", {
       try {
         const response = await axios.get(`${endpoint}/getAllBookPitches`);
         this.bookPitchData = response?.data;
-        console.log("🚀 ~ getAllBookPitches ~ response:", response);
       } catch (error) {
         console.log("🚀 ~ getAllBookPitches ~ error:", error);
       }
@@ -89,7 +87,6 @@ const useBookPitch = defineStore("bookPitch", {
           `${endpoint}/getStadiumOwnerBookings`,
           config
         );
-        console.log("🚀 ~ getStadiumOwnerBookings ~ response:", response);
         this.bookPitchData = response?.data?.message;
       } catch (error) {
         console.log("🚀 ~ getStadiumOwnerBookings ~ error:", error);

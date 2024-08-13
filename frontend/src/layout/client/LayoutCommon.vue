@@ -47,6 +47,7 @@ const handleMenuToggle = () => {
   overflow-y: auto;
   transition: 0.6s ease;
   transition-property: left;
+  z-index: 1000;
 }
 
 .layout-sidebar::-webkit-scrollbar {
