@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const revenueRecordController = require("../controllers/revenueRecordController");
-const middlewareController = require("../controllers/middlewareController");
+const middlewareController = require("../middleware/middleware");
 router.get(
   "/getRevenues",
   middlewareController.verifyToken,
