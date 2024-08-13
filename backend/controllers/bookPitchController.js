@@ -327,7 +327,7 @@ const bookPitchController = {
 getAnBookPitch: async (req, res) => {
   try {
       const idCustomer = req.customer.id;
-      const bookPitch = await BookPitch.findOne({status:"confirmed",user: idCustomer});
+      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
       if (!bookPitch) {
           return res.status(404).json({
               success: false,
@@ -387,99 +387,7 @@ cancelpayment: async (req,res) => {
     return res.status(500).json(error);
   }
 },
-/*
-getFreeTime: async (req, res) => {
-  try {
-    const { idStadium } = req.params;
-    const book = await BookPitch.find({
-      status: "confirmed",
-      stadium: idStadium
-    });
 
-    console.log("All Bookings:", book);
-
-    book.forEach(booking => {
-      console.log(`Booking ID: ${booking._id}`);
-      if (Array.isArray(booking.time)) {
-        booking.time.forEach(t => {
-          const startTimeFormatted = moment(t.startTime).tz('Asia/Ho_Chi_Minh').format('M/D/YYYY, h:mm:ss A');
-          const endTimeFormatted = moment(t.endTime).tz('Asia/Ho_Chi_Minh').format('M/D/YYYY, h:mm:ss A');
-          console.log(`Start Time: ${startTimeFormatted}, End Time: ${endTimeFormatted}`);
-        });
-      } else {
-        console.log("No time data available");
-      }
-    });
-
-    const stadium = await Stadium.findById(idStadium);
-    if (!stadium) {
-      return res.status(400).json({
-        success: false,
-        message: "Không tìm thấy sân"
-      });
-    }
-
-    const styles = stadium.stadium_styles;
-    console.log("Time:", styles);
-    if (!styles) {
-      return res.status(400).json({
-        success: false,
-        message: "Không tìm thấy kiểu sân"
-      });
-    }
-
-    const availableTimesByStyle = styles.map(style => {
-      const bookedTimesForStyle = book.flatMap(booking => 
-        booking.time.filter(t => t.type === style.type)
-      ).map(t => ({
-        startTime: moment(t.startTime).tz('Asia/Ho_Chi_Minh'),
-        endTime: moment(t.endTime).tz('Asia/Ho_Chi_Minh')
-      }));
-
-      const generateAvailableTimes = () => {
-        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
-        const timeslots = [];
-        const year = now.getFullYear();
-        for (let month = 0; month < 12; month++) {
-          const daysInMonth = new Date(year, month + 1, 0).getDate();
-          for (let day = 1; day <= daysInMonth; day++) {
-            let slotTime = moment.tz(new Date(year, month, day, 5, 0), 'Asia/Ho_Chi_Minh').toDate(); 
-            const slotDuration = style.time; 
-            
-            while (slotTime.getHours() < 23) {
-              if (slotTime >= now) {
-                const isBooked = bookedTimesForStyle.some(
-                  (booked) => moment(slotTime).isBetween(booked.startTime, booked.endTime, null, '[)')
-                );
-                timeslots.push({
-                  time: moment(slotTime).format('M/D/YYYY, h:mm:ss A'),
-                  booked: isBooked
-                });
-              }
-              slotTime = moment(slotTime).add(slotDuration, 'minutes').toDate();
-            }
-          }
-        }
-        return timeslots;
-      };
-
-      const availableTimes = generateAvailableTimes();
-      return {
-        style: style.name,
-        availableTimes: availableTimes
-      };
-    });
-
-    return res.status(200).json({
-      success: true,
-      data: availableTimesByStyle
-    });
-  } catch (error) {
-    console.error("Error:", error); 
-    return res.status(500).json({ success: false, message: error.message });
-  }
-}
-  */
 
 getFreeTime: async (req, res) => {
   try {

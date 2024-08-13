@@ -19,10 +19,10 @@ router.get("/getAllBookPitches", bookPitchController.getAllBookPitches);
 // );
 
 router.get(
-  "/getAnBookPitches",
+  "/getCustomerBookPitches",
   middlewareController.verifyToken,
-  bookPitchController.getAnBookPitch
-);
+  bookPitchController.getCustomerBookPitches
+);-
 
 
 router.delete(
