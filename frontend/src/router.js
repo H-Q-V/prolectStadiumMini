@@ -52,7 +52,7 @@ const routes = [
       {
         path: "/stadiumOwner",
         name: "StadiumOwner",
-        component: () => import("./pages/admin/AdminPage.vue"),
+        component: () => import("./pages/stadiumOwner/Dashboard.vue"),
       },
 
       {
