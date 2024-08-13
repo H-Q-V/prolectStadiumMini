@@ -1,7 +1,6 @@
 <script setup>
 import { toast } from "vue3-toastify";
 import { useStadium } from "../../stores";
-import Dialog from "primevue/dialog";
 const props = defineProps({
   stadiumId: { type: String, required: true },
   image: { type: String, required: true },
@@ -22,7 +21,7 @@ const handleDeleteStadium = async (id) => {
 <template>
   <div class="relative bg-white border border-[#e2e8f0] p-5 rounded-2xl group">
     <router-link
-      :to="`/stadium-detail/${stadiumId}`"
+      :to="`/stadium-owner-detail/${stadiumId}`"
       class="flex flex-col gap-4"
     >
       <img
@@ -47,7 +46,9 @@ const handleDeleteStadium = async (id) => {
       </div>
     </router-link>
 
-    <button>
+    <button
+      class="absolute top-1 left-2 translate-x-2/3 translate-y-2/3 bg-slate-600 rounded-full p-2 text-white opacity-0 group-hover:opacity-100 hover:bg-red-500 transition-opacity duration-300"
+    >
       <i class="pi pi-fw pi-pencil"></i>
     </button>
 
