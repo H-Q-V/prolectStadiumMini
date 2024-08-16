@@ -1,49 +1,65 @@
 const RevenueRecord = require("../model/revenueRecord");
 const moment = require("moment");
+
+const calculateRevenue = (
+  bookings,
+  timeUnit,
+  format,
+  isWeekly = false,
+  useDeposit = false
+) => {
+  const revenueMap = bookings.reduce((acc, booking) => {
+    const key = isWeekly
+      ? `${moment(booking.startTime).startOf("isoWeek").format("YYYY-MM-DD")} to ${moment(booking.startTime).endOf("isoWeek").format("YYYY-MM-DD")}`
+      : moment(booking.startTime).format(format);
+
+    if (!acc[key]) {
+      acc[key] = {
+        start: isWeekly
+          ? moment(booking.startTime).startOf("isoWeek").format("YYYY-MM-DD")
+          : moment(booking.startTime).startOf(timeUnit).format("YYYY-MM-DD"),
+        end: isWeekly
+          ? moment(booking.startTime).endOf("isoWeek").format("YYYY-MM-DD")
+          : moment(booking.startTime).endOf(timeUnit).format("YYYY-MM-DD"),
+        revenue: 0,
+      };
+    }
+    acc[key].revenue += useDeposit
+      ? booking.deposit
+      : booking.amount - booking.deposit;
+
+    return acc;
+  }, {});
+  return Object.values(revenueMap);
+};
+
 const revenueRecordController = {
   getRevenues: async (req, res) => {
     try {
       const bookings = await RevenueRecord.find();
       const today = moment();
 
-      // Filter bookings for the current month
-      const currentMonth = today.format("YYYY-MM");
-      const monthlyRevenues = bookings.filter(
-        (booking) =>
-          moment(booking.startTime).format("YYYY-MM") === currentMonth
-      );
-      const totalMonthlyRevenue = monthlyRevenues.reduce((total, booking) => {
-        return total + booking.deposit;
-      }, 0);
+      const monthlyRevenue = calculateRevenue(
+        bookings,
+        "month",
+        "YYYY-MM",
+        false,
+        true
+      ).filter((rev) => moment(rev.start).isSameOrBefore(today, "month"));
 
-      // Filter bookings for the current week
-      const startOfWeek = today.startOf("isoWeek").format("YYYY-MM-DD");
-      const endOfWeek = today.endOf("isoWeek").format("YYYY-MM-DD");
-      const weeklyRevenues = bookings.filter((booking) =>
-        moment(booking.startTime).isBetween(
-          startOfWeek,
-          endOfWeek,
-          undefined,
-          "[]"
-        )
+      const weeklyRevenue = calculateRevenue(
+        bookings,
+        "isoWeek",
+        "YYYY-MM-DD",
+        true,
+        true
       );
-      const totalWeeklyRevenue = weeklyRevenues.reduce((total, booking) => {
-        return total + booking.deposit;
-      }, 0);
 
       return res.status(200).json({
         success: true,
         data: {
-          weeklyRevenue: {
-            startOfWeek,
-            endOfWeek,
-            revenue: totalWeeklyRevenue.toLocaleString("vi-VN"),
-          },
-          monthlyRevenue: {
-            startOfMonth: moment(today).startOf("month").format("YYYY-MM-DD"),
-            endOfMonth: moment(today).endOf("month").format("YYYY-MM-DD"),
-            revenue: totalMonthlyRevenue.toLocaleString("vi-VN"),
-          },
+          weeklyRevenue,
+          monthlyRevenue,
         },
       });
     } catch (error) {
@@ -58,102 +74,90 @@ const revenueRecordController = {
         .populate("stadiumId")
         .populate("ownerId");
 
-      const today = moment();
-
-      // Filter and group bookings for the current month
-      const currentMonth = today.format("YYYY-MM");
-      const monthlyRevenues = bookings.filter(
-        (booking) =>
-          moment(booking.startTime).format("YYYY-MM") === currentMonth
-      );
-
-      const monthlyRevenueByStadium = monthlyRevenues.reduce((acc, booking) => {
+      const monthlyRevenueByStadium = bookings.reduce((acc, booking) => {
         const stadiumName = booking.stadiumId.stadium_name;
-        const ownerUsername = booking.ownerId.username;
+        const month = moment(booking.startTime).format("YYYY-MM");
         const deposit = booking.deposit;
 
-        if (!acc[stadiumName]) {
-          acc[stadiumName] = {
-            totalDeposit: 0,
-            ownerUsername: ownerUsername,
+        if (!acc[month]) {
+          acc[month] = {
+            startOfMonth: moment(booking.startTime)
+              .startOf("month")
+              .format("YYYY-MM-DD"),
+            endOfMonth: moment(booking.startTime)
+              .endOf("month")
+              .format("YYYY-MM-DD"),
+            stadiums: {},
           };
         }
 
-        acc[stadiumName].totalDeposit += deposit;
-
-        // Ensure the ownerUsername remains consistent
-        if (!acc[stadiumName].ownerUsername) {
-          acc[stadiumName].ownerUsername = ownerUsername;
+        if (!acc[month].stadiums[stadiumName]) {
+          acc[month].stadiums[stadiumName] = 0;
         }
+        acc[month].stadiums[stadiumName] += deposit; // Use deposit only
 
         return acc;
       }, {});
 
-      // Filter and group bookings for the current week
-      const startOfWeek = today.startOf("isoWeek").format("YYYY-MM-DD");
-      const endOfWeek = today.endOf("isoWeek").format("YYYY-MM-DD");
-      const weeklyRevenues = bookings.filter((booking) =>
-        moment(booking.startTime).isBetween(
-          startOfWeek,
-          endOfWeek,
-          undefined,
-          "[]"
-        )
-      );
-
-      const weeklyRevenueByStadium = weeklyRevenues.reduce((acc, booking) => {
+      // Calculate weekly revenue
+      const weeklyRevenueByStadium = bookings.reduce((acc, booking) => {
         const stadiumName = booking.stadiumId.stadium_name;
-        const ownerUsername = booking.ownerId.username;
+        const week = `${moment(booking.startTime).year()}-W${moment(booking.startTime).isoWeek()}`;
+        const startOfWeek = moment(booking.startTime)
+          .startOf("isoWeek")
+          .format("YYYY-MM-DD");
+        const endOfWeek = moment(booking.startTime)
+          .endOf("isoWeek")
+          .format("YYYY-MM-DD");
         const deposit = booking.deposit;
 
-        if (!acc[stadiumName]) {
-          acc[stadiumName] = {
-            totalDeposit: 0,
-            ownerUsername: ownerUsername,
+        if (!acc[week]) {
+          acc[week] = {
+            startOfWeek,
+            endOfWeek,
+            stadiums: {},
           };
         }
 
-        acc[stadiumName].totalDeposit += deposit;
-
-        // Ensure the ownerUsername remains consistent
-        if (!acc[stadiumName].ownerUsername) {
-          acc[stadiumName].ownerUsername = ownerUsername;
+        if (!acc[week].stadiums[stadiumName]) {
+          acc[week].stadiums[stadiumName] = 0;
         }
+        acc[week].stadiums[stadiumName] += deposit; // Use deposit only
 
         return acc;
       }, {});
 
-      // Format the results for display
-      const formattedMonthlyRevenue = Object.entries(
+      // Format monthly revenue data
+      const formattedMonthlyRevenue = Object.values(
         monthlyRevenueByStadium
-      ).map(([stadiumName, { totalDeposit, ownerUsername }]) => ({
-        stadiumName,
-        total: totalDeposit.toLocaleString("vi-VN"),
-        ownerUsername,
+      ).map((rev) => ({
+        start: rev.startOfMonth,
+        end: rev.endOfMonth,
+        stadiums: Object.entries(rev.stadiums).map(([stadiumName, total]) => ({
+          stadiumName,
+          total,
+        })),
       }));
 
-      const formattedWeeklyRevenue = Object.entries(weeklyRevenueByStadium).map(
-        ([stadiumName, { totalDeposit, ownerUsername }]) => ({
-          stadiumName,
-          total: totalDeposit.toLocaleString("vi-VN"),
-          ownerUsername,
+      // Format weekly revenue data
+      const formattedWeeklyRevenue = Object.values(weeklyRevenueByStadium).map(
+        (rev) => ({
+          start: rev.startOfWeek,
+          end: rev.endOfWeek,
+          stadiums: Object.entries(rev.stadiums).map(
+            ([stadiumName, total]) => ({
+              stadiumName,
+              total,
+            })
+          ),
         })
       );
 
-      // Return the results
       return res.status(200).json({
         success: true,
         data: {
-          weeklyRevenue: {
-            startOfWeek,
-            endOfWeek,
-            stadiums: formattedWeeklyRevenue,
-          },
-          monthlyRevenue: {
-            startOfMonth: moment(today).startOf("month").format("YYYY-MM-DD"),
-            endOfMonth: moment(today).endOf("month").format("YYYY-MM-DD"),
-            stadiums: formattedMonthlyRevenue,
-          },
+          monthlyRevenue: formattedMonthlyRevenue,
+          weeklyRevenue: formattedWeeklyRevenue,
         },
       });
     } catch (error) {
@@ -161,52 +165,26 @@ const revenueRecordController = {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
+
   getRevenuesOwner: async (req, res) => {
     try {
       const stadiumOwnerID = req.customer.id;
       const bookings = await RevenueRecord.find({ ownerId: stadiumOwnerID });
-      const weeklyRevenue = bookings.reduce(
-        (acc, book) => {
-          const currentWeek = moment(book.startTime).isoWeek();
-          const currentYear = moment(book.startTime).year();
 
-          if (
-            !acc ||
-            (currentWeek === moment().isoWeek() &&
-              currentYear === moment().year())
-          ) {
-            acc.startOfWeek = moment(book.startTime)
-              .startOf("isoWeek")
-              .format("YYYY-MM-DD");
-            acc.endOfWeek = moment(book.startTime)
-              .endOf("isoWeek")
-              .format("YYYY-MM-DD");
-            acc.revenue = (acc.revenue || 0) + (book.amount - book.deposit);
-          }
-
-          return acc;
-        },
-        { startOfWeek: "", endOfWeek: "", revenue: 0 }
+      const weeklyRevenue = calculateRevenue(
+        bookings,
+        "isoWeek",
+        "YYYY-MM-DD",
+        true,
+        false // Use amount - deposit
       );
-
-      const monthlyRevenue = bookings.reduce((acc, book) => {
-        const month = moment(book.startTime).format("YYYY-MM");
-
-        if (!acc[month]) {
-          acc[month] = {
-            startOfMonth: moment(book.startTime)
-              .startOf("month")
-              .format("YYYY-MM-DD"),
-            endOfMonth: moment(book.startTime)
-              .endOf("month")
-              .format("YYYY-MM-DD"),
-            revenue: 0,
-          };
-        }
-        acc[month].revenue += book.amount - book.deposit;
-
-        return acc;
-      }, {});
+      const monthlyRevenue = calculateRevenue(
+        bookings,
+        "month",
+        "YYYY-MM",
+        false,
+        false // Use amount - deposit
+      );
 
       return res.status(200).json({
         success: true,
@@ -226,7 +204,7 @@ const revenueRecordController = {
       const stadiumOwnerID = req.customer.id;
       const bookings = await RevenueRecord.find().populate("stadiumId");
       const stadiumOwnerBookings = bookings.filter(
-        (book) => book.ownerId.toString() === stadiumOwnerID.toString()
+        (booking) => booking.ownerId.toString() === stadiumOwnerID.toString()
       );
 
       const monthlyRevenue = stadiumOwnerBookings.reduce((acc, booking) => {
@@ -238,9 +216,7 @@ const revenueRecordController = {
         const endOfMonth = moment(booking.startTime)
           .endOf("month")
           .format("YYYY-MM-DD");
-        const amount = booking.amount;
-        const deposit = booking.deposit;
-        const total = amount - deposit;
+        const total = booking.amount - booking.deposit;
 
         if (!acc[month]) {
           acc[month] = {
@@ -252,7 +228,7 @@ const revenueRecordController = {
         if (!acc[month].stadiums[stadiumName]) {
           acc[month].stadiums[stadiumName] = 0;
         }
-        acc[month].stadiums[stadiumName] += total;
+        acc[month].stadiums[stadiumName] += total; // Use amount - deposit
 
         return acc;
       }, {});
@@ -266,9 +242,7 @@ const revenueRecordController = {
         const endOfWeek = moment(booking.startTime)
           .endOf("isoWeek")
           .format("YYYY-MM-DD");
-        const amount = booking.amount;
-        const deposit = booking.deposit;
-        const total = amount - deposit;
+        const total = booking.amount - booking.deposit;
 
         if (!acc[week]) {
           acc[week] = {
@@ -280,47 +254,28 @@ const revenueRecordController = {
         if (!acc[week].stadiums[stadiumName]) {
           acc[week].stadiums[stadiumName] = 0;
         }
-        acc[week].stadiums[stadiumName] += total;
+        acc[week].stadiums[stadiumName] += total; // Use amount - deposit
 
         return acc;
       }, {});
 
-      // Format the totals for display
-      const formattedMonthlyRevenue = Object.entries(monthlyRevenue).map(
-        ([month, details]) => {
-          return {
-            startOfMonth: details.startOfMonth,
-            endOfMonth: details.endOfMonth,
-            stadiums: Object.entries(details.stadiums).map(
-              ([stadiumName, total]) => ({
-                stadiumName,
-                total: total.toLocaleString("vi-VN"),
-              })
-            ),
-          };
-        }
-      );
-
-      const formattedWeeklyRevenue = Object.entries(weeklyRevenue).map(
-        ([week, details]) => {
-          return {
-            startOfWeek: details.startOfWeek,
-            endOfWeek: details.endOfWeek,
-            stadiums: Object.entries(details.stadiums).map(
-              ([stadiumName, total]) => ({
-                stadiumName,
-                total: total.toLocaleString("vi-VN"),
-              })
-            ),
-          };
-        }
-      );
+      const formatRevenue = (revenueByTimeUnit) =>
+        Object.entries(revenueByTimeUnit).map(([key, details]) => ({
+          start: details.startOfWeek || details.startOfMonth,
+          end: details.endOfWeek || details.endOfMonth,
+          stadiums: Object.entries(details.stadiums).map(
+            ([stadiumName, total]) => ({
+              stadiumName,
+              total,
+            })
+          ),
+        }));
 
       return res.status(200).json({
         success: true,
         data: {
-          monthlyRevenue: formattedMonthlyRevenue,
-          weeklyRevenue: formattedWeeklyRevenue,
+          monthlyRevenue: formatRevenue(monthlyRevenue),
+          weeklyRevenue: formatRevenue(weeklyRevenue),
         },
       });
     } catch (error) {
