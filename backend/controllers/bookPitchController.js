@@ -1,8 +1,10 @@
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
-const cron = require("node-cron");
 const { Stadium } = require("../model/stadium");
+<<<<<<< HEAD
+=======
 const mongoose = require("mongoose");
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
 const bookPitchController = {
 
   bookPitch: async (req, res) => {
@@ -98,7 +100,6 @@ const bookPitchController = {
         });
 
         const userID = req.customer.id;
-        console.log("🚀 ~ createBooking ~ userID:", userID);
         return await BookPitch.create({
           phone,
           totalAmount: formattedtotalAmount,
@@ -258,7 +259,11 @@ const bookPitchController = {
       const data = [];
       for (let i = 0; i < bookPitch.length; i++) {
         let stadiumStyleId = bookPitch[i].stadiumStyle;
+<<<<<<< HEAD
+
+=======
   
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
         const stadium = await Stadium.findOne({
           "stadium_styles._id": stadiumStyleId,
         });
@@ -267,12 +272,27 @@ const bookPitchController = {
         );
         let oject = {};
         const { stadium_styles, ...datas } = stadium._doc;
+<<<<<<< HEAD
+
+        const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
+          startTime: moment
+            .utc(slot.startTime)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY/MM/DD HH:mm"),
+          endTime: moment
+            .utc(slot.endTime)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY/MM/DD HH:mm"),
+        }));
+
+=======
   
         const convertedTimeSlots = bookPitch[i].time.map((slot) => ({
           startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
           endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
         }));
   
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
         oject = {
           ...datas,
           ...st._doc,
@@ -281,6 +301,20 @@ const bookPitchController = {
           originalStartTime: moment
             .utc(bookPitch[i].originalStartTime)
             .tz("Asia/Ho_Chi_Minh")
+<<<<<<< HEAD
+            .format("YYYY/MM/DD HH:mm"),
+          originalEndTime: moment
+            .utc(bookPitch[i].originalEndTime)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY/MM/DD HH:mm"),
+        };
+        data.push(oject);
+      }
+
+      return res.status(200).json({ success: true, message: data });
+    } catch (error) {
+      console.log("🚀 ~ getAnBookPitches: ~ error:", error);
+=======
             .format('YYYY/MM/DD HH:mm'),
           originalEndTime: moment
             .utc(bookPitch[i].originalEndTime)
@@ -293,6 +327,7 @@ const bookPitchController = {
       return res.status(200).json({ success: true, message: data });
     } catch (error) {
       console.log("🚀 ~ getCustomerBookPitches: ~ error:", error);
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
       return res.status(500).json(error);
     }
   },
@@ -426,7 +461,14 @@ const bookPitchController = {
   getAnBookPitch: async (req, res) => {
     try {
       const idCustomer = req.customer.id;
+<<<<<<< HEAD
+      const bookPitch = await BookPitch.findOne({
+        status: "pending",
+        user: idCustomer,
+      });
+=======
       const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
       if (!bookPitch) {
         return res.status(404).json({
           success: false,
@@ -452,8 +494,14 @@ const bookPitchController = {
         });
       }
       const convertedTimeSlots = bookPitch.time.map((slot) => ({
-        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
-        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
+        startTime: moment
+          .utc(slot.startTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY/MM/DD HH:mm"),
+        endTime: moment
+          .utc(slot.endTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY/MM/DD HH:mm"),
       }));
       const data = {
         ...stadium._doc,
@@ -463,11 +511,11 @@ const bookPitchController = {
         originalStartTime: moment
           .utc(bookPitch.originalStartTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format('YYYY/MM/DD HH:mm'),
+          .format("YYYY/MM/DD HH:mm"),
         originalEndTime: moment
           .utc(bookPitch.originalEndTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format('YYYY/MM/DD HH:mm'),
+          .format("YYYY/MM/DD HH:mm"),
       };
       delete data.stadium_styles;
       return res.status(200).json({
@@ -480,51 +528,83 @@ const bookPitchController = {
     }
   },
 
-
-cancelpayment: async (req,res) => {
-  try {
-    const id = req.customer.id;
-    await BookPitch.findOneAndDelete({status:"pending",user: id});
-    return res.status(200).json({
-      success: true,
-      message: "Xóa thanh toán thành công"
-    })
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-},
-getFreeTime: async (req, res) => {
-  try {
-    const { idStadium } = req.params;
-    const book = await BookPitch.find({
-      status: "confirmed",
-      stadium: idStadium
-    });
-    const stadium = await Stadium.findById(idStadium);
-    if (!stadium) {
-      return res.status(400).json({
-        success: false,
-        message: "Không tìm thấy sân"
+  cancelpayment: async (req, res) => {
+    try {
+      const id = req.customer.id;
+      await BookPitch.findOneAndDelete({ status: "pending", user: id });
+      return res.status(200).json({
+        success: true,
+        message: "Xóa thanh toán thành công",
       });
+    } catch (error) {
+      return res.status(500).json(error);
     }
-    const styles = stadium.stadium_styles;
-    if (!styles) {
-      return res.status(400).json({
-        success: false,
-        message: "Không tìm thấy kiểu sân"
+  },
+  getFreeTime: async (req, res) => {
+    try {
+      const { idStadium } = req.params;
+      const book = await BookPitch.find({
+        status: "confirmed",
+        stadium: idStadium,
       });
-    }
-    const currentMonth = moment().tz('Asia/Ho_Chi_Minh').month();
-    const availableTimesByStyle = styles.map(style => {
-      
-      const bookedTimesForStyle = book.flatMap(booking => 
-        booking.time.filter(t => t.time === styles.time)
-      )?.map(t => ({
-        startTime: moment(t.startTime).tz('Asia/Ho_Chi_Minh'),
-        endTime: moment(t.endTime).tz('Asia/Ho_Chi_Minh')
-      }));
-      console.log(`Thời gian đã đặt cho kiểu sân ${style.name}:`, bookedTimesForStyle);
+      const stadium = await Stadium.findById(idStadium);
+      if (!stadium) {
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy sân",
+        });
+      }
+      const styles = stadium.stadium_styles;
+      if (!styles) {
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy kiểu sân",
+        });
+      }
+      const currentMonth = moment().tz("Asia/Ho_Chi_Minh").month();
+      const availableTimesByStyle = styles.map((style) => {
+        const bookedTimesForStyle = book
+          .flatMap((booking) =>
+            booking.time.filter((t) => t.time === styles.time)
+          )
+          ?.map((t) => ({
+            startTime: moment(t.startTime).tz("Asia/Ho_Chi_Minh"),
+            endTime: moment(t.endTime).tz("Asia/Ho_Chi_Minh"),
+          }));
+        console.log(
+          `Thời gian đã đặt cho kiểu sân ${style.name}:`,
+          bookedTimesForStyle
+        );
 
+<<<<<<< HEAD
+        const generateAvailableTimes = (month) => {
+          const now = moment().tz("Asia/Ho_Chi_Minh").toDate();
+          const timeslots = [];
+          const year = now.getFullYear();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          for (let day = 1; day <= daysInMonth; day++) {
+            let slotTime = moment
+              .tz(new Date(year, month, day, 5, 0), "Asia/Ho_Chi_Minh")
+              .toDate();
+            const slotDuration = style.time;
+            while (slotTime.getHours() < 23) {
+              if (slotTime >= now) {
+                const isBooked = bookedTimesForStyle.some((book) =>
+                  moment(slotTime).isBetween(
+                    book.startTime,
+                    book.endTime,
+                    null,
+                    "[)"
+                  )
+                );
+                //console.log(isBooked)
+                timeslots.push({
+                  time: moment(slotTime).format("M/D/YYYY, h:mm:ss A"),
+                  book: isBooked,
+                });
+              }
+              slotTime = moment(slotTime).add(slotDuration, "minutes").toDate();
+=======
       const generateAvailableTimes = (month) => {
         const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
         const timeslots = [];
@@ -544,9 +624,30 @@ getFreeTime: async (req, res) => {
                 time: moment(slotTime).format('YYYY/MM/DD HH:mm'),
                 book: isBooked
               });
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
             }
-            slotTime = moment(slotTime).add(slotDuration, 'minutes').toDate();
           }
+<<<<<<< HEAD
+          return timeslots;
+        };
+        const availableTimes = generateAvailableTimes(currentMonth);
+        return {
+          style: style.name,
+          availableTimes: availableTimes,
+        };
+      });
+      return res.status(200).json({
+        success: true,
+        data: availableTimesByStyle,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+};
+
+=======
         }
         return timeslots;
       };
@@ -566,4 +667,5 @@ getFreeTime: async (req, res) => {
   }
 } 
 };
+>>>>>>> d3b70b3046fc446f0148d5fed9ad9c07fe22dadd
 module.exports = bookPitchController;

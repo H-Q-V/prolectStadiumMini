@@ -56,6 +56,12 @@ const routes = [
       },
 
       {
+        path: "/stadiumOwner/revenue",
+        name: "RevenueOwner",
+        component: () => import("./pages/stadiumOwner/RevenueDetails.vue"),
+      },
+
+      {
         path: "/stadiumOwner/list",
         name: "ListStadiumOwner",
         component: () =>
@@ -90,7 +96,7 @@ const routes = [
       {
         path: "/admin",
         name: "Admin",
-        component: () => import("./pages/admin/AdminPage.vue"),
+        component: () => import("./pages/admin/Dashboard.vue"),
       },
 
       {
@@ -99,6 +105,11 @@ const routes = [
         component: () => import("./pages/admin/ListCustomersPage.vue"),
       },
 
+      {
+        path: "/admin/revenue",
+        name: "RevenueAdmin",
+        component: () => import("./pages/admin/RevenueDetails.vue"),
+      },
       {
         path: "/admin/list",
         name: "ListStadiumsByAdmin",
