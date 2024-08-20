@@ -91,7 +91,7 @@ const payment = {
           { Status: "confirmed" },
           { new: true }
         );
-        // comment bắt đầu ở đây để thay linh payos
+        //comment bắt đầu ở đây để thay linh payos
         const bookingStatus = await BookPitch.findOne({
           user: inforDonate.User,
         });
