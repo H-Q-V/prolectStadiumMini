@@ -18,13 +18,13 @@ const customerSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
-    img: [
-      {
-        image: {
-          type: String,
-        },
-      },
-    ],
+    // img: [
+    //   {
+    //     image: {
+    //       type: String,
+    //     },
+    //   },
+    // ],
     role: {
       type: String,
       enum: ["Customer", "Admin", "StadiumOwner"],

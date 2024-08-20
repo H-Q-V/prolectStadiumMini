@@ -80,7 +80,7 @@ const authController = {
         role: customer.role,
       },
       process.env.JWT_ACCESS_KEY,
-      { expiresIn: "30d" }
+      { expiresIn: "1d" }
     );
   },
   generateRefreshToken: (customer) => {
@@ -90,7 +90,7 @@ const authController = {
         admin: customer.role,
       },
       process.env.JWT_REFRESH_KEY,
-      { expiresIn: "360d" }
+      { expiresIn: "1d" }
     );
   },
   // login

@@ -493,7 +493,9 @@ cancelpayment: async (req,res) => {
     return res.status(500).json(error);
   }
 },
-getFreeTime: async (req, res) => {
+
+/*
+getBookFreeTime: async (req, res) => {
   try {
     const { idStadium } = req.params;
     const book = await BookPitch.find({
@@ -558,12 +560,94 @@ getFreeTime: async (req, res) => {
     });
     return res.status(200).json({
       success: true,
-      data: availableTimesByStyle
+      data: {
+        stadium_name:stadium.stadium_name,
+        availableTimesByStyle:availableTimesByStyle
+      }
     });
   } catch (error) {
     console.error("Error:", error); 
     return res.status(500).json({ success: false, message: error.message });
   }
 } 
+*/
+getFreeTime: async (req, res) => {
+  try {
+    const { idStadium } = req.params;
+    const book = await BookPitch.find({
+      status: "confirmed",
+      stadium: idStadium
+    });
+    const stadium = await Stadium.findById(idStadium);
+    if (!stadium) {
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy sân"
+      });
+    }
+    const styles = stadium.stadium_styles;
+    if (!styles) {
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy kiểu sân"
+      });
+    }
+
+    const availableTimesByStyle = styles.map(style => {
+      const bookedTimesForStyle = book.flatMap(booking => 
+        booking.time.filter(t => t.time === style.time)
+      )?.map(t => ({
+        startTime: moment(t.startTime).tz('Asia/Ho_Chi_Minh'),
+        endTime: moment(t.endTime).tz('Asia/Ho_Chi_Minh')
+      }));
+
+      console.log(`Thời gian đã đặt cho kiểu sân ${style.name}:`, bookedTimesForStyle);
+
+      const generateAvailableTimesForCurrentWeek = () => {
+        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
+        const startOfWeek = moment().tz('Asia/Ho_Chi_Minh').startOf('week').add(1, 'day').toDate();  // Bắt đầu từ thứ Hai
+        const endOfWeek = moment(startOfWeek).endOf('week').add(1, 'day').toDate();  // Kết thúc vào Chủ Nhật
+
+        const timeslots = [];
+
+        for (let day = startOfWeek.getDate(); day <= endOfWeek.getDate(); day++) {
+          let slotTime = moment(startOfWeek).set('date', day).set('hour', 5).set('minute', 0).toDate();
+          const slotDuration = style.time; 
+
+          while (slotTime.getHours() < 23) {
+            if (slotTime >= now) {
+              const isBooked = bookedTimesForStyle.some(
+                (book) => moment(slotTime).isBetween(book.startTime, book.endTime, null, '[)')
+              );
+              timeslots.push({
+                time: moment(slotTime).format('YYYY/MM/DD HH:mm'),
+                book: isBooked
+              });
+            }
+            slotTime = moment(slotTime).add(slotDuration, 'minutes').toDate();
+          }
+        }
+        return timeslots;
+      };
+
+      const availableTimes = generateAvailableTimesForCurrentWeek();
+      return {
+        style: style.name,
+        availableTimes: availableTimes
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        stadium_name: stadium.stadium_name,
+        availableTimesByStyle: availableTimesByStyle
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error); 
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
 };
 module.exports = bookPitchController;
