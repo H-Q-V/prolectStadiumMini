@@ -1,6 +1,5 @@
 const BookPitch = require("../model/bookPitch");
 const moment = require("moment-timezone");
-const cron = require("node-cron");
 const { Stadium } = require("../model/stadium");
 const mongoose = require("mongoose");
 const bookPitchController = {
@@ -98,7 +97,6 @@ const bookPitchController = {
         });
 
         const userID = req.customer.id;
-        console.log("🚀 ~ createBooking ~ userID:", userID);
         return await BookPitch.create({
           phone,
           totalAmount: formattedtotalAmount,
@@ -296,6 +294,7 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
+  
   getStadiumOwnerBookings: async (req, res) => {
     try {
       const booking = await BookPitch.find()
@@ -426,7 +425,12 @@ const bookPitchController = {
   getAnBookPitch: async (req, res) => {
     try {
       const idCustomer = req.customer.id;
-      const bookPitch = await BookPitch.findOne({status:"pending",user: idCustomer});
+
+      const bookPitch = await BookPitch.findOne({
+        status: "pending",
+        user: idCustomer,
+      });
+
       if (!bookPitch) {
         return res.status(404).json({
           success: false,
@@ -452,8 +456,14 @@ const bookPitchController = {
         });
       }
       const convertedTimeSlots = bookPitch.time.map((slot) => ({
-        startTime: moment.utc(slot.startTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
-        endTime: moment.utc(slot.endTime).tz("Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:mm'),
+        startTime: moment
+          .utc(slot.startTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY/MM/DD HH:mm"),
+        endTime: moment
+          .utc(slot.endTime)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY/MM/DD HH:mm"),
       }));
       const data = {
         ...stadium._doc,
@@ -463,11 +473,11 @@ const bookPitchController = {
         originalStartTime: moment
           .utc(bookPitch.originalStartTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format('YYYY/MM/DD HH:mm'),
+          .format("YYYY/MM/DD HH:mm"),
         originalEndTime: moment
           .utc(bookPitch.originalEndTime)
           .tz("Asia/Ho_Chi_Minh")
-          .format('YYYY/MM/DD HH:mm'),
+          .format("YYYY/MM/DD HH:mm"),
       };
       delete data.stadium_styles;
       return res.status(200).json({
@@ -479,6 +489,7 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
+
 
 
 cancelpayment: async (req,res) => {
@@ -650,4 +661,5 @@ getFreeTime: async (req, res) => {
   }
 }
 };
+
 module.exports = bookPitchController;
