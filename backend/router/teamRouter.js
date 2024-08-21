@@ -25,4 +25,23 @@ router.get("/searchTeam",
 middlewareController.verifyToken, 
 teamController.searchTeam
 );
+
+router.post("/Send-Invitation/:idTeam", 
+middlewareController.verifyToken, 
+teamController.sendAnInvitation);
+
+router.get("/Get-Invitation",
+middlewareController.verifyToken,
+teamController.getAnInvitation);
+
+router.post("/Receives-Invitation",
+middlewareController.verifyToken,
+teamController.receivesAnInvitation
+);
+
+router.delete("/Delete-Invitation",
+middlewareController.verifyToken,
+teamController.deleteAnInvitation
+);
+
 module.exports = router;
