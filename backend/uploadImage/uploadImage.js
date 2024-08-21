@@ -1,8 +1,11 @@
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
-  cloud_name: "dpnxghbxb",
-  api_key: "323689665689785",
-  api_secret: "zLIf0IEBLp5a6eLSfNZbCyvI9WY",
+  // cloud_name: "dpnxghbxb",
+  // api_key: "323689665689785",
+  // api_secret: "zLIf0IEBLp5a6eLSfNZbCyvI9WY",
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret,
 });
 const otps = {
   overwrite: true,

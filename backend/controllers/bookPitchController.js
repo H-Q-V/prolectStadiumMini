@@ -301,6 +301,7 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
+
   getStadiumOwnerBookings: async (req, res) => {
     try {
       const booking = await BookPitch.find()

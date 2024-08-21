@@ -4,7 +4,6 @@ const {
   deleteImage,
   imageUpdater,
 } = require("../uploadImage/uploadImage");
-
 const stadiumController = {
   addStadium: async (req, res) => {
     try {
@@ -155,7 +154,7 @@ const stadiumController = {
       await deleteImage(stadium.image);
 
       await Stadium.findByIdAndDelete(req.params.id);
-      return res.status(200).json("Deleted successfully");
+      return res.status(200).json("Xóa sân vận động thành công");
     } catch (err) {
       return res.status(500).json(err);
     }
@@ -223,7 +222,7 @@ const stadiumController = {
       if (stadiums.length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Khồng tìm thấy thông tin sân",
+          message: "Không tìm thấy thông tin sân",
         });
       }
       return res.status(200).json({ success: true, message: stadiums });
@@ -242,7 +241,6 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Nhập thiếu thông tin" });
       }
-
       const priceRegex = /^\d+$/;
       if (!priceRegex.test(price)) {
         return res
@@ -253,27 +251,40 @@ const stadiumController = {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       });
-      // Tìm stadium theo stadium_owner
+
       const stadium = await Stadium.findOne({
         stadium_name: nameStadium,
         stadium_owner: id,
       });
+
+      const isDuplicateName = stadium.stadium_styles.some(
+        (style) => style.name.toLowerCase() === name.toLowerCase()
+      );
+
+      if (isDuplicateName) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Tên kiểu sân đã tồn tại" });
+      }
+
       if (!stadium) {
         return res
           .status(404)
           .json({ status: false, message: "Sân vận động không tìm thấy" });
       }
+
       const stadiumStyle = {
         name,
         type,
         price: formattedPrice,
         time,
       };
+
       stadium.stadium_styles.push(stadiumStyle);
       const updatedStadium = await stadium.save();
       return res.status(200).json({ status: true, data: updatedStadium });
     } catch (err) {
-      console.error("Error occurred in addStadiumStyle:", err);
+      //console.error("Error occurred in addStadiumStyle:", err);
       return res
         .status(500)
         .json({ status: false, message: "Thêm thông tin thất bại" });
@@ -346,7 +357,7 @@ const stadiumController = {
       if (!stadium) {
         return res
           .status(404)
-          .json({ status: false, message: "Stadium not found" });
+          .json({ status: false, message: "Không tìm thấy sân vận động" });
       }
 
       const style = stadium.stadium_styles.find(
@@ -355,7 +366,7 @@ const stadiumController = {
       if (!style) {
         return res
           .status(404)
-          .json({ status: false, message: "StadiumStyle not found" });
+          .json({ status: false, message: "Không tìm thấy kiểu sân vận động" });
       }
 
       if (image) {
@@ -372,7 +383,7 @@ const stadiumController = {
       await stadium.save();
       return res.status(200).json({ status: true, data: style });
     } catch (err) {
-      console.error("Error occurred in updateStadiumStyle:", err);
+      //console.error("Error occurred in updateStadiumStyle:", err);
       return res
         .status(500)
         .json({ status: false, message: "Cập nhật thông tin thất bại" });
