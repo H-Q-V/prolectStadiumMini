@@ -242,6 +242,7 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Nhập thiếu thông tin" });
       }
+
       const priceRegex = /^\d+$/;
       if (!priceRegex.test(price)) {
         return res

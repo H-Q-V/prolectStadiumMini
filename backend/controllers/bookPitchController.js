@@ -506,6 +506,7 @@ const bookPitchController = {
       return res.status(500).json(error);
     }
   },
+
   getFreeTime: async (req, res) => {
     try {
       const { idStadium } = req.params;
@@ -515,45 +516,44 @@ const bookPitchController = {
       });
       const stadium = await Stadium.findById(idStadium);
       if (!stadium) {
-        return res.status(400).json({
+        return res.status(404).json({
           success: false,
           message: "Không tìm thấy sân",
         });
       }
       const styles = stadium.stadium_styles;
-      if (!styles) {
-        return res.status(400).json({
+      if (!styles || styles.length === 0) {
+        return res.status(404).json({
           success: false,
           message: "Không tìm thấy kiểu sân",
         });
       }
-      const currentMonth = moment().tz("Asia/Ho_Chi_Minh").month();
-      const availableTimesByStyle = styles.map((style) => {
-        const bookedTimesForStyle = book
-          .flatMap((booking) =>
-            booking.time.filter((t) => t.time === styles.time)
-          )
-          ?.map((t) => ({
-            startTime: moment(t.startTime).tz("Asia/Ho_Chi_Minh"),
-            endTime: moment(t.endTime).tz("Asia/Ho_Chi_Minh"),
-          }));
-        console.log(
-          `Thời gian đã đặt cho kiểu sân ${style.name}:`,
-          bookedTimesForStyle
-        );
 
-        const generateAvailableTimes = (month) => {
-          const now = moment().tz("Asia/Ho_Chi_Minh").toDate();
+      const now = moment().tz("Asia/Ho_Chi_Minh");
+      const endOfNextWeek = moment(now).add(1, "weeks").endOf("week").toDate();
+
+      const availableTimesByStyle = styles.map((style) => {
+        const styleTime = style.time;
+        const bookedTimesForStyle = book
+          .filter((booking) => booking.stadiumStyle.equals(style._id))
+          .flatMap((booking) =>
+            booking.time.map((t) => ({
+              startTime: moment(t.startTime).tz("Asia/Ho_Chi_Minh"),
+              endTime: moment(t.endTime).tz("Asia/Ho_Chi_Minh"),
+            }))
+          );
+
+        const generateAvailableTimes = (startDate, endDate) => {
           const timeslots = [];
-          const year = now.getFullYear();
-          const daysInMonth = new Date(year, month + 1, 0).getDate();
-          for (let day = 1; day <= daysInMonth; day++) {
-            let slotTime = moment
-              .tz(new Date(year, month, day, 5, 0), "Asia/Ho_Chi_Minh")
-              .toDate();
-            const slotDuration = style.time;
-            while (slotTime.getHours() < 23) {
-              if (slotTime >= now) {
+          let slotTime = moment(startDate).startOf("day").add(5, "hours");
+
+          while (slotTime.toDate() <= endDate) {
+            const endOfDay = moment(slotTime).startOf("day").add(22, "hours");
+            while (
+              slotTime.isBefore(endOfDay) &&
+              slotTime.toDate() <= endDate
+            ) {
+              if (slotTime.toDate() >= now.toDate()) {
                 const isBooked = bookedTimesForStyle.some((book) =>
                   moment(slotTime).isBetween(
                     book.startTime,
@@ -562,23 +562,37 @@ const bookPitchController = {
                     "[)"
                   )
                 );
-                //console.log(isBooked)
-                timeslots.push({
-                  time: moment(slotTime).format("M/D/YYYY, h:mm:ss A"),
-                  book: isBooked,
-                });
+
+                if (!isBooked) {
+                  timeslots.push({
+                    start: slotTime.format("YYYY-MM-DDTHH:mm:ss"),
+                    end: slotTime
+                      .add(styleTime, "minutes")
+                      .format("YYYY-MM-DDTHH:mm:ss"),
+                    book: false,
+                  });
+                  slotTime.subtract(styleTime, "minutes");
+                }
               }
-              slotTime = moment(slotTime).add(slotDuration, "minutes").toDate();
+              slotTime.add(styleTime, "minutes");
             }
+            slotTime.add(1, "day").startOf("day").add(5, "hours");
           }
           return timeslots;
         };
-        const availableTimes = generateAvailableTimes(currentMonth);
+
+        const availableTimes = generateAvailableTimes(
+          now.toDate(),
+          endOfNextWeek
+        );
         return {
           style: style.name,
+          id: style._id,
+          price: style.price,
           availableTimes: availableTimes,
         };
       });
+
       return res.status(200).json({
         success: true,
         data: availableTimesByStyle,
