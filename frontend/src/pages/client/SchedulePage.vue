@@ -3,7 +3,7 @@ import { onMounted, ref, watchEffect } from "vue";
 import Button from "primevue/button";
 import { toast } from "vue3-toastify";
 import { useBookPitch } from "../../stores";
-import { formatTime } from "../../utils/formatTime";
+import { formatTime } from "../../utils";
 const customerBookPitchesData = ref([]);
 const bookPitchStore = useBookPitch();
 onMounted(async () => {
@@ -12,10 +12,6 @@ onMounted(async () => {
 
 watchEffect(() => {
   customerBookPitchesData.value = bookPitchStore.customerBookPitchesData;
-  console.log(
-    "🚀 ~ watchEffect ~ customerBookPitchesData:",
-    customerBookPitchesData
-  );
 });
 const handleDeleteBookPitch = async (id) => {
   if (window.confirm("Bạn có chắc chắn xóa không ?")) {
