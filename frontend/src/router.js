@@ -119,7 +119,7 @@ const routes = [
   },
 
   {
-    path: "/calendar",
+    path: "/book-pitch/:id",
     name: "Calendar",
     component: () => import("./components/calendar/Calendar.vue"),
   },

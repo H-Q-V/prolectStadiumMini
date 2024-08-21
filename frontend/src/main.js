@@ -3,6 +3,7 @@ import "./style.css";
 import "vue3-toastify/dist/index.css";
 import "./primevue.css";
 import "primeicons/primeicons.css";
+
 import App from "./App.vue";
 import router from "./router";
 import PrimeVue from "primevue/config";

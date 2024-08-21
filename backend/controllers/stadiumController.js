@@ -173,7 +173,7 @@ const stadiumController = {
     }
   },
 
-   searchStadium: async (req, res) => {
+  searchStadium: async (req, res) => {
     try {
       const { search, ward, city, provice, address } = req.query;
       let queries = [];
@@ -229,8 +229,7 @@ const stadiumController = {
     } catch (err) {
       return res.status(500).json(err);
     }
-   },
-
+  },
 
   addStadiumStyle: async (req, res) => {
     try {
@@ -242,7 +241,6 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Nhập thiếu thông tin" });
       }
-      
       const priceRegex = /^\d+$/;
       if (!priceRegex.test(price)) {
         return res
@@ -264,7 +262,9 @@ const stadiumController = {
       );
 
       if (isDuplicateName) {
-        return res.status(400).json({ status: false, message: "Tên kiểu sân đã tồn tại" });
+        return res
+          .status(400)
+          .json({ status: false, message: "Tên kiểu sân đã tồn tại" });
       }
 
       if (!stadium) {
@@ -279,7 +279,7 @@ const stadiumController = {
         price: formattedPrice,
         time,
       };
-      
+
       stadium.stadium_styles.push(stadiumStyle);
       const updatedStadium = await stadium.save();
       return res.status(200).json({ status: true, data: updatedStadium });

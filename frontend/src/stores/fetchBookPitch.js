@@ -92,6 +92,19 @@ const useBookPitch = defineStore("bookPitch", {
         console.log("🚀 ~ getStadiumOwnerBookings ~ error:", error);
       }
     },
+
+    async getFreeTime(id) {
+      try {
+        const response = await axios.get(
+          `${endpoint}/getFreeTime/${id}`,
+          config
+        );
+
+        this.bookPitchData = response?.data?.data;
+      } catch (error) {
+        console.log("🚀 ~ getFreeTime ~ error:", error);
+      }
+    },
   },
 });
 
