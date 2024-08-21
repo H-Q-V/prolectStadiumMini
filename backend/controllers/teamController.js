@@ -1,4 +1,5 @@
 const Team = require('../model/team');
+const ManMaking = require('../model/manMarking');
 const teamController = {
   addTeam: async (req, res) => {
     try {
@@ -131,7 +132,79 @@ const teamController = {
     } catch (error) {
        return res.status(500).json(error);
     }
+  },
+  sendAnInvitation: async(req,res) => {
+    try {
+      const id = req.customer.id;
+      const team = await Team.findOne({teamFounder:id});
+      const teamreceives = await Team.findById(req.params.idTeam);
+      console.log("a", team);
+      console.log("b", teamreceives);
+      const response = await ManMaking.create({
+           teamSends: team.name,
+           teamReceives: teamreceives.name,
+           ownerTeamSends: team.teamFounder,
+           ownerTeamReceives: teamreceives.teamFounder,
+      })
+      return res.status(200).json({
+        message: "Gửi lời mời thành công",
+        data: response,
+      });
+    }catch (error) {
+       return res.status(500).json(error);
+    }
+  },
+  getAnInvitation: async (req, res) => {
+    try {
+      const id = req.customer.id;
+      const teams = await ManMaking.find({ ownerTeamReceives: id });
+      console.log("b", id);
+      console.log("a", teams);
+  
+      if (teams.length === 0) {
+        return res.status(404).json({ message: "Không có lời mời nào." });
+      }
+  
+      const messages = teams.map(team => `Đội bóng ${team.teamSends} muốn đấu với đội bạn`);
+  
+      return res.status(200).json({
+        messages: messages
+      });
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+  receivesAnInvitation: async(req,res) => {
+      try {
+        const id = req.customer.id;
+        const accept = await ManMaking.findOne({ownerTeamReceives:id});
+        accept.status = "accept";
+        accept.save();
+        return res.status(200).json({
+          message: `Đội bóng ${accept.teamReceives} chấp nhận tham gia trận đấu`,
+        });
+      } catch (error) {
+        return res.status(500).json(error);
+      }
+  },
+  deleteAnInvitation: async(req,res) => {
+     try {
+        const id = req.customer.id;
+        await ManMaking.deleteMany({
+          $or: [
+            { ownerTeamReceives: id },
+            { ownerTeamSends: id }
+          ]
+        });
+        return res.status(200).json({
+          message: "Xóa bắt đối thành công"
+        })
+     }catch (error) {
+       return res.status(500).json(error);
+     }
   }
+  
+  
 };
 
 module.exports = teamController;

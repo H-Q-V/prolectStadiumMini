@@ -242,6 +242,7 @@ const stadiumController = {
           .status(400)
           .json({ status: false, message: "Nhập thiếu thông tin" });
       }
+      
       const priceRegex = /^\d+$/;
       if (!priceRegex.test(price)) {
         return res
@@ -252,22 +253,33 @@ const stadiumController = {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       });
-      // Tìm stadium theo stadium_owner
+
       const stadium = await Stadium.findOne({
         stadium_name: nameStadium,
         stadium_owner: id,
       });
+
+      const isDuplicateName = stadium.stadium_styles.some(
+        (style) => style.name.toLowerCase() === name.toLowerCase()
+      );
+
+      if (isDuplicateName) {
+        return res.status(400).json({ status: false, message: "Tên kiểu sân đã tồn tại" });
+      }
+
       if (!stadium) {
         return res
           .status(404)
           .json({ status: false, message: "Sân vận động không tìm thấy" });
       }
+
       const stadiumStyle = {
         name,
         type,
         price: formattedPrice,
         time,
       };
+      
       stadium.stadium_styles.push(stadiumStyle);
       const updatedStadium = await stadium.save();
       return res.status(200).json({ status: true, data: updatedStadium });
