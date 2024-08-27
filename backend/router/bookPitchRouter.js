@@ -28,14 +28,12 @@ router.delete(
   bookPitchController.deleteBookPitchs
 );
 
-
 router.get(
   "/getStadiumOwnerBookings",
   middlewareController.verifyToken,
   middlewareController.authorize(["StadiumOwner"]),
   bookPitchController.getStadiumOwnerBookings
 );
-
 
 router.delete(
   "/deleteBookPitches/:id",
@@ -55,9 +53,10 @@ router.delete(
   bookPitchController.cancelpayment
 );
 
-router.get("/getFreeTime/:idStadium", 
-middlewareController.verifyToken, 
-bookPitchController.getFreeTime
+router.get(
+  "/getBooked/:idStadium",
+  middlewareController.verifyToken,
+  bookPitchController.getBooked
 );
 
 module.exports = router;
