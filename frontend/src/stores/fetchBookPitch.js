@@ -15,9 +15,6 @@ const useBookPitch = defineStore("bookPitch", {
           data,
           config
         );
-        toast.success(
-          "Đăng kí giữ giỗ thành công. Thời gian giữ chỗ sẽ hết sau 15 phút"
-        );
         router.push(`/payment`);
       } catch (error) {
         console.log("🚀 ~ bookPitch ~ error:", error);
@@ -93,16 +90,12 @@ const useBookPitch = defineStore("bookPitch", {
       }
     },
 
-    async getFreeTime(id) {
+    async getBooked(id) {
       try {
-        const response = await axios.get(
-          `${endpoint}/getFreeTime/${id}`,
-          config
-        );
-
+        const response = await axios.get(`${endpoint}/getBooked/${id}`, config);
         this.bookPitchData = response?.data?.data;
       } catch (error) {
-        console.log("🚀 ~ getFreeTime ~ error:", error);
+        console.log("🚀 ~ getBooked ~ error:", error);
       }
     },
   },

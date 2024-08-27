@@ -33,13 +33,13 @@ const routes = [
       {
         path: "/book-pitch/:id/:stadiumStyleID",
         name: "BookPitch",
-        component: () => import("./pages/client/BookPitchPage.vue"),
+        component: () => import("./pages/client/BookPitch.vue"),
       },
 
       {
         path: "/schedule",
         name: "Schedule",
-        component: () => import("./pages/client/SchedulePage.vue"),
+        component: () => import("./pages/client/Schedule.vue"),
       },
     ],
   },

@@ -4,6 +4,9 @@ const bookPitchSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    note: {
+      type: String,
+    },
     totalAmount: {
       type: String,
     },
