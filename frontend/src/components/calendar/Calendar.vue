@@ -70,7 +70,7 @@ watchEffect(() => {
   bookPitch.value = bookStore.bookPitchData;
   const currentTime = new Date();
   const pastTime = {
-    start: currentTime.getFullYear(),
+    start: new Date(currentTime.getFullYear(), 0, 1),
     end: currentTime,
     display: "background",
     color: "#f0f0f0",
@@ -82,7 +82,7 @@ watchEffect(() => {
     ...bookPitch.value.flatMap(
       (pitch) =>
         pitch?.bookedTimes?.map((timeSlot) => ({
-          resourceID: pitch.id,
+          resourceId: pitch.id,
           start: timeSlot.start,
           end: timeSlot.end,
           display: "background",
